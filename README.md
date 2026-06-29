@@ -1,36 +1,123 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Estudio Norte
 
-## Getting Started
+Plataforma de cursos online premium para emprendedores y profesionales digitales de Argentina y LATAM.
 
-First, run the development server:
+**Estudio Norte es una iniciativa de JuanoConecta · Rafaela, Santa Fe, Argentina**
+
+---
+
+## Stack
+
+- **Framework:** Next.js 15 App Router + TypeScript
+- **Estilos:** Tailwind CSS v4 + CSS variables
+- **Auth:** Supabase Auth (magic link)
+- **Base de datos:** Supabase PostgreSQL
+- **Pagos ARS:** Mercado Pago Checkout Pro
+- **Pagos USD:** Stripe Checkout
+- **Emails:** Resend + React Email
+- **Deploy:** Vercel
+- **Dominio:** estudionorte.ar
+
+---
+
+## Setup local
+
+### 1. Clonar e instalar
+
+```bash
+git clone <repo-url>
+cd estudio-norte-web
+npm install
+```
+
+### 2. Variables de entorno
+
+```bash
+cp .env.local.example .env.local
+```
+
+Completá todos los valores en `.env.local`.
+
+### 3. Supabase
+
+1. Creá un proyecto en [supabase.com](https://supabase.com)
+2. Ejecutá las migraciones en el SQL Editor de Supabase:
+   - `supabase/migrations/001_initial_schema.sql`
+   - `supabase/migrations/002_rls_policies.sql`
+3. (Opcional) Ejecutá el seed: `supabase/seed.sql`
+
+### 4. Dev server
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Abrí [http://localhost:3000](http://localhost:3000)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Deploy en Vercel
 
-## Learn More
+### 1. Conectar repositorio
 
-To learn more about Next.js, take a look at the following resources:
+1. Pusheá el código a GitHub (repo público o privado)
+2. Importá el proyecto en [vercel.com](https://vercel.com)
+3. Framework: **Next.js** (detectado automáticamente)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### 2. Variables de entorno en Vercel
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+En el dashboard de Vercel → Settings → Environment Variables, agregá todas las variables de `.env.local.example`.
 
-## Deploy on Vercel
+### 3. Dominio
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+En Vercel → Settings → Domains, agregá `estudionorte.ar` y configurá los DNS en tu registrador.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
+
+## Webhooks
+
+Configurá estas URLs en los dashboards de cada proveedor:
+
+| Proveedor | URL del webhook |
+|-----------|----------------|
+| Mercado Pago | `https://estudionorte.ar/api/webhooks/mercadopago` |
+| Stripe | `https://estudionorte.ar/api/webhooks/stripe` |
+
+---
+
+## Rutas
+
+### Públicas
+| Ruta | Descripción |
+|------|-------------|
+| `/` | Landing principal |
+| `/cursos` | Catálogo de cursos |
+| `/cursos/[slug]` | Página de venta |
+| `/sobre-juano` | Página del instructor |
+| `/login` | Acceso alumnos |
+| `/gracias` | Confirmación de compra |
+
+### Privadas (requieren autenticación)
+| Ruta | Descripción |
+|------|-------------|
+| `/dashboard` | Panel del alumno |
+| `/aprender/[slug]/[leccion]` | Player de clases |
+| `/certificados/[slug]` | Certificado del curso |
+
+### Admin (requiere ADMIN_EMAIL)
+| Ruta | Descripción |
+|------|-------------|
+| `/admin` | Métricas generales |
+| `/admin/cursos` | Gestión de cursos |
+| `/admin/alumnos` | Lista de alumnos |
+| `/admin/ventas` | Historial de pagos |
+
+---
+
+## Primer curso
+
+El curso piloto `ia-para-community-managers` se carga ejecutando `supabase/seed.sql` en la base de datos.
+
+---
+
+*Generado con Claude Code · JuanoConecta · Junio 2026*
