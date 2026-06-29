@@ -4,12 +4,34 @@ import Badge from '@/components/ui/Badge'
 import Button from '@/components/ui/Button'
 import Card from '@/components/ui/Card'
 import Logo from '@/components/ui/Logo'
+import { useState } from 'react'
 import { CourseData } from './page'
 
 export default function CourseSalesPage({ course }: { course: CourseData }) {
-  const handleBuyArs = () => {
-    // Will be wired in Task 9
-    console.log('buy ARS', course.slug)
+  const [loading, setLoading] = useState(false)
+
+  const handleBuyArs = async () => {
+    setLoading(true)
+    try {
+      const res = await fetch('/api/checkout/mercadopago', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          courseSlug: course.slug,
+          courseTitle: course.title,
+          priceArs: course.priceArs,
+        }),
+      })
+      const data = await res.json()
+      if (data.init_point) {
+        window.location.href = data.init_point
+      } else {
+        alert('Error al iniciar el pago. Intentá de nuevo.')
+      }
+    } catch {
+      alert('Error al iniciar el pago. Intentá de nuevo.')
+    }
+    setLoading(false)
   }
   const handleBuyUsd = () => {
     // Will be wired in Task 10
@@ -86,8 +108,8 @@ export default function CourseSalesPage({ course }: { course: CourseData }) {
 
             {/* Buy buttons */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              <Button variant="primary" onClick={handleBuyArs} style={{ width: '100%' }}>
-                Comprar ahora (ARS)
+              <Button variant="primary" onClick={handleBuyArs} disabled={loading} style={{ width: '100%' }}>
+                {loading ? 'Redirigiendo...' : 'Comprar ahora (ARS)'}
               </Button>
               <Button variant="secondary" onClick={handleBuyUsd} style={{ width: '100%' }}>
                 Pay in USD
