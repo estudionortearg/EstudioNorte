@@ -9,6 +9,7 @@ import { CourseData } from './page'
 
 export default function CourseSalesPage({ course }: { course: CourseData }) {
   const [loading, setLoading] = useState(false)
+  const [loadingUsd, setLoadingUsd] = useState(false)
 
   const handleBuyArs = async () => {
     setLoading(true)
@@ -33,9 +34,28 @@ export default function CourseSalesPage({ course }: { course: CourseData }) {
     }
     setLoading(false)
   }
-  const handleBuyUsd = () => {
-    // Will be wired in Task 10
-    console.log('buy USD', course.slug)
+  const handleBuyUsd = async () => {
+    setLoadingUsd(true)
+    try {
+      const res = await fetch('/api/checkout/stripe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          courseSlug: course.slug,
+          courseTitle: course.title,
+          priceUsd: course.priceUsd,
+        }),
+      })
+      const data = await res.json()
+      if (data.url) {
+        window.location.href = data.url
+      } else {
+        alert('Error al iniciar el pago. Intentá de nuevo.')
+      }
+    } catch {
+      alert('Error al iniciar el pago. Intentá de nuevo.')
+    }
+    setLoadingUsd(false)
   }
 
   return (
@@ -111,8 +131,8 @@ export default function CourseSalesPage({ course }: { course: CourseData }) {
               <Button variant="primary" onClick={handleBuyArs} disabled={loading} style={{ width: '100%' }}>
                 {loading ? 'Redirigiendo...' : 'Comprar ahora (ARS)'}
               </Button>
-              <Button variant="secondary" onClick={handleBuyUsd} style={{ width: '100%' }}>
-                Pay in USD
+              <Button variant="secondary" onClick={handleBuyUsd} disabled={loadingUsd} style={{ width: '100%' }}>
+                {loadingUsd ? 'Redirecting...' : 'Pay in USD ($25)'}
               </Button>
             </div>
 
