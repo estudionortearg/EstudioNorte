@@ -1,9 +1,12 @@
 'use client'
 
 import Link from 'next/link'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import { Logo } from '@/components/ui'
 import { Button } from '@/components/ui'
+import { createClient } from '@/lib/supabase/client'
+import type { User } from '@supabase/supabase-js'
 
 const navLinks = [
   { href: '/cursos', label: 'Cursos' },
@@ -33,6 +36,32 @@ function NavLink({ href, label }: { href: string; label: string }) {
 }
 
 export default function Header() {
+  const [user, setUser] = useState<User | null>(null)
+  const router = useRouter()
+
+  useEffect(() => {
+    const supabase = createClient()
+    supabase.auth.getUser().then(({ data }) => setUser(data.user))
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null)
+    })
+
+    return () => subscription.unsubscribe()
+  }, [])
+
+  const handleSignOut = async () => {
+    const supabase = createClient()
+    await supabase.auth.signOut()
+    router.push('/')
+  }
+
+  const truncatedEmail = user?.email
+    ? user.email.length > 20
+      ? user.email.slice(0, 20) + '…'
+      : user.email
+    : null
+
   return (
     <header
       style={{
@@ -65,16 +94,33 @@ export default function Header() {
           {navLinks.map((link) => (
             <NavLink key={link.href} href={link.href} label={link.label} />
           ))}
-          <Button href="/login" variant="ghost" size="sm">
-            Ya soy alumno
-          </Button>
+          {user ? (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <span style={{ fontSize: '13px', color: 'rgba(247,247,242,0.5)' }}>
+                {truncatedEmail}
+              </span>
+              <Button variant="ghost" size="sm" onClick={handleSignOut}>
+                Salir
+              </Button>
+            </div>
+          ) : (
+            <Button href="/login" variant="ghost" size="sm">
+              Ya soy alumno
+            </Button>
+          )}
         </div>
 
         {/* Mobile: only show button */}
         <div className="flex md:hidden">
-          <Button href="/login" variant="ghost" size="sm">
-            Ya soy alumno
-          </Button>
+          {user ? (
+            <Button variant="ghost" size="sm" onClick={handleSignOut}>
+              Salir
+            </Button>
+          ) : (
+            <Button href="/login" variant="ghost" size="sm">
+              Ya soy alumno
+            </Button>
+          )}
         </div>
       </nav>
     </header>
