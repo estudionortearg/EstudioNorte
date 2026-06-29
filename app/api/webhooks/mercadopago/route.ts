@@ -1,6 +1,7 @@
 import { MercadoPagoConfig, Payment } from 'mercadopago'
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
+import { sendWelcomeEmail } from '@/lib/email/resend'
 
 export async function POST(request: NextRequest) {
   try {
@@ -91,7 +92,17 @@ export async function POST(request: NextRequest) {
       expires_at: null, // lifetime access
     })
 
-    // TODO: Send welcome email (Task 15)
+    // Send welcome email
+    try {
+      await sendWelcomeEmail({
+        to: payerEmail,
+        studentName: payerEmail.split('@')[0],
+        courseTitle: courseSlug, // will be replaced with actual title
+        courseSlug,
+      })
+    } catch (emailError) {
+      console.error('Welcome email error (non-fatal):', emailError)
+    }
 
     return NextResponse.json({ ok: true })
   } catch (error) {

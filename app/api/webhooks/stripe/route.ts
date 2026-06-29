@@ -1,6 +1,7 @@
 import Stripe from 'stripe'
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
+import { sendWelcomeEmail } from '@/lib/email/resend'
 
 export async function POST(request: NextRequest) {
   const body = await request.text()
@@ -84,7 +85,17 @@ export async function POST(request: NextRequest) {
     expires_at: null,
   })
 
-  // TODO: Send welcome email (Task 15)
+  // Send welcome email
+  try {
+    await sendWelcomeEmail({
+      to: customerEmail,
+      studentName: customerEmail.split('@')[0],
+      courseTitle: courseSlug, // will be replaced with actual title
+      courseSlug,
+    })
+  } catch (emailError) {
+    console.error('Welcome email error (non-fatal):', emailError)
+  }
 
   return NextResponse.json({ ok: true })
 }
