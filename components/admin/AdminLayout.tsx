@@ -1,48 +1,154 @@
+'use client'
+
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import { Logo } from '@/components/ui'
 
 const navItems = [
-  { href: '/admin', label: 'Dashboard' },
-  { href: '/admin/cursos', label: 'Cursos' },
-  { href: '/admin/alumnos', label: 'Alumnos' },
-  { href: '/admin/ventas', label: 'Ventas' },
+  {
+    href: '/admin',
+    label: 'Dashboard',
+    icon: (
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+        <rect x="1" y="1" width="6" height="6" rx="1" stroke="currentColor" strokeWidth="1.3"/>
+        <rect x="9" y="1" width="6" height="6" rx="1" stroke="currentColor" strokeWidth="1.3"/>
+        <rect x="1" y="9" width="6" height="6" rx="1" stroke="currentColor" strokeWidth="1.3"/>
+        <rect x="9" y="9" width="6" height="6" rx="1" stroke="currentColor" strokeWidth="1.3"/>
+      </svg>
+    ),
+  },
+  {
+    href: '/admin/cursos',
+    label: 'Cursos',
+    icon: (
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+        <path d="M2 4h12M2 8h8M2 12h10" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/>
+      </svg>
+    ),
+  },
+  {
+    href: '/admin/alumnos',
+    label: 'Alumnos',
+    icon: (
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+        <circle cx="8" cy="5" r="3" stroke="currentColor" strokeWidth="1.3"/>
+        <path d="M2 14c0-3.314 2.686-6 6-6s6 2.686 6 6" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/>
+      </svg>
+    ),
+  },
+  {
+    href: '/admin/ventas',
+    label: 'Ventas',
+    icon: (
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+        <path d="M2 12L5 8L8 10L11 5L14 7" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
+      </svg>
+    ),
+  },
 ]
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname()
+
   return (
     <div style={{ display: 'flex', minHeight: '100vh', backgroundColor: 'var(--color-bg-deep)' }}>
       {/* Sidebar */}
       <aside style={{
-        width: '220px', flexShrink: 0,
-        backgroundColor: 'var(--color-bg-card)',
-        borderRight: '1px solid var(--color-border)',
-        padding: '32px 0',
-        display: 'flex', flexDirection: 'column', gap: '4px'
+        width: '240px', flexShrink: 0,
+        background: 'rgba(12,12,24,0.95)',
+        borderRight: '1px solid rgba(255,255,255,0.05)',
+        display: 'flex', flexDirection: 'column',
+        position: 'sticky', top: 0, height: '100vh',
+        backdropFilter: 'blur(20px)',
       }}>
-        <div style={{ padding: '0 20px', marginBottom: '32px' }}>
+        {/* Logo area */}
+        <div style={{
+          padding: '28px 24px 24px',
+          borderBottom: '1px solid rgba(255,255,255,0.04)',
+        }}>
           <Logo size="sm" />
-          <p style={{ fontSize: '10px', letterSpacing: '2px', textTransform: 'uppercase', color: 'var(--color-teal)', marginTop: '8px' }}>
-            Admin
-          </p>
+          <div style={{
+            display: 'inline-flex', alignItems: 'center', gap: '6px',
+            marginTop: '10px', padding: '3px 10px', borderRadius: '100px',
+            background: 'rgba(78,205,196,0.08)',
+            border: '1px solid rgba(78,205,196,0.15)',
+          }}>
+            <div style={{ width: '5px', height: '5px', borderRadius: '50%', background: 'var(--color-teal)' }}/>
+            <span style={{ fontSize: '10px', letterSpacing: '2px', textTransform: 'uppercase', color: 'var(--color-teal)', fontFamily: 'var(--font-body)' }}>
+              Panel Admin
+            </span>
+          </div>
         </div>
-        {navItems.map(item => (
-          <Link
-            key={item.href}
-            href={item.href}
-            style={{
-              display: 'block', padding: '10px 20px',
-              color: 'var(--color-text-muted)',
-              textDecoration: 'none', fontSize: '14px', fontWeight: 500,
-              transition: 'color 150ms ease',
-            }}
-          >
-            {item.label}
+
+        {/* Nav */}
+        <nav style={{ flex: 1, padding: '16px 12px', display: 'flex', flexDirection: 'column', gap: '2px' }}>
+          <p style={{ fontSize: '10px', letterSpacing: '2px', textTransform: 'uppercase', color: 'rgba(247,247,242,0.2)', padding: '8px 12px 4px', fontFamily: 'var(--font-body)' }}>
+            Gestión
+          </p>
+          {navItems.map(item => {
+            const isActive = item.href === '/admin' ? pathname === '/admin' : pathname.startsWith(item.href)
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: '10px',
+                  padding: '10px 12px', borderRadius: '10px',
+                  color: isActive ? 'var(--color-teal)' : 'rgba(247,247,242,0.4)',
+                  textDecoration: 'none', fontSize: '13px', fontWeight: isActive ? 600 : 400,
+                  background: isActive ? 'rgba(78,205,196,0.08)' : 'transparent',
+                  border: isActive ? '1px solid rgba(78,205,196,0.12)' : '1px solid transparent',
+                  transition: 'all 0.2s ease',
+                  fontFamily: 'var(--font-body)',
+                }}
+              >
+                <span style={{ opacity: isActive ? 1 : 0.5 }}>{item.icon}</span>
+                {item.label}
+                {isActive && (
+                  <div style={{ marginLeft: 'auto', width: '4px', height: '4px', borderRadius: '50%', background: 'var(--color-teal)' }}/>
+                )}
+              </Link>
+            )
+          })}
+        </nav>
+
+        {/* Bottom: ver sitio */}
+        <div style={{
+          padding: '16px 12px',
+          borderTop: '1px solid rgba(255,255,255,0.04)',
+          display: 'flex', flexDirection: 'column', gap: '4px',
+        }}>
+          <Link href="/" target="_blank" style={{
+            display: 'flex', alignItems: 'center', gap: '10px',
+            padding: '10px 12px', borderRadius: '10px',
+            color: 'rgba(247,247,242,0.3)', textDecoration: 'none',
+            fontSize: '13px', fontFamily: 'var(--font-body)',
+            transition: 'color 0.2s',
+          }}>
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path d="M8 1a7 7 0 100 14A7 7 0 008 1z" stroke="currentColor" strokeWidth="1.3"/>
+              <path d="M1 8h14M8 1c-2 2-3 4-3 7s1 5 3 7M8 1c2 2 3 4 3 7s-1 5-3 7" stroke="currentColor" strokeWidth="1.3"/>
+            </svg>
+            Ver sitio →
           </Link>
-        ))}
+          <Link href="/dashboard" style={{
+            display: 'flex', alignItems: 'center', gap: '10px',
+            padding: '10px 12px', borderRadius: '10px',
+            color: 'rgba(247,247,242,0.3)', textDecoration: 'none',
+            fontSize: '13px', fontFamily: 'var(--font-body)',
+            transition: 'color 0.2s',
+          }}>
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <circle cx="8" cy="5" r="3" stroke="currentColor" strokeWidth="1.3"/>
+              <path d="M3 14c0-2.761 2.239-5 5-5s5 2.239 5 5" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/>
+            </svg>
+            Mi dashboard
+          </Link>
+        </div>
       </aside>
 
       {/* Main content */}
-      <main style={{ flex: 1, padding: '40px', overflowY: 'auto' }}>
+      <main style={{ flex: 1, padding: '40px 48px', overflowY: 'auto', minHeight: '100vh' }}>
         {children}
       </main>
     </div>
