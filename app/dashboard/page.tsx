@@ -36,6 +36,8 @@ export default async function DashboardPage() {
       const { data: lessons } = await supabase.from('lessons').select('id, title, slug').in('module_id', moduleIds)
       const lessonIds = lessons?.map((l: { id: string }) => l.id) || []
 
+      if (lessonIds.length === 0) return { courseSlug: course.slug, courseTitle: course.title, progressPercent: 0, totalLessons: 0, completedLessons: 0 }
+
       const { data: progressRows } = await supabase
         .from('progress').select('lesson_id')
         .eq('user_id', user.id).in('lesson_id', lessonIds)
