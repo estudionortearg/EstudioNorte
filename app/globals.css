@@ -3,8 +3,8 @@
 @import "tailwindcss";
 
 :root {
-  --color-bg-deep: #0A0A14;
-  --color-bg-section: #1A1A2E;
+  --color-bg-deep: #080810;
+  --color-bg-section: #0C0C18;
   --color-bg-card: #0F0F1A;
   --color-teal: #4ECDC4;
   --color-teal-muted: rgba(78,205,196,0.12);
@@ -20,8 +20,8 @@
 }
 
 @theme {
-  --color-brand-bg-deep: #0A0A14;
-  --color-brand-bg-section: #1A1A2E;
+  --color-brand-bg-deep: #080810;
+  --color-brand-bg-section: #0C0C18;
   --color-brand-bg-card: #0F0F1A;
   --color-brand-teal: #4ECDC4;
   --color-brand-teal-muted: rgba(78, 205, 196, 0.12);
@@ -40,9 +40,19 @@
   box-sizing: border-box;
 }
 
-html,
+html {
+  background-color: var(--color-bg-deep);
+}
+
 body {
   background-color: var(--color-bg-deep);
+  /* Flowing atmospheric gradient — gives depth without section cuts */
+  background-image:
+    radial-gradient(ellipse 80% 40% at 20% 10%, rgba(78,205,196,0.04) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 50% at 80% 35%, rgba(255,107,107,0.025) 0%, transparent 60%),
+    radial-gradient(ellipse 70% 40% at 40% 70%, rgba(78,205,196,0.03) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 30% at 70% 90%, rgba(255,107,107,0.02) 0%, transparent 60%);
+  background-attachment: fixed;
   color: var(--color-text);
   font-family: var(--font-body);
   -webkit-font-smoothing: antialiased;

@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { useEffect, useState } from 'react'
 import { Logo } from '@/components/ui'
 
 const navItems = [
@@ -49,6 +50,18 @@ const navItems = [
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
+  const [newEnrollments, setNewEnrollments] = useState(0)
+
+  useEffect(() => {
+    const lastVisit = localStorage.getItem('admin_last_visit') || '1970-01-01'
+    fetch('/api/admin/new-enrollments?since=' + encodeURIComponent(lastVisit))
+      .then(r => r.json())
+      .then(d => setNewEnrollments(d.count || 0))
+    if (pathname === '/admin/alumnos') {
+      localStorage.setItem('admin_last_visit', new Date().toISOString())
+      setNewEnrollments(0)
+    }
+  }, [pathname])
 
   return (
     <div style={{ display: 'flex', minHeight: '100vh', backgroundColor: 'var(--color-bg-deep)' }}>
@@ -104,7 +117,15 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               >
                 <span style={{ opacity: isActive ? 1 : 0.5 }}>{item.icon}</span>
                 {item.label}
-                {isActive && (
+                {item.href === '/admin/alumnos' && newEnrollments > 0 && (
+                  <span style={{
+                    marginLeft: 'auto', minWidth: '18px', height: '18px', borderRadius: '100px',
+                    background: 'var(--color-coral)', color: '#fff',
+                    fontSize: '10px', fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    padding: '0 5px',
+                  }}>{newEnrollments}</span>
+                )}
+                {isActive && newEnrollments === 0 && (
                   <div style={{ marginLeft: 'auto', width: '4px', height: '4px', borderRadius: '50%', background: 'var(--color-teal)' }}/>
                 )}
               </Link>

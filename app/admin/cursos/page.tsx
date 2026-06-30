@@ -1,5 +1,6 @@
 import { createAdminClient } from '@/lib/supabase/admin'
 import Link from 'next/link'
+import TogglePublish from './TogglePublish'
 
 export const dynamic = 'force-dynamic'
 
@@ -26,11 +27,7 @@ export default async function AdminCursosPage() {
     .select('id, slug, title, price_ars, price_usd, is_published, is_featured, created_at')
     .order('created_at', { ascending: false })
 
-  // Enrollment count per course
-  const { data: enrollCounts } = await supabase
-    .from('enrollments')
-    .select('course_id')
-
+  const { data: enrollCounts } = await supabase.from('enrollments').select('course_id')
   const countMap = new Map<string, number>()
   ;(enrollCounts || []).forEach(e => {
     countMap.set(e.course_id, (countMap.get(e.course_id) || 0) + 1)
@@ -115,15 +112,18 @@ export default async function AdminCursosPage() {
                   <PublishedBadge published={c.is_published} />
                 </td>
                 <td style={{ padding: '16px 20px' }}>
-                  <Link href={`/cursos/${c.slug}`} style={{
-                    display: 'inline-flex', alignItems: 'center', gap: '4px',
-                    fontSize: '12px', color: 'var(--color-teal)', textDecoration: 'none',
-                    padding: '5px 12px', borderRadius: '8px',
-                    background: 'rgba(78,205,196,0.06)', border: '1px solid rgba(78,205,196,0.12)',
-                    fontFamily: 'var(--font-body)',
-                  }}>
-                    Ver →
-                  </Link>
+                  <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                    <Link href={`/cursos/${c.slug}`} style={{
+                      display: 'inline-flex', alignItems: 'center', gap: '4px',
+                      fontSize: '12px', color: 'rgba(247,247,242,0.4)', textDecoration: 'none',
+                      padding: '5px 12px', borderRadius: '8px',
+                      background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)',
+                      fontFamily: 'var(--font-body)',
+                    }}>
+                      Ver →
+                    </Link>
+                    <TogglePublish courseId={c.id} published={c.is_published} />
+                  </div>
                 </td>
               </tr>
             ))}

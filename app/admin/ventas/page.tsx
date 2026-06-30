@@ -1,4 +1,5 @@
 import { createAdminClient } from '@/lib/supabase/admin'
+import SalesChart from './SalesChart'
 
 export const dynamic = 'force-dynamic'
 
@@ -50,6 +51,21 @@ export default async function AdminVentasPage() {
   const pendingPayments = (payments || []).filter(p => p.status === 'pending').length
   const totalPayments = payments?.length || 0
 
+  // Build monthly chart data (last 6 months)
+  const monthlyMap = new Map<string, number>()
+  const now = new Date()
+  for (let i = 5; i >= 0; i--) {
+    const d = new Date(now.getFullYear(), now.getMonth() - i, 1)
+    const key = d.toLocaleDateString('es-AR', { month: 'short' })
+    monthlyMap.set(key, 0)
+  }
+  ;(payments || []).filter(p => p.status === 'approved' && p.currency === 'ARS').forEach(p => {
+    const d = new Date(p.created_at)
+    const key = d.toLocaleDateString('es-AR', { month: 'short' })
+    if (monthlyMap.has(key)) monthlyMap.set(key, (monthlyMap.get(key) || 0) + p.amount)
+  })
+  const chartData = Array.from(monthlyMap.entries()).map(([month, ars]) => ({ month, ars, usd: 0 }))
+
   return (
     <div>
       <div style={{ marginBottom: '40px' }}>
@@ -64,51 +80,57 @@ export default async function AdminVentasPage() {
       {/* Revenue cards */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '16px', marginBottom: '40px' }}>
         {[
-          {
-            label: 'Total ARS', value: `$${totalArs.toLocaleString('es-AR')}`,
-            color: 'var(--color-coral)', sub: `${approvedPayments} pagos aprobados`,
-            icon: <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M3 13L6.5 9L9.5 11.5L13 6.5L16 9" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/></svg>,
-          },
-          {
-            label: 'Total USD', value: `$${totalUsd.toLocaleString()}`,
-            color: '#A78BFA', sub: 'pagos internacionales',
-            icon: <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="7" stroke="currentColor" strokeWidth="1.3"/><path d="M9 5v8M7 7h3a1.5 1.5 0 010 3H7" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/></svg>,
-          },
-          {
-            label: 'Total transacciones', value: totalPayments,
-            color: 'rgba(247,247,242,0.6)', sub: `${pendingPayments} pendientes`,
-            icon: <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="2" y="4" width="14" height="10" rx="2" stroke="currentColor" strokeWidth="1.3"/><path d="M2 8h14" stroke="currentColor" strokeWidth="1.3"/></svg>,
-          },
-        ].map(({ label, value, color, sub, icon }) => (
+          { label: 'Total ARS', value: `$${totalArs.toLocaleString('es-AR')}`, color: 'var(--color-coral)', sub: `${approvedPayments} pagos aprobados` },
+          { label: 'Total USD', value: `$${totalUsd.toLocaleString()}`, color: '#A78BFA', sub: 'pagos internacionales' },
+          { label: 'Transacciones', value: totalPayments, color: 'rgba(247,247,242,0.6)', sub: `${pendingPayments} pendientes` },
+        ].map(({ label, value, color, sub }) => (
           <div key={label} style={{
             padding: '20px 24px', borderRadius: '16px',
             background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)',
             position: 'relative', overflow: 'hidden',
           }}>
-            <div style={{
-              position: 'absolute', top: 0, right: 0, width: '100px', height: '100px',
-              background: `radial-gradient(circle at 100% 0%, ${color}15 0%, transparent 70%)`,
-              pointerEvents: 'none',
-            }}/>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
-              <p style={{ fontSize: '10px', letterSpacing: '1.5px', textTransform: 'uppercase', color: 'rgba(247,247,242,0.3)', fontFamily: 'var(--font-body)' }}>{label}</p>
-              <span style={{ color, opacity: 0.6 }}>{icon}</span>
-            </div>
+            <div style={{ position: 'absolute', top: 0, right: 0, width: '100px', height: '100px', background: `radial-gradient(circle at 100% 0%, ${color}15 0%, transparent 70%)`, pointerEvents: 'none' }}/>
+            <p style={{ fontSize: '10px', letterSpacing: '1.5px', textTransform: 'uppercase', color: 'rgba(247,247,242,0.3)', fontFamily: 'var(--font-body)', marginBottom: '14px' }}>{label}</p>
             <p style={{ fontFamily: 'var(--font-display)', fontWeight: 900, fontSize: 'clamp(22px, 2.5vw, 32px)', letterSpacing: '-1px', color, lineHeight: 1 }}>{value}</p>
             <p style={{ fontFamily: 'var(--font-body)', fontSize: '11px', color: 'rgba(247,247,242,0.25)', marginTop: '6px' }}>{sub}</p>
           </div>
         ))}
       </div>
 
+      {/* Chart */}
+      <SalesChart data={chartData} />
+
       {/* Payments table */}
       <div style={{ borderRadius: '16px', border: '1px solid rgba(255,255,255,0.06)', overflow: 'hidden', background: 'rgba(255,255,255,0.015)' }}>
-        <div style={{ padding: '20px 24px', borderBottom: '1px solid rgba(255,255,255,0.04)', display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <h2 style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: '18px', color: 'var(--color-text)', letterSpacing: '-0.5px' }}>
-            Historial de pagos
-          </h2>
-          <span style={{ fontFamily: 'var(--font-body)', fontSize: '12px', color: 'rgba(247,247,242,0.2)' }}>
-            últimos {totalPayments}
-          </span>
+        <div style={{ padding: '20px 24px', borderBottom: '1px solid rgba(255,255,255,0.04)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <h2 style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: '18px', color: 'var(--color-text)', letterSpacing: '-0.5px' }}>
+              Historial de pagos
+            </h2>
+            <span style={{ fontFamily: 'var(--font-body)', fontSize: '12px', color: 'rgba(247,247,242,0.2)' }}>últimos {totalPayments}</span>
+          </div>
+          <a
+            href={`data:text/csv;charset=utf-8,${encodeURIComponent(
+              ['Proveedor,ID,Monto,Moneda,Estado,Fecha',
+                ...(payments || []).map(p =>
+                  `${p.provider},${p.provider_payment_id || ''},${p.amount},${p.currency},${p.status},${new Date(p.created_at).toLocaleDateString('es-AR')}`
+                )
+              ].join('\n')
+            )}`}
+            download="ventas.csv"
+            style={{
+              display: 'inline-flex', alignItems: 'center', gap: '6px',
+              padding: '7px 14px', borderRadius: '8px', fontSize: '12px', fontWeight: 600,
+              fontFamily: 'var(--font-body)', textDecoration: 'none',
+              background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)',
+              color: 'rgba(247,247,242,0.5)',
+            }}
+          >
+            <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
+              <path d="M6.5 1v8M3.5 6l3 3 3-3M1 10v1.5A.5.5 0 001.5 12h10a.5.5 0 00.5-.5V10" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+            Exportar CSV
+          </a>
         </div>
         <table style={{ width: '100%', borderCollapse: 'collapse' }}>
           <thead>
@@ -143,12 +165,8 @@ export default async function AdminVentasPage() {
                     ${p.amount.toLocaleString()}
                   </span>
                 </td>
-                <td style={{ padding: '14px 20px' }}>
-                  <CurrencyBadge currency={p.currency} />
-                </td>
-                <td style={{ padding: '14px 20px' }}>
-                  <StatusBadge status={p.status} />
-                </td>
+                <td style={{ padding: '14px 20px' }}><CurrencyBadge currency={p.currency} /></td>
+                <td style={{ padding: '14px 20px' }}><StatusBadge status={p.status} /></td>
                 <td style={{ padding: '14px 20px' }}>
                   <span style={{ fontFamily: 'var(--font-body)', fontSize: '12px', color: 'rgba(247,247,242,0.3)' }}>
                     {new Date(p.created_at).toLocaleDateString('es-AR', { day: '2-digit', month: 'short', year: 'numeric' })}
