@@ -109,15 +109,16 @@ export default async function DashboardPage() {
                   {displayName}
                 </p>
               </div>
-              <div style={{
+              <Link href="/perfil" style={{
                 width: '36px', height: '36px', borderRadius: '50%', flexShrink: 0,
                 background: 'linear-gradient(135deg, rgba(78,205,196,0.25), rgba(255,107,107,0.1))',
                 border: '1px solid rgba(78,205,196,0.25)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: '13px', color: 'var(--color-teal)',
+                textDecoration: 'none',
               }}>
                 {initials}
-              </div>
+              </Link>
             </div>
           </div>
         </div>
