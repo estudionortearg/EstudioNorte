@@ -38,6 +38,26 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(redirectUrl)
   }
 
+  // Onboarding redirect — only on /dashboard to avoid per-request DB hit
+  if (pathname === '/dashboard' && user) {
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('onboarding_completed')
+      .eq('id', user.id)
+      .maybeSingle()
+    if (!profile?.onboarding_completed) {
+      return NextResponse.redirect(new URL('/onboarding', request.url))
+    }
+  }
+
+  // Protect /onboarding — must be logged in
+  if (pathname.startsWith('/onboarding') && !user) {
+    const redirectUrl = request.nextUrl.clone()
+    redirectUrl.pathname = '/login'
+    redirectUrl.searchParams.set('next', '/onboarding')
+    return NextResponse.redirect(redirectUrl)
+  }
+
   // Admin routes — auth + is_admin check
   if (pathname.startsWith('/admin')) {
     if (!user) {
@@ -66,5 +86,7 @@ export const config = {
     '/perfil/:path*',
     '/certificados/:path*',
     '/admin/:path*',
+    '/onboarding',
+    '/onboarding/:path*',
   ],
 }
