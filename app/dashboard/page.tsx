@@ -76,11 +76,18 @@ export default async function DashboardPage() {
     .select('id', { count: 'exact', head: true })
     .eq('user_id', user.id)
 
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('plan')
+    .eq('id', user.id)
+    .maybeSingle()
+
   const activeCourses = validCourses.filter(c => c.progressPercent > 0 && c.progressPercent < 100)
   const completedCourses = validCourses.filter(c => c.progressPercent === 100)
   const resumeCourse = activeCourses[0] || validCourses[0]
   const displayName = user.user_metadata?.full_name || user.email?.split('@')[0] || 'estudiante'
   const initials = displayName.slice(0, 2).toUpperCase()
+  const userPlan = profile?.plan ?? 'free'
 
   return (
     <div style={{ minHeight: '100vh', background: 'var(--en-bg)', display: 'flex' }}>
@@ -98,9 +105,28 @@ export default async function DashboardPage() {
           padding: '0 clamp(16px, 4vw, 40px)',
         }}>
           <div style={{ maxWidth: '1000px', margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: '60px' }}>
-            <div>
-              <span style={{ fontFamily: 'var(--font-body)', fontSize: '12px', color: 'var(--en-text-soft)' }}>{getGreeting()}, </span>
-              <span style={{ fontFamily: 'var(--font-body)', fontSize: '12px', fontWeight: 600, color: 'var(--en-green)' }}>{displayName}</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <div>
+                <span style={{ fontFamily: 'var(--font-body)', fontSize: '12px', color: 'var(--en-text-soft)' }}>{getGreeting()}, </span>
+                <span style={{ fontFamily: 'var(--font-body)', fontSize: '12px', fontWeight: 600, color: 'var(--en-green)' }}>{displayName}</span>
+              </div>
+              {userPlan !== 'free' && (
+                <span style={{
+                  background: userPlan === 'norte_pro'
+                    ? 'color-mix(in srgb, var(--en-coral) 15%, transparent)'
+                    : 'color-mix(in srgb, var(--en-green) 15%, transparent)',
+                  color: userPlan === 'norte_pro' ? 'var(--en-coral)' : 'var(--en-green)',
+                  fontFamily: 'var(--font-body)',
+                  fontSize: '10px',
+                  fontWeight: 700,
+                  letterSpacing: '0.5px',
+                  textTransform: 'uppercase' as const,
+                  padding: '3px 8px',
+                  borderRadius: '6px',
+                }}>
+                  {userPlan === 'norte_pro' ? 'Norte Pro' : 'Norte'}
+                </span>
+              )}
             </div>
             <Link href="/perfil" style={{
               width: '36px', height: '36px', borderRadius: '50%',
