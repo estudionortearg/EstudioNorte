@@ -42,7 +42,7 @@ export default async function PlayerPage({ params }: Props) {
   // Get current lesson
   const { data: lesson } = await supabase
     .from('lessons')
-    .select('id, title, description, video_url, duration_minutes, order_index, module_id')
+    .select('id, title, description, video_url, pdf_url, duration_minutes, order_index, module_id')
     .eq('id', lessonId)
     .single()
 
@@ -77,7 +77,7 @@ export default async function PlayerPage({ params }: Props) {
     <PlayerClient
       courseSlug={slug}
       courseTitle={course.title}
-      lesson={lesson as { id: string; title: string; description: string | null; video_url: string | null; duration_minutes: number | null; order_index: number; module_id: string }}
+      lesson={lesson as { id: string; title: string; description: string | null; video_url: string | null; pdf_url: string | null; duration_minutes: number | null; order_index: number; module_id: string }}
       modules={modules as unknown as Array<{ id: string; title: string; order_index: number; lessons: Array<{ id: string; title: string; duration_minutes: number | null; order_index: number; is_free_preview: boolean }> }>}
       completedIds={[...completedIds]}
       prevLessonId={prevLessonId}
