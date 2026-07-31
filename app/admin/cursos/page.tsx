@@ -44,9 +44,9 @@ export default async function AdminCursosPage() {
             Cursos
           </h1>
         </div>
-        <div style={{
+        <Link href="/admin/cursos/nuevo" style={{
           display: 'inline-flex', alignItems: 'center', gap: '8px',
-          padding: '10px 20px', borderRadius: '10px', cursor: 'not-allowed',
+          padding: '10px 20px', borderRadius: '10px', textDecoration: 'none',
           background: 'rgba(78,205,196,0.08)', border: '1px solid rgba(78,205,196,0.15)',
           fontFamily: 'var(--font-body)', fontSize: '13px', color: 'var(--color-teal)', fontWeight: 600,
         }}>
@@ -54,8 +54,7 @@ export default async function AdminCursosPage() {
             <path d="M7 2V12M2 7H12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
           </svg>
           Nuevo curso
-          <span style={{ fontSize: '10px', opacity: 0.5 }}>(próximamente)</span>
-        </div>
+        </Link>
       </div>
 
       {/* Summary strip */}
@@ -113,6 +112,15 @@ export default async function AdminCursosPage() {
                 </td>
                 <td style={{ padding: '16px 20px' }}>
                   <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                    <Link href={`/admin/cursos/${c.id}`} style={{
+                      display: 'inline-flex', alignItems: 'center', gap: '4px',
+                      fontSize: '12px', color: 'var(--color-teal)', textDecoration: 'none',
+                      padding: '5px 12px', borderRadius: '8px',
+                      background: 'rgba(78,205,196,0.06)', border: '1px solid rgba(78,205,196,0.12)',
+                      fontFamily: 'var(--font-body)', fontWeight: 600,
+                    }}>
+                      Editar
+                    </Link>
                     <Link href={`/cursos/${c.slug}`} style={{
                       display: 'inline-flex', alignItems: 'center', gap: '4px',
                       fontSize: '12px', color: 'rgba(247,247,242,0.4)', textDecoration: 'none',
