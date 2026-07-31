@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { Metadata } from 'next'
 import Sidebar from '@/components/layout/Sidebar'
 import BottomNav from '@/components/layout/BottomNav'
+import XPStreak from '@/components/gamification/XPStreak'
 
 export const metadata: Metadata = { title: 'Mi Dashboard — Estudio Norte' }
 
@@ -56,6 +57,24 @@ export default async function DashboardPage() {
     totalLessons: number; completedLessons: number
     nextLessonId?: string; nextLessonTitle?: string
   }>
+
+  // Gamification queries
+  const { data: xpRow } = await supabase
+    .from('user_xp')
+    .select('total_xp')
+    .eq('user_id', user.id)
+    .single()
+
+  const { data: streakRow } = await supabase
+    .from('user_streaks')
+    .select('current_streak, longest_streak, last_activity_date')
+    .eq('user_id', user.id)
+    .single()
+
+  const { count: badgesCount } = await supabase
+    .from('user_badges')
+    .select('id', { count: 'exact', head: true })
+    .eq('user_id', user.id)
 
   const activeCourses = validCourses.filter(c => c.progressPercent > 0 && c.progressPercent < 100)
   const completedCourses = validCourses.filter(c => c.progressPercent === 100)
@@ -117,6 +136,15 @@ export default async function DashboardPage() {
             </div>
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
+
+              {/* XP, Racha, Badges */}
+              <XPStreak
+                totalXp={xpRow?.total_xp || 0}
+                currentStreak={streakRow?.current_streak || 0}
+                longestStreak={streakRow?.longest_streak || 0}
+                lastActivityDate={streakRow?.last_activity_date || null}
+                badgesCount={badgesCount || 0}
+              />
 
               {/* Resume banner */}
               {resumeCourse && resumeCourse.progressPercent > 0 && resumeCourse.progressPercent < 100 && (
