@@ -5,6 +5,8 @@ import Link from 'next/link'
 import { useRouter, usePathname } from 'next/navigation'
 import Sidebar from '@/components/layout/Sidebar'
 import BottomNav from '@/components/layout/BottomNav'
+import BadgeModal from '@/components/gamification/BadgeModal'
+import RankingPanel from '@/components/gamification/RankingPanel'
 
 interface Lesson {
   id: string
@@ -32,9 +34,17 @@ interface Module {
   lessons: LessonItem[]
 }
 
+interface BadgeInfo {
+  slug: string
+  name: string
+  emoji: string
+  description: string
+}
+
 interface Props {
   courseSlug: string
   courseTitle: string
+  courseId: string
   lesson: Lesson
   modules: Module[]
   completedIds: string[]
@@ -55,14 +65,17 @@ function getVideoEmbedUrl(url: string | null): string | null {
 }
 
 export default function PlayerClient({
-  courseSlug, courseTitle, lesson, modules, completedIds,
-  prevLessonId, nextLessonId, completedCount, totalCount,
+  courseSlug, courseTitle, courseId, lesson, modules, completedIds,
+  prevLessonId, nextLessonId, userId, completedCount, totalCount,
 }: Props) {
   const router = useRouter()
   const pathname = usePathname()
   const [completed, setCompleted] = useState(new Set(completedIds))
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [isPending, startTransition] = useTransition()
+  const [badgesEarned, setBadgesEarned] = useState<BadgeInfo[]>([])
+  const [xpEarned, setXpEarned] = useState(0)
+  const [sidebarTab, setSidebarTab] = useState<'modules' | 'ranking'>('modules')
 
   const isCurrentComplete = completed.has(lesson.id)
   const progressPercent = totalCount > 0 ? Math.round((completed.size / totalCount) * 100) : 0
@@ -71,12 +84,17 @@ export default function PlayerClient({
   const markComplete = async () => {
     if (isCurrentComplete) return
     startTransition(async () => {
-      await fetch('/api/progress', {
+      const res = await fetch('/api/progress', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ lesson_id: lesson.id }),
       })
+      const data = await res.json()
       setCompleted(prev => new Set([...prev, lesson.id]))
+      if (data.badges_earned && data.badges_earned.length > 0) {
+        setBadgesEarned(data.badges_earned)
+        setXpEarned(data.xp_earned || 0)
+      }
       if (nextLessonId) {
         setTimeout(() => router.push(`/aprender/${courseSlug}/${nextLessonId}`), 500)
       }
@@ -309,64 +327,100 @@ export default function PlayerClient({
               background: 'var(--en-white)', borderLeft: '1px solid var(--en-border)',
               overflow: 'auto', padding: '20px 0',
             }}>
-              <div style={{ padding: '0 16px', marginBottom: '16px' }}>
-                <p style={{ fontFamily: 'var(--font-body)', fontSize: '11px', fontWeight: 700, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--en-text-soft)' }}>
-                  Índice del curso
-                </p>
+              {/* Tab toggle */}
+              <div style={{
+                display: 'flex', gap: '4px', padding: '8px 12px',
+                borderBottom: '1px solid var(--en-border)',
+                marginBottom: '8px',
+              }}>
+                {(['modules', 'ranking'] as const).map(tab => (
+                  <button
+                    key={tab}
+                    onClick={() => setSidebarTab(tab)}
+                    style={{
+                      flex: 1, padding: '7px', borderRadius: '8px', border: 'none', cursor: 'pointer',
+                      background: sidebarTab === tab ? 'var(--en-green-light)' : 'transparent',
+                      color: sidebarTab === tab ? 'var(--en-green)' : 'var(--en-text-soft)',
+                      fontFamily: 'var(--font-body)', fontSize: '12px', fontWeight: sidebarTab === tab ? 600 : 400,
+                    }}
+                  >
+                    {tab === 'modules' ? 'Módulos' : 'Ranking'}
+                  </button>
+                ))}
               </div>
-              {(modules || []).sort((a, b) => a.order_index - b.order_index).map(mod => (
-                <div key={mod.id} style={{ marginBottom: '16px' }}>
-                  <div style={{ padding: '6px 16px', marginBottom: '4px' }}>
-                    <p style={{ fontFamily: 'var(--font-body)', fontSize: '12px', fontWeight: 600, color: 'var(--en-text-soft)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                      {mod.title}
+
+              {sidebarTab === 'modules' ? (
+                <>
+                  <div style={{ padding: '0 16px', marginBottom: '16px' }}>
+                    <p style={{ fontFamily: 'var(--font-body)', fontSize: '11px', fontWeight: 700, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--en-text-soft)' }}>
+                      Índice del curso
                     </p>
                   </div>
-                  {(mod.lessons || []).sort((a, b) => a.order_index - b.order_index).map(l => {
-                    const isComplete = completed.has(l.id)
-                    const isCurrent = l.id === lesson.id
-                    return (
-                      <Link
-                        key={l.id}
-                        href={`/aprender/${courseSlug}/${l.id}`}
-                        style={{
-                          display: 'flex', alignItems: 'center', gap: '10px',
-                          padding: '10px 16px', textDecoration: 'none',
-                          background: isCurrent ? 'var(--en-green-light)' : 'transparent',
-                          borderLeft: `3px solid ${isCurrent ? 'var(--en-green)' : 'transparent'}`,
-                          transition: 'background 0.15s ease',
-                        }}
-                      >
-                        <span style={{
-                          width: '18px', height: '18px', borderRadius: '50%', flexShrink: 0,
-                          background: isComplete ? 'var(--en-green)' : 'var(--en-white)',
-                          border: `1.5px solid ${isComplete ? 'var(--en-green)' : 'var(--en-border)'}`,
-                          display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        }}>
-                          {isComplete && (
-                            <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="var(--en-white)" strokeWidth="3">
-                              <polyline points="20 6 9 17 4 12"/>
-                            </svg>
-                          )}
-                        </span>
-                        <span style={{
-                          fontFamily: 'var(--font-body)', fontSize: '13px',
-                          color: isCurrent ? 'var(--en-green)' : isComplete ? 'var(--en-text-soft)' : 'var(--en-text)',
-                          fontWeight: isCurrent ? 600 : 400,
-                          lineHeight: 1.3, flex: 1,
-                        }}>
-                          {l.title}
-                        </span>
-                      </Link>
-                    )
-                  })}
-                </div>
-              ))}
+                  {(modules || []).sort((a, b) => a.order_index - b.order_index).map(mod => (
+                    <div key={mod.id} style={{ marginBottom: '16px' }}>
+                      <div style={{ padding: '6px 16px', marginBottom: '4px' }}>
+                        <p style={{ fontFamily: 'var(--font-body)', fontSize: '12px', fontWeight: 600, color: 'var(--en-text-soft)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                          {mod.title}
+                        </p>
+                      </div>
+                      {(mod.lessons || []).sort((a, b) => a.order_index - b.order_index).map(l => {
+                        const isComplete = completed.has(l.id)
+                        const isCurrent = l.id === lesson.id
+                        return (
+                          <Link
+                            key={l.id}
+                            href={`/aprender/${courseSlug}/${l.id}`}
+                            style={{
+                              display: 'flex', alignItems: 'center', gap: '10px',
+                              padding: '10px 16px', textDecoration: 'none',
+                              background: isCurrent ? 'var(--en-green-light)' : 'transparent',
+                              borderLeft: `3px solid ${isCurrent ? 'var(--en-green)' : 'transparent'}`,
+                              transition: 'background 0.15s ease',
+                            }}
+                          >
+                            <span style={{
+                              width: '18px', height: '18px', borderRadius: '50%', flexShrink: 0,
+                              background: isComplete ? 'var(--en-green)' : 'var(--en-white)',
+                              border: `1.5px solid ${isComplete ? 'var(--en-green)' : 'var(--en-border)'}`,
+                              display: 'flex', alignItems: 'center', justifyContent: 'center',
+                            }}>
+                              {isComplete && (
+                                <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="var(--en-white)" strokeWidth="3">
+                                  <polyline points="20 6 9 17 4 12"/>
+                                </svg>
+                              )}
+                            </span>
+                            <span style={{
+                              fontFamily: 'var(--font-body)', fontSize: '13px',
+                              color: isCurrent ? 'var(--en-green)' : isComplete ? 'var(--en-text-soft)' : 'var(--en-text)',
+                              fontWeight: isCurrent ? 600 : 400,
+                              lineHeight: 1.3, flex: 1,
+                            }}>
+                              {l.title}
+                            </span>
+                          </Link>
+                        )
+                      })}
+                    </div>
+                  ))}
+                </>
+              ) : (
+                <RankingPanel courseId={courseId} userId={userId} />
+              )}
             </aside>
           )}
         </div>
       </div>
 
       <BottomNav activeRoute={pathname} />
+
+      {badgesEarned.length > 0 && (
+        <BadgeModal
+          badges={badgesEarned}
+          xpEarned={xpEarned}
+          onClose={() => setBadgesEarned([])}
+        />
+      )}
     </div>
   )
 }

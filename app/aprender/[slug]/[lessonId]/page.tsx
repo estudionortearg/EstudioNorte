@@ -77,6 +77,7 @@ export default async function PlayerPage({ params }: Props) {
     <PlayerClient
       courseSlug={slug}
       courseTitle={course.title}
+      courseId={course.id}
       lesson={lesson as { id: string; title: string; description: string | null; video_url: string | null; pdf_url: string | null; duration_minutes: number | null; order_index: number; module_id: string }}
       modules={modules as unknown as Array<{ id: string; title: string; order_index: number; lessons: Array<{ id: string; title: string; duration_minutes: number | null; order_index: number; is_free_preview: boolean }> }>}
       completedIds={[...completedIds]}
