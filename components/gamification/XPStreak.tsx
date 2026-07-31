@@ -41,7 +41,7 @@ export default function XPStreak({ totalXp, currentStreak, longestStreak, lastAc
       {/* Racha */}
       <div style={{
         background: 'var(--en-surface)',
-        border: `1px solid ${atRisk ? 'rgba(232,115,90,0.3)' : 'var(--en-border)'}`,
+        border: `1px solid ${atRisk ? 'color-mix(in srgb, var(--en-coral) 30%, transparent)' : 'var(--en-border)'}`,
         borderRadius: '14px',
         padding: '16px',
         boxShadow: 'var(--en-shadow-sm)',

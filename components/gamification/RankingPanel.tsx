@@ -18,6 +18,7 @@ interface RankingPanelProps {
 export default function RankingPanel({ courseId, userId }: RankingPanelProps) {
   const [ranking, setRanking] = useState<RankingEntry[]>([])
   const [myPosition, setMyPosition] = useState<number | null>(null)
+  const [myEntry, setMyEntry] = useState<RankingEntry | null>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -45,6 +46,7 @@ export default function RankingPanel({ courseId, userId }: RankingPanelProps) {
 
       const myIdx = entries.findIndex(e => e.user_id === userId)
       setMyPosition(myIdx === -1 ? null : myIdx + 1)
+      setMyEntry(myIdx === -1 ? null : entries[myIdx])
       setRanking(entries.slice(0, 10))
       setLoading(false)
     }
@@ -132,6 +134,9 @@ export default function RankingPanel({ courseId, userId }: RankingPanelProps) {
             </div>
             <div style={{ flex: 1, fontFamily: 'var(--font-body)', fontSize: '13px', fontWeight: 600, color: 'var(--en-green)' }}>
               Vos
+            </div>
+            <div style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: '13px', color: 'var(--en-green)', flexShrink: 0 }}>
+              {myEntry?.xp ?? 0} XP
             </div>
           </div>
         </>
