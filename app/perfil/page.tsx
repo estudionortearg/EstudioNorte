@@ -53,7 +53,7 @@ export default async function PerfilPage() {
 
   const { data: myRequests } = await supabase
     .from('reward_requests')
-    .select('id, status, requested_at, rewards(title, type, xp_cost)')
+    .select('id, reward_id, status, requested_at, rewards(title, type, xp_cost)')
     .eq('user_id', user.id)
     .order('requested_at', { ascending: false })
 

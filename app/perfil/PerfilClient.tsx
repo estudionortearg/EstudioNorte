@@ -24,7 +24,7 @@ interface Reward {
 }
 
 interface RewardRequest {
-  id: string; status: string; requested_at: string;
+  id: string; reward_id: string; status: string; requested_at: string;
   rewards: { title: string; type: string; xp_cost: number } | null
 }
 
@@ -298,7 +298,7 @@ export default function PerfilClient({ email, fullName, avatarUrl, createdAt, en
               </div>
             ) : activeRewards.map(reward => {
               const canAfford = totalXp >= reward.xp_cost
-              const hasPending = myRequests.some(r => r.rewards && r.status === 'pending' && r.id === reward.id)
+              const hasPending = myRequests.some(r => r.status === 'pending' && r.reward_id === reward.id)
               const typeLabel = reward.type === 'course' ? '🎓 Curso gratis' : reward.type === 'discount' ? '💸 Descuento' : '🤝 Mentoría'
               return (
                 <div key={reward.id} style={{
