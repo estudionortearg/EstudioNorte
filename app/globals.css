@@ -20,6 +20,7 @@
   --en-text: #0F0F0F;
   --en-text-soft: #8A8A8A;
   --en-text-faint: rgba(15,15,15,0.35);
+  --en-white: #ffffff;
 
   /* Borders y sombras */
   --en-border: rgba(0,0,0,0.06);

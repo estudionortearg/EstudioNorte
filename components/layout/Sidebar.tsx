@@ -49,7 +49,7 @@ export default function Sidebar({ activeRoute }: SidebarProps) {
           alignItems: 'center', justifyContent: 'center', marginBottom: '20px',
           textDecoration: 'none', flexShrink: 0,
         }}>
-          <span style={{ color: '#fff', fontFamily: 'var(--font-display)', fontWeight: 900, fontSize: '14px' }}>EN</span>
+          <span style={{ color: 'var(--en-white)', fontFamily: 'var(--font-display)', fontWeight: 900, fontSize: '14px' }}>EN</span>
         </Link>
 
         {NAV_ITEMS.map(({ href, label, icon }) => {
@@ -69,7 +69,7 @@ export default function Sidebar({ activeRoute }: SidebarProps) {
               {/* Tooltip */}
               <div style={{
                 position: 'absolute', left: '56px', top: '50%', transform: 'translateY(-50%)',
-                background: 'var(--en-text)', color: '#fff',
+                background: 'var(--en-text)', color: 'var(--en-white)',
                 padding: '4px 10px', borderRadius: '6px', fontSize: '12px',
                 fontFamily: 'var(--font-body)', fontWeight: 500,
                 whiteSpace: 'nowrap', pointerEvents: 'none',
