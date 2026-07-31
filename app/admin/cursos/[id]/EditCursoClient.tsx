@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useTransition } from 'react'
+import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 
 interface Lesson {
@@ -208,11 +208,12 @@ export default function EditCursoClient({ course, initialModules }: Props) {
       if (!uploadRes.ok) { alert('Error al subir el archivo'); return }
 
       // 3. Save pdf_url to lesson
-      await fetch(`/api/admin/lecciones/${lessonId}`, {
+      const patchRes = await fetch(`/api/admin/lecciones/${lessonId}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ pdf_url: publicUrl }),
       })
+      if (!patchRes.ok) { alert('Error al guardar la URL del PDF'); return }
 
       setModules(m => m.map(mod => mod.id === moduleId ? {
         ...mod,
