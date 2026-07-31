@@ -142,7 +142,7 @@ export default function CourseSalesPage({ course }: { course: CourseData }) {
   const totalLessons = curriculum.reduce((acc, m) => acc + m.lessons.length, 0)
 
   return (
-    <div style={{ minHeight: '100vh', backgroundColor: 'var(--color-bg-deep)', paddingTop: '80px' }}>
+    <div style={{ minHeight: '100vh', backgroundColor: '#0A0A14', paddingTop: '80px' }}>
 
       {/* Course hero banner */}
       <div style={{
