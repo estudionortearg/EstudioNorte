@@ -121,7 +121,7 @@ export default function CertificadoClient({
       doc.text(issuedDate, W / 2, 132, { align: 'center' })
 
       // Firma
-      doc.setDrawColor(200, 200, 200)
+      doc.setDrawColor(138, 138, 138)
       doc.setLineWidth(0.4)
       doc.line(W / 2 - 35, 163, W / 2 + 35, 163)
       doc.setTextColor(138, 138, 138)
@@ -284,7 +284,7 @@ export default function CertificadoClient({
           style={{
             display: 'inline-flex', alignItems: 'center', gap: '8px',
             padding: '13px 24px', borderRadius: '12px', textDecoration: 'none',
-            background: '#0A66C2', color: '#fff',
+            background: '#0A66C2', color: 'var(--en-white)',
             fontFamily: 'var(--font-body)', fontSize: '14px', fontWeight: 600,
           }}
         >
