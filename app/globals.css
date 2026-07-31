@@ -34,6 +34,15 @@
   --en-shadow: 0 8px 40px rgba(0,0,0,0.08);
   --en-shadow-sm: 0 2px 12px rgba(0,0,0,0.06);
   --en-shadow-lg: 0 20px 60px rgba(0,0,0,0.12);
+  --en-shadow-green-sm: 0 4px 16px rgba(61,122,95,0.3);
+  --en-track-bg: rgba(0,0,0,0.08);
+
+  /* Semitransparencias adicionales */
+  --en-bg-blur: rgba(250,250,248,0.88);
+  --en-green-08: rgba(61,122,95,0.08);
+  --en-coral-05: rgba(232,115,90,0.05);
+  --en-green-15: rgba(61,122,95,0.15);
+  --en-green-30: rgba(61,122,95,0.30);
 
   /* Tipografía */
   --font-display: 'Fraunces', serif;
