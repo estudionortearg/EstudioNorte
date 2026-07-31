@@ -72,7 +72,7 @@ export default function PreciosPage() {
       {/* Header */}
       <header style={{
         position: 'sticky', top: 0, zIndex: 30,
-        background: 'rgba(250,250,248,0.88)', backdropFilter: 'blur(16px)',
+        background: 'var(--en-bg-blur)', backdropFilter: 'blur(16px)',
         borderBottom: '1px solid var(--en-border)',
         padding: '0 clamp(16px, 5vw, 64px)',
       }}>

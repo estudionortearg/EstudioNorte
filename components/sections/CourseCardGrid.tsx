@@ -17,7 +17,7 @@ export default function CourseCardGrid({ courses }: { courses: Course[] }) {
         <Link key={course.id} href={`/cursos/${course.slug}`} style={{ textDecoration: 'none' }}>
           <div
             style={{
-              background: '#fff', borderRadius: '16px',
+              background: 'var(--en-surface)', borderRadius: '16px',
               border: '1px solid var(--en-border)',
               boxShadow: 'var(--en-shadow-sm)',
               overflow: 'hidden', transition: 'box-shadow 0.2s ease, transform 0.2s ease',

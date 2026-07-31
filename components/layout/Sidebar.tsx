@@ -35,7 +35,7 @@ export default function Sidebar({ activeRoute }: SidebarProps) {
       <aside style={{
         position: 'fixed', left: 0, top: 0, bottom: 0,
         width: '64px', zIndex: 20,
-        background: 'rgba(255,255,255,0.9)',
+        background: 'var(--en-white-90)',
         backdropFilter: 'blur(16px)',
         borderRight: '1px solid var(--en-border)',
         display: 'flex', flexDirection: 'column', alignItems: 'center',

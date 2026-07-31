@@ -32,7 +32,7 @@ export default function BottomNav({ activeRoute }: BottomNavProps) {
   return (
     <nav style={{
       position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 20,
-      background: 'rgba(255,255,255,0.92)',
+      background: 'var(--en-white-90)',
       backdropFilter: 'blur(16px)',
       borderTop: '1px solid var(--en-border)',
       display: 'flex', alignItems: 'center', justifyContent: 'space-around',

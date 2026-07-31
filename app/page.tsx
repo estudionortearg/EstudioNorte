@@ -21,7 +21,7 @@ export default async function HomePage() {
       {/* Header público */}
       <header style={{
         position: 'sticky', top: 0, zIndex: 30,
-        background: 'rgba(250,250,248,0.88)', backdropFilter: 'blur(16px)',
+        background: 'var(--en-bg-blur)', backdropFilter: 'blur(16px)',
         borderBottom: '1px solid var(--en-border)',
         padding: '0 clamp(16px, 5vw, 64px)',
       }}>
@@ -35,7 +35,7 @@ export default async function HomePage() {
               width: '28px', height: '28px', borderRadius: '7px',
               background: 'var(--en-green)', display: 'inline-flex',
               alignItems: 'center', justifyContent: 'center',
-              color: '#fff', fontFamily: 'var(--font-display)', fontWeight: 900, fontSize: '11px',
+              color: 'var(--en-white)', fontFamily: 'var(--font-display)', fontWeight: 900, fontSize: '11px',
             }}>EN</span>
             <span style={{ fontFamily: 'var(--font-body)', fontWeight: 600, fontSize: '14px', color: 'var(--en-text)' }}>
               Estudio Norte
@@ -92,7 +92,7 @@ export default async function HomePage() {
           <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
             <Link href="/cursos" style={{
               padding: '14px 28px', borderRadius: '12px',
-              background: 'var(--en-green)', color: '#fff',
+              background: 'var(--en-green)', color: 'var(--en-white)',
               fontFamily: 'var(--font-body)', fontWeight: 600, fontSize: '15px',
               textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '6px',
               boxShadow: '0 4px 20px rgba(61,122,95,0.3)',
@@ -137,7 +137,7 @@ export default async function HomePage() {
 
       {/* Cursos preview */}
       {courses.length > 0 && (
-        <section style={{ padding: '64px clamp(16px, 5vw, 64px)', background: 'rgba(0,0,0,0.02)' }}>
+        <section style={{ padding: '64px clamp(16px, 5vw, 64px)', background: 'var(--en-overlay-light)' }}>
           <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
             <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: '32px', flexWrap: 'wrap', gap: '12px' }}>
               <h2 style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 'clamp(24px, 3vw, 36px)', letterSpacing: '-1.5px', color: 'var(--en-text)' }}>
@@ -163,7 +163,7 @@ export default async function HomePage() {
           </p>
           <Link href="/precios" style={{
             padding: '16px 40px', borderRadius: '14px',
-            background: 'var(--en-coral)', color: '#fff',
+            background: 'var(--en-coral)', color: 'var(--en-white)',
             fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '16px',
             textDecoration: 'none',
             boxShadow: '0 4px 24px rgba(232,115,90,0.35)',
