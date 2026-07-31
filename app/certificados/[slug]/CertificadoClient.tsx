@@ -10,7 +10,8 @@ interface Props {
   isComplete: boolean
   completedCount: number
   totalLessons: number
-  enrolledAt: string
+  verificationCode?: string
+  issuedAt?: string
 }
 
 export default function CertificadoClient({

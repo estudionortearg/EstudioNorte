@@ -1,5 +1,6 @@
 import { redirect, notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import CertificadoClient from './CertificadoClient'
 
 interface Props {
@@ -13,14 +14,12 @@ export default async function CertificadoPage({ params }: Props) {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/login')
 
-  // Get profile
   const { data: profile } = await supabase
     .from('profiles')
     .select('full_name')
     .eq('id', user.id)
     .single()
 
-  // Get course
   const { data: course } = await supabase
     .from('courses')
     .select('id, slug, title')
@@ -29,17 +28,15 @@ export default async function CertificadoPage({ params }: Props) {
 
   if (!course) notFound()
 
-  // Check enrollment
   const { data: enrollment } = await supabase
     .from('enrollments')
-    .select('id, enrolled_at')
+    .select('id')
     .eq('user_id', user.id)
     .eq('course_id', course.id)
     .single()
 
   if (!enrollment) redirect(`/cursos/${slug}`)
 
-  // Get all lesson IDs for this course
   const { data: modules } = await supabase
     .from('modules')
     .select('id, lessons (id)')
@@ -52,13 +49,42 @@ export default async function CertificadoPage({ params }: Props) {
   const totalLessons = allLessonIds.length
 
   const { data: progressRows } = allLessonIds.length > 0
-    ? await supabase.from('progress').select('lesson_id').eq('user_id', user.id).in('lesson_id', allLessonIds)
+    ? await supabase
+        .from('progress')
+        .select('lesson_id')
+        .eq('user_id', user.id)
+        .in('lesson_id', allLessonIds)
     : { data: [] }
 
   const completedCount = (progressRows || []).length
   const isComplete = totalLessons > 0 && completedCount >= totalLessons
 
   const displayName = profile?.full_name || user.email?.split('@')[0] || 'Alumno'
+
+  let verificationCode: string | null = null
+  let issuedAt: string | null = null
+
+  if (isComplete) {
+    const admin = createAdminClient()
+
+    // Emitir certificado (idempotente — ignorar conflicto si ya existe)
+    await admin
+      .from('certificates')
+      .upsert(
+        { user_id: user.id, course_id: course.id },
+        { onConflict: 'user_id,course_id', ignoreDuplicates: true }
+      )
+
+    const { data: cert } = await admin
+      .from('certificates')
+      .select('verification_code, issued_at')
+      .eq('user_id', user.id)
+      .eq('course_id', course.id)
+      .single()
+
+    verificationCode = cert?.verification_code ?? null
+    issuedAt = cert?.issued_at ?? null
+  }
 
   return (
     <CertificadoClient
@@ -68,7 +94,8 @@ export default async function CertificadoPage({ params }: Props) {
       isComplete={isComplete}
       completedCount={completedCount}
       totalLessons={totalLessons}
-      enrolledAt={enrollment.enrolled_at}
+      verificationCode={verificationCode ?? undefined}
+      issuedAt={issuedAt ?? undefined}
     />
   )
 }
