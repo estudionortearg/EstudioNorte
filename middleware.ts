@@ -50,7 +50,7 @@ export async function middleware(request: NextRequest) {
       .from('profiles')
       .select('is_admin')
       .eq('id', user.id)
-      .single()
+      .maybeSingle()
     if (!profile?.is_admin) {
       return NextResponse.redirect(new URL('/', request.url))
     }
