@@ -37,7 +37,7 @@ export default async function PlayerPage({ params }: Props) {
     .from('profiles')
     .select('plan')
     .eq('id', user.id)
-    .single()
+    .maybeSingle()
 
   // Get all modules + lessons for sidebar
   const { data: modules } = await supabase

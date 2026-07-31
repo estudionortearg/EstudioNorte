@@ -144,7 +144,7 @@ export async function POST(req: Request) {
     .from('profiles')
     .select('plan')
     .eq('id', user.id)
-    .single()
+    .maybeSingle()
 
   if ((profile?.plan ?? 'free') === 'free' && !lesson.is_free_preview) {
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 })

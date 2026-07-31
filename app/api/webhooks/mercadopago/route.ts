@@ -6,17 +6,18 @@ import { sendWelcomeEmail } from '@/lib/email/resend'
 
 function verifyMpSignature(request: NextRequest, dataId: string): boolean {
   const webhookSecret = process.env.MP_WEBHOOK_SECRET
-  // If secret not configured, skip verification (dev mode)
+  // Fail closed in production; skip in dev only
   if (!webhookSecret) {
-    console.warn('MP_WEBHOOK_SECRET not set — skipping signature verification')
+    if (process.env.NODE_ENV === 'production') return false
+    console.warn('MP_WEBHOOK_SECRET not set — skipping signature verification (dev mode)')
     return true
   }
 
   const xSignature = request.headers.get('x-signature') ?? ''
   const xRequestId = request.headers.get('x-request-id') ?? ''
 
-  const ts = xSignature.match(/ts=([^,]+)/)?.[1] ?? ''
-  const v1 = xSignature.match(/v1=([^,]+)/)?.[1] ?? ''
+  const ts = (xSignature.match(/ts=([^,]+)/)?.[1] ?? '').trim()
+  const v1 = (xSignature.match(/v1=([^,]+)/)?.[1] ?? '').trim()
 
   if (!ts || !v1) return false
 
@@ -42,6 +43,9 @@ async function handlePaymentEvent(paymentId: string): Promise<void> {
 
   const payerEmail = payment.payer?.email
   const courseSlug = payment.external_reference
+
+  // Subscription payments have external_reference like "<uuid>|norte" — skip
+  if (courseSlug?.includes('|')) return
 
   if (!payerEmail || !courseSlug) {
     console.error('MP webhook payment: missing payer email or course slug')
@@ -130,6 +134,11 @@ async function handlePreapprovalEvent(preapprovalId: string): Promise<void> {
 
   const [userId, plan] = externalRef.split('|')
 
+  if (!['norte', 'norte_pro'].includes(plan) || !/^[0-9a-f-]{36}$/i.test(userId)) {
+    console.error('MP webhook preapproval: bad external_reference', externalRef)
+    return
+  }
+
   if (preapproval.status === 'authorized') {
     const { error: upsertError } = await admin.from('subscriptions').upsert(
       {
@@ -161,9 +170,18 @@ async function handlePreapprovalEvent(preapprovalId: string): Promise<void> {
     if (statusError) {
       console.error('MP webhook preapproval: subscription status update failed', statusError)
     }
-    const { error: downgradeError } = await admin.from('profiles').update({ plan: 'free' }).eq('id', userId)
+    // Only downgrade to free if no other active subscription remains (upgrade scenario)
+    const { data: stillActive } = await admin
+      .from('subscriptions')
+      .select('plan')
+      .eq('user_id', userId)
+      .eq('status', 'active')
+      .neq('mp_preapproval_id', preapproval.id)
+      .limit(1)
+    const newPlan = stillActive && stillActive.length > 0 ? (stillActive[0] as { plan: string }).plan : 'free'
+    const { error: downgradeError } = await admin.from('profiles').update({ plan: newPlan }).eq('id', userId)
     if (downgradeError) {
-      console.error('MP webhook preapproval: profile downgrade failed', downgradeError)
+      console.error('MP webhook preapproval: profile plan update failed', downgradeError)
     }
   }
 }

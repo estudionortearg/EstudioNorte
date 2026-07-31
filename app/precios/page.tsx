@@ -77,7 +77,7 @@ export default async function PreciosPage() {
       .from('profiles')
       .select('plan')
       .eq('id', user.id)
-      .single()
+      .maybeSingle()
     currentUserPlan = profile?.plan ?? 'free'
   }
 

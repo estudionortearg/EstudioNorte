@@ -25,9 +25,27 @@ CREATE TABLE IF NOT EXISTS subscriptions (
 ALTER TABLE subscriptions ENABLE ROW LEVEL SECURITY;
 
 -- Solo el dueño puede leer su suscripción
-CREATE POLICY IF NOT EXISTS "subscriptions_owner_read"
+DROP POLICY IF EXISTS "subscriptions_owner_read" ON subscriptions;
+CREATE POLICY "subscriptions_owner_read"
   ON subscriptions FOR SELECT
   USING (auth.uid() = user_id);
 
 -- Solo service role escribe (admin client bypasea RLS)
 -- No INSERT/UPDATE policy para authenticated users
+
+-- C1: Bloquear UPDATE de plan e is_admin por usuarios normales.
+-- La política original (002_rls_policies.sql) no tenía WITH CHECK ni restricción de columna,
+-- permitiendo a cualquier usuario autenticado auto-asignarse plan o is_admin.
+-- REVOKE a nivel de columna es la protección más fuerte (no depende de RLS).
+REVOKE UPDATE (plan, is_admin) ON profiles FROM authenticated, anon;
+
+-- Reemplazar política de UPDATE de profiles para que no permita cambiar plan ni is_admin
+DROP POLICY IF EXISTS "Users can update own profile" ON profiles;
+CREATE POLICY "Users can update own profile"
+  ON profiles FOR UPDATE
+  USING (auth.uid() = id)
+  WITH CHECK (
+    auth.uid() = id
+    AND plan     = (SELECT p.plan     FROM profiles p WHERE p.id = auth.uid())
+    AND is_admin = (SELECT p.is_admin FROM profiles p WHERE p.id = auth.uid())
+  );
