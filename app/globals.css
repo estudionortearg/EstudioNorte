@@ -72,11 +72,11 @@
 * { box-sizing: border-box; }
 
 html {
-  background-color: var(--en-bg);
-  background-image:
-    radial-gradient(ellipse 80% 60% at 0% 0%, rgba(61,122,95,0.22) 0%, transparent 55%),
-    radial-gradient(ellipse 70% 50% at 100% 5%, rgba(232,115,90,0.18) 0%, transparent 55%),
-    radial-gradient(ellipse 40% 40% at 80% 60%, rgba(232,115,90,0.10) 0%, transparent 50%);
+  background:
+    radial-gradient(ellipse 90% 70% at 0% 0%, #d4ebe1 0%, transparent 50%),
+    radial-gradient(ellipse 80% 60% at 100% 0%, #f9d9d1 0%, transparent 50%),
+    radial-gradient(ellipse 60% 50% at 50% 100%, #e2f0e8 0%, transparent 60%),
+    #FAFAF8;
   min-height: 100%;
   scroll-behavior: smooth;
 }
