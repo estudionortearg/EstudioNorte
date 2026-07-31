@@ -68,12 +68,17 @@ export default async function CertificadoPage({ params }: Props) {
     const admin = createAdminClient()
 
     // Emitir certificado (idempotente — ignorar conflicto si ya existe)
-    await admin
+    const { error: upsertError } = await admin
       .from('certificates')
       .upsert(
         { user_id: user.id, course_id: course.id },
         { onConflict: 'user_id,course_id', ignoreDuplicates: true }
       )
+
+    if (upsertError) {
+      console.error('Error emitting certificate:', upsertError)
+      // Intentar leer igualmente — puede existir ya de una emisión anterior
+    }
 
     const { data: cert } = await admin
       .from('certificates')

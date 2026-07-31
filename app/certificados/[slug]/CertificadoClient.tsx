@@ -55,6 +55,7 @@ export default function CertificadoClient({
   }
 
   const downloadPDF = async () => {
+    if (!verificationCode) return
     setDownloading(true)
     try {
       const { jsPDF } = await import('jspdf')
