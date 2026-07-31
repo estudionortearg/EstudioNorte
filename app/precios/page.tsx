@@ -78,7 +78,7 @@ export default function PreciosPage() {
       }}>
         <div style={{ maxWidth: '1200px', margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: '60px' }}>
           <Link href="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <span style={{ width: '28px', height: '28px', borderRadius: '7px', background: 'var(--en-green)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontFamily: 'var(--font-display)', fontWeight: 900, fontSize: '11px' }}>EN</span>
+            <span style={{ width: '28px', height: '28px', borderRadius: '7px', background: 'var(--en-green)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', color: 'var(--en-white)', fontFamily: 'var(--font-display)', fontWeight: 900, fontSize: '11px' }}>EN</span>
             <span style={{ fontFamily: 'var(--font-body)', fontWeight: 600, fontSize: '14px', color: 'var(--en-text)' }}>Estudio Norte</span>
           </Link>
           <Link href="/dashboard" style={{ fontFamily: 'var(--font-body)', fontSize: '13px', color: 'var(--en-green)', fontWeight: 600, textDecoration: 'none' }}>
@@ -101,18 +101,18 @@ export default function PreciosPage() {
       <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '0 clamp(16px, 5vw, 64px) 96px', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 300px), 1fr))', gap: '20px', alignItems: 'stretch' }}>
         {PLANS.map(plan => (
           <div key={plan.name} style={{
-            background: plan.featured ? 'var(--en-green)' : '#fff',
+            background: plan.featured ? 'var(--en-green)' : 'var(--en-white)',
             border: `1.5px solid ${plan.featured ? 'transparent' : 'var(--en-border)'}`,
             borderRadius: '24px',
             padding: '32px',
-            boxShadow: plan.featured ? '0 20px 60px rgba(61,122,95,0.25)' : 'var(--en-shadow-sm)',
+            boxShadow: plan.featured ? 'var(--en-shadow-green)' : 'var(--en-shadow-sm)',
             display: 'flex', flexDirection: 'column', gap: '0',
             position: 'relative',
           }}>
             {plan.featured && (
               <div style={{
                 position: 'absolute', top: '-13px', left: '50%', transform: 'translateX(-50%)',
-                background: 'var(--en-coral)', color: '#fff',
+                background: 'var(--en-coral)', color: 'var(--en-white)',
                 padding: '4px 16px', borderRadius: '100px',
                 fontFamily: 'var(--font-body)', fontSize: '11px', fontWeight: 700, letterSpacing: '1px',
                 whiteSpace: 'nowrap',
@@ -122,20 +122,20 @@ export default function PreciosPage() {
             )}
 
             <div style={{ marginBottom: '24px' }}>
-              <div style={{ fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: plan.featured ? 'rgba(255,255,255,0.7)' : plan.color, marginBottom: '8px' }}>
+              <div style={{ fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: plan.featured ? 'var(--en-white-70)' : plan.color, marginBottom: '8px' }}>
                 {plan.name}
               </div>
               <div style={{ display: 'flex', alignItems: 'baseline', gap: '2px' }}>
-                <span style={{ fontFamily: 'var(--font-display)', fontWeight: 900, fontSize: '44px', letterSpacing: '-2px', color: plan.featured ? '#fff' : 'var(--en-text)' }}>
+                <span style={{ fontFamily: 'var(--font-display)', fontWeight: 900, fontSize: '44px', letterSpacing: '-2px', color: plan.featured ? 'var(--en-white)' : 'var(--en-text)' }}>
                   {plan.price}
                 </span>
                 {plan.period && (
-                  <span style={{ fontFamily: 'var(--font-body)', fontSize: '14px', color: plan.featured ? 'rgba(255,255,255,0.6)' : 'var(--en-text-soft)' }}>
+                  <span style={{ fontFamily: 'var(--font-body)', fontSize: '14px', color: plan.featured ? 'var(--en-white-60)' : 'var(--en-text-soft)' }}>
                     {plan.period}
                   </span>
                 )}
               </div>
-              <p style={{ fontFamily: 'var(--font-body)', fontSize: '14px', color: plan.featured ? 'rgba(255,255,255,0.75)' : 'var(--en-text-soft)', marginTop: '8px' }}>
+              <p style={{ fontFamily: 'var(--font-body)', fontSize: '14px', color: plan.featured ? 'var(--en-white-75)' : 'var(--en-text-soft)', marginTop: '8px' }}>
                 {plan.description}
               </p>
             </div>
@@ -143,10 +143,10 @@ export default function PreciosPage() {
             <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 32px 0', display: 'flex', flexDirection: 'column', gap: '10px', flex: 1 }}>
               {plan.features.map(feat => (
                 <li key={feat} style={{ display: 'flex', gap: '10px', alignItems: 'flex-start' }}>
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={plan.featured ? '#fff' : 'var(--en-green)'} strokeWidth="2.5" style={{ flexShrink: 0, marginTop: '2px' }}>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={plan.featured ? 'var(--en-white)' : 'var(--en-green)'} strokeWidth="2.5" style={{ flexShrink: 0, marginTop: '2px' }}>
                     <polyline points="20 6 9 17 4 12"/>
                   </svg>
-                  <span style={{ fontFamily: 'var(--font-body)', fontSize: '14px', color: plan.featured ? 'rgba(255,255,255,0.9)' : 'var(--en-text)' }}>
+                  <span style={{ fontFamily: 'var(--font-body)', fontSize: '14px', color: plan.featured ? 'var(--en-white-90)' : 'var(--en-text)' }}>
                     {feat}
                   </span>
                 </li>
@@ -156,7 +156,7 @@ export default function PreciosPage() {
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ flexShrink: 0, marginTop: '2px' }}>
                     <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
                   </svg>
-                  <span style={{ fontFamily: 'var(--font-body)', fontSize: '14px', color: plan.featured ? 'rgba(255,255,255,0.9)' : 'var(--en-text)', textDecoration: 'line-through' }}>
+                  <span style={{ fontFamily: 'var(--font-body)', fontSize: '14px', color: plan.featured ? 'var(--en-white-90)' : 'var(--en-text)', textDecoration: 'line-through' }}>
                     {feat}
                   </span>
                 </li>
@@ -168,7 +168,7 @@ export default function PreciosPage() {
               padding: '14px 24px', borderRadius: '12px', textDecoration: 'none',
               fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '14px',
               ...(plan.ctaStyle === 'solid' && {
-                background: '#fff', color: 'var(--en-green)',
+                background: 'var(--en-white)', color: 'var(--en-green)',
                 boxShadow: '0 2px 12px rgba(0,0,0,0.1)',
               }),
               ...(plan.ctaStyle === 'outline' && {
@@ -176,8 +176,8 @@ export default function PreciosPage() {
                 border: '1.5px solid var(--en-border)',
               }),
               ...(plan.ctaStyle === 'coral' && {
-                background: 'var(--en-coral)', color: '#fff',
-                boxShadow: '0 4px 20px rgba(232,115,90,0.3)',
+                background: 'var(--en-coral)', color: 'var(--en-white)',
+                boxShadow: 'var(--en-shadow-coral)',
               }),
             }}>
               {plan.cta}

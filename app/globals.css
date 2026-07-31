@@ -21,6 +21,12 @@
   --en-text-soft: #8A8A8A;
   --en-text-faint: rgba(15,15,15,0.35);
   --en-white: #ffffff;
+  --en-white-60: rgba(255,255,255,0.6);
+  --en-white-70: rgba(255,255,255,0.7);
+  --en-white-75: rgba(255,255,255,0.75);
+  --en-white-90: rgba(255,255,255,0.9);
+  --en-shadow-green: 0 20px 60px rgba(61,122,95,0.25);
+  --en-shadow-coral: 0 4px 20px rgba(232,115,90,0.3);
 
   /* Borders y sombras */
   --en-border: rgba(0,0,0,0.06);
