@@ -1,6 +1,8 @@
 // app/precios/page.tsx
 import Link from 'next/link'
 import { Metadata } from 'next'
+import { createClient } from '@/lib/supabase/server'
+import PreciosCTA from './PreciosCTA'
 
 export const metadata: Metadata = { title: 'Planes — Estudio Norte' }
 
@@ -65,7 +67,20 @@ const PLANS = [
   },
 ]
 
-export default function PreciosPage() {
+export default async function PreciosPage() {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+
+  let currentUserPlan: string | null = null
+  if (user) {
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('plan')
+      .eq('id', user.id)
+      .single()
+    currentUserPlan = profile?.plan ?? 'free'
+  }
+
   return (
     <div style={{ minHeight: '100vh' }}>
 
@@ -163,25 +178,28 @@ export default function PreciosPage() {
               ))}
             </ul>
 
-            <Link href={plan.ctaHref} style={{
-              display: 'block', textAlign: 'center',
-              padding: '14px 24px', borderRadius: '12px', textDecoration: 'none',
-              fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '14px',
-              ...(plan.ctaStyle === 'solid' && {
-                background: 'var(--en-white)', color: 'var(--en-green)',
-                boxShadow: '0 2px 12px rgba(0,0,0,0.1)',
-              }),
-              ...(plan.ctaStyle === 'outline' && {
-                background: 'transparent', color: 'var(--en-text)',
-                border: '1.5px solid var(--en-border)',
-              }),
-              ...(plan.ctaStyle === 'coral' && {
-                background: 'var(--en-coral)', color: 'var(--en-white)',
-                boxShadow: 'var(--en-shadow-coral)',
-              }),
-            }}>
-              {plan.cta}
-            </Link>
+            {plan.name === 'FREE' ? (
+              <a
+                href="/login"
+                style={{
+                  display: 'block', textAlign: 'center',
+                  padding: '14px 24px', borderRadius: '12px', textDecoration: 'none',
+                  fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '14px',
+                  background: 'transparent', color: 'var(--en-text)',
+                  border: '1.5px solid var(--en-border)',
+                }}
+              >
+                {plan.cta}
+              </a>
+            ) : (
+              <PreciosCTA
+                planSlug={plan.name === 'NORTE' ? 'norte' : 'norte_pro'}
+                ctaText={plan.cta}
+                ctaStyle={plan.ctaStyle as 'solid' | 'coral'}
+                currentUserPlan={currentUserPlan}
+                thisPlan={plan.name === 'NORTE' ? 'norte' : 'norte_pro'}
+              />
+            )}
           </div>
         ))}
       </div>
