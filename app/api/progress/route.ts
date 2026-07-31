@@ -133,11 +133,22 @@ export async function POST(req: Request) {
   // Obtener lección y su course_id
   const { data: lesson } = await supabase
     .from('lessons')
-    .select('id, xp_value, module_id, modules!inner(course_id)')
+    .select('id, xp_value, module_id, is_free_preview, modules!inner(course_id)')
     .eq('id', lesson_id)
     .single()
 
   if (!lesson) return NextResponse.json({ error: 'Lesson not found' }, { status: 404 })
+
+  // Plan guard — free users cannot record progress on non-preview lessons
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('plan')
+    .eq('id', user.id)
+    .single()
+
+  if ((profile?.plan ?? 'free') === 'free' && !lesson.is_free_preview) {
+    return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+  }
 
   const courseId = (lesson.modules as unknown as { course_id: string }).course_id
   const xpValue = lesson.xp_value || 10
