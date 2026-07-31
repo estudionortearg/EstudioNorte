@@ -2,6 +2,7 @@
 
 import { useState, useRef } from 'react'
 import Link from 'next/link'
+import BadgeGrid from '@/components/gamification/BadgeGrid'
 
 interface Payment {
   amount: number
@@ -9,6 +10,22 @@ interface Payment {
   created_at: string
   provider: string
   status: string
+}
+
+interface Badge {
+  id: string; slug: string; name: string; emoji: string; description: string;
+  condition_type: string; condition_value: number;
+}
+
+interface EarnedBadge { badge: Badge; earned_at: string; course_id: string | null }
+
+interface Reward {
+  id: string; title: string; description: string; type: string; xp_cost: number; stock: number | null
+}
+
+interface RewardRequest {
+  id: string; status: string; requested_at: string;
+  rewards: { title: string; type: string; xp_cost: number } | null
 }
 
 interface Props {
@@ -19,6 +36,50 @@ interface Props {
   enrollmentsCount: number
   lessonsCompleted: number
   payments: Payment[]
+  allBadges: Badge[]
+  earnedBadges: EarnedBadge[]
+  activeRewards: Reward[]
+  myRequests: RewardRequest[]
+  totalXp: number
+}
+
+function RedeemButton({ rewardId, canAfford, hasPending }: { rewardId: string; canAfford: boolean; hasPending: boolean }) {
+  const [loading, setLoading] = useState(false)
+  const [done, setDone] = useState(false)
+
+  const handleRedeem = async () => {
+    if (!canAfford || hasPending || loading || done) return
+    setLoading(true)
+    const res = await fetch('/api/rewards', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ reward_id: rewardId }),
+    })
+    setLoading(false)
+    if (res.ok) setDone(true)
+  }
+
+  if (done || hasPending) return (
+    <span style={{ fontFamily: 'var(--font-body)', fontSize: '12px', color: 'var(--en-text-soft)', padding: '8px 14px', borderRadius: '8px', background: 'var(--en-surface)', border: '1px solid var(--en-border)' }}>
+      Solicitud enviada
+    </span>
+  )
+
+  return (
+    <button
+      onClick={handleRedeem}
+      disabled={!canAfford || loading}
+      style={{
+        padding: '9px 18px', borderRadius: '10px', border: 'none', cursor: canAfford ? 'pointer' : 'not-allowed',
+        background: canAfford ? 'var(--en-green)' : 'var(--en-border)',
+        color: canAfford ? 'var(--en-white)' : 'var(--en-text-soft)',
+        fontFamily: 'var(--font-body)', fontSize: '13px', fontWeight: 600,
+        opacity: loading ? 0.7 : 1,
+      }}
+    >
+      {loading ? '...' : canAfford ? 'Canjear' : 'XP insuficiente'}
+    </button>
+  )
 }
 
 function getInitials(name: string, email: string) {
@@ -26,12 +87,12 @@ function getInitials(name: string, email: string) {
   return email.slice(0, 2).toUpperCase()
 }
 
-export default function PerfilClient({ email, fullName, avatarUrl, createdAt, enrollmentsCount, lessonsCompleted, payments }: Props) {
+export default function PerfilClient({ email, fullName, avatarUrl, createdAt, enrollmentsCount, lessonsCompleted, payments, allBadges, earnedBadges, activeRewards, myRequests, totalXp }: Props) {
   const [name, setName] = useState(fullName)
   const [inputName, setInputName] = useState(fullName)
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
-  const [activeTab, setActiveTab] = useState<'info' | 'pagos'>('info')
+  const [activeTab, setActiveTab] = useState<'info' | 'pagos' | 'badges' | 'recompensas' | 'canjes'>('info')
   const inputRef = useRef<HTMLInputElement>(null)
 
   const memberSince = new Date(createdAt).toLocaleDateString('es-AR', { month: 'long', year: 'numeric' })
@@ -132,7 +193,7 @@ export default function PerfilClient({ email, fullName, avatarUrl, createdAt, en
 
         {/* Tabs */}
         <div style={{ display: 'flex', gap: '4px', marginBottom: '24px', background: 'rgba(255,255,255,0.03)', borderRadius: '12px', padding: '4px' }}>
-          {([['info', 'Mis datos'], ['pagos', 'Mis pagos']] as const).map(([tab, label]) => (
+          {([['info', 'Mis datos'], ['pagos', 'Mis pagos'], ['badges', 'Badges'], ['recompensas', 'Recompensas'], ['canjes', 'Mis canjes']] as const).map(([tab, label]) => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
@@ -217,6 +278,91 @@ export default function PerfilClient({ email, fullName, avatarUrl, createdAt, en
                 </button>
               </form>
             </div>
+          </div>
+        )}
+
+        {/* Tab: Badges */}
+        {activeTab === 'badges' && (
+          <BadgeGrid earnedBadges={earnedBadges} allBadges={allBadges} />
+        )}
+
+        {/* Tab: Recompensas */}
+        {activeTab === 'recompensas' && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            <div style={{ fontFamily: 'var(--font-body)', fontSize: '13px', color: 'var(--en-text-soft)', marginBottom: '4px' }}>
+              Tu saldo: <strong style={{ color: 'var(--en-green)' }}>{totalXp} XP</strong>
+            </div>
+            {activeRewards.length === 0 ? (
+              <div style={{ textAlign: 'center', padding: '48px', color: 'var(--en-text-soft)', fontFamily: 'var(--font-body)', fontSize: '14px' }}>
+                No hay recompensas disponibles por ahora.
+              </div>
+            ) : activeRewards.map(reward => {
+              const canAfford = totalXp >= reward.xp_cost
+              const hasPending = myRequests.some(r => r.rewards && r.status === 'pending' && r.id === reward.id)
+              const typeLabel = reward.type === 'course' ? '🎓 Curso gratis' : reward.type === 'discount' ? '💸 Descuento' : '🤝 Mentoría'
+              return (
+                <div key={reward.id} style={{
+                  padding: '20px', borderRadius: '14px',
+                  background: 'var(--en-surface)', border: '1px solid var(--en-border)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '16px', flexWrap: 'wrap',
+                }}>
+                  <div>
+                    <div style={{ fontFamily: 'var(--font-body)', fontSize: '11px', color: 'var(--en-text-soft)', marginBottom: '4px' }}>{typeLabel}</div>
+                    <div style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: '16px', color: 'var(--en-text)' }}>{reward.title}</div>
+                    <div style={{ fontFamily: 'var(--font-body)', fontSize: '13px', color: 'var(--en-text-soft)', marginTop: '2px' }}>{reward.description}</div>
+                    {reward.stock !== null && (
+                      <div style={{ fontFamily: 'var(--font-body)', fontSize: '11px', color: 'var(--en-coral)', marginTop: '4px' }}>
+                        {reward.stock} disponibles
+                      </div>
+                    )}
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '8px', flexShrink: 0 }}>
+                    <div style={{ fontFamily: 'var(--font-display)', fontWeight: 900, fontSize: '20px', color: 'var(--en-green)' }}>
+                      {reward.xp_cost} XP
+                    </div>
+                    <RedeemButton rewardId={reward.id} canAfford={canAfford} hasPending={hasPending} />
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        )}
+
+        {/* Tab: Mis canjes */}
+        {activeTab === 'canjes' && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+            {myRequests.length === 0 ? (
+              <div style={{ textAlign: 'center', padding: '48px', color: 'var(--en-text-soft)', fontFamily: 'var(--font-body)', fontSize: '14px' }}>
+                No tenés solicitudes de canje todavía.
+              </div>
+            ) : myRequests.map(req => {
+              const statusColor = req.status === 'approved' ? 'var(--en-green)' : req.status === 'rejected' ? 'var(--en-coral)' : 'var(--en-text-soft)'
+              const statusLabel = req.status === 'approved' ? 'Aprobado' : req.status === 'rejected' ? 'Rechazado' : 'Pendiente'
+              const date = new Date(req.requested_at).toLocaleDateString('es-AR', { day: 'numeric', month: 'short' })
+              return (
+                <div key={req.id} style={{
+                  padding: '16px 20px', borderRadius: '12px',
+                  background: 'var(--en-surface)', border: '1px solid var(--en-border)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px',
+                }}>
+                  <div>
+                    <div style={{ fontFamily: 'var(--font-body)', fontWeight: 600, fontSize: '14px', color: 'var(--en-text)' }}>
+                      {req.rewards?.title || 'Recompensa'}
+                    </div>
+                    <div style={{ fontFamily: 'var(--font-body)', fontSize: '12px', color: 'var(--en-text-soft)', marginTop: '2px' }}>
+                      {req.rewards?.xp_cost} XP · {date}
+                    </div>
+                  </div>
+                  <span style={{
+                    padding: '4px 10px', borderRadius: '100px',
+                    fontFamily: 'var(--font-body)', fontSize: '11px', fontWeight: 600,
+                    color: statusColor, border: `1px solid ${statusColor}`,
+                  }}>
+                    {statusLabel}
+                  </span>
+                </div>
+              )
+            })}
           </div>
         )}
 
