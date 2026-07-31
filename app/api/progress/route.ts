@@ -70,7 +70,17 @@ async function evaluateBadges(
 
   const earned: Array<{ slug: string; name: string; emoji: string; description: string }> = []
 
-  for (const badge of allBadges as BadgeRow[]) {
+  // I1 fix: track if course_complete badge is earned in this request so
+  // courses_completed count is accurate when evaluated later in the same loop
+  let courseCompleteEarnedThisRequest = 0
+
+  // Evaluate course_complete badges first so the count is available for courses_completed
+  const sortedBadges = [
+    ...(allBadges as BadgeRow[]).filter(b => b.condition_type === 'course_complete'),
+    ...(allBadges as BadgeRow[]).filter(b => b.condition_type !== 'course_complete'),
+  ]
+
+  for (const badge of sortedBadges) {
     let qualifies = false
     let isCourseScoped = false
 
@@ -85,7 +95,8 @@ async function evaluateBadges(
         qualifies = totalXp >= badge.condition_value && !globalEarned.has(badge.id)
         break
       case 'courses_completed':
-        qualifies = (coursesCompleted || 0) >= badge.condition_value && !globalEarned.has(badge.id)
+        // Add any course_complete badge earned in this same request to the count
+        qualifies = ((coursesCompleted || 0) + courseCompleteEarnedThisRequest) >= badge.condition_value && !globalEarned.has(badge.id)
         break
       case 'course_complete':
         isCourseScoped = true
@@ -101,6 +112,9 @@ async function evaluateBadges(
         badge_id: badge.id,
         course_id: isCourseScoped ? courseId : null,
       })
+      if (badge.condition_type === 'course_complete') {
+        courseCompleteEarnedThisRequest++
+      }
       earned.push({ slug: badge.slug, name: badge.name, emoji: badge.emoji, description: badge.description })
     }
   }
@@ -128,15 +142,22 @@ export async function POST(req: Request) {
   const courseId = (lesson.modules as unknown as { course_id: string }).course_id
   const xpValue = lesson.xp_value || 10
 
-  // Verificar si ya estaba completada
-  const { data: existing } = await supabase
+  // Paso 1: Insertar progreso (atómico — evita race condition con ON CONFLICT DO NOTHING)
+  const { data: insertedRows, error: insertError } = await supabase
     .from('progress')
+    .upsert(
+      { user_id: user.id, lesson_id, completed_at: new Date().toISOString() },
+      { onConflict: 'user_id,lesson_id', ignoreDuplicates: true }
+    )
     .select('id')
-    .eq('user_id', user.id)
-    .eq('lesson_id', lesson_id)
-    .single()
 
-  if (existing) {
+  if (insertError) {
+    return NextResponse.json({ error: insertError.message }, { status: 500 })
+  }
+
+  // Si no se insertó ninguna fila nueva → ya estaba completada
+  const alreadyCompleted = !insertedRows || insertedRows.length === 0
+  if (alreadyCompleted) {
     const { data: xpRow } = await supabase.from('user_xp').select('total_xp').eq('user_id', user.id).single()
     const { data: courseXpRow } = await supabase.from('user_course_xp').select('xp').eq('user_id', user.id).eq('course_id', courseId).single()
     const { data: streakRow } = await supabase.from('user_streaks').select('current_streak, longest_streak').eq('user_id', user.id).single()
@@ -149,9 +170,6 @@ export async function POST(req: Request) {
       already_completed: true,
     })
   }
-
-  // Paso 1: Insertar progreso
-  await supabase.from('progress').insert({ user_id: user.id, lesson_id, completed_at: new Date().toISOString() })
 
   // Paso 2: Actualizar XP global
   const { data: xpRow } = await supabase.from('user_xp').select('total_xp').eq('user_id', user.id).single()
