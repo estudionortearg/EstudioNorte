@@ -37,7 +37,7 @@ export default function BadgeModal({ badges, xpEarned, onClose }: BadgeModalProp
   return (
     <div style={{
       position: 'fixed' as const, inset: 0, zIndex: 1000,
-      background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(4px)',
+      background: 'color-mix(in srgb, black 50%, transparent)', backdropFilter: 'blur(4px)',
       display: 'flex', alignItems: 'center', justifyContent: 'center',
       padding: '24px',
     }} onClick={onClose}>

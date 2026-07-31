@@ -92,7 +92,8 @@ CREATE POLICY "badges_admin_write" ON badges FOR ALL USING (
 
 ALTER TABLE user_badges ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "user_badges_own" ON user_badges FOR SELECT USING (auth.uid() = user_id);
-CREATE POLICY "user_badges_insert" ON user_badges FOR INSERT WITH CHECK (auth.uid() = user_id);
+-- NOTA: user_badges inserts son exclusivos del server client (bypasea RLS).
+-- No se permite INSERT desde el cliente browser.
 
 ALTER TABLE rewards ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "rewards_read_active" ON rewards FOR SELECT USING (is_active = TRUE AND auth.role() = 'authenticated');
