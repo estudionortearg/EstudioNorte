@@ -12,6 +12,11 @@ export async function POST(req: Request) {
   const { courseSlug, lessonId } = await req.json()
   if (!courseSlug || !lessonId) return NextResponse.json({ error: 'courseSlug and lessonId required' }, { status: 400 })
 
+  // Sanitize to prevent path traversal
+  if (/[\/\\.]/.test(courseSlug) || !/^[0-9a-f-]{36}$/i.test(lessonId)) {
+    return NextResponse.json({ error: 'invalid courseSlug or lessonId' }, { status: 400 })
+  }
+
   const path = `${courseSlug}/${lessonId}.pdf`
   const admin = createAdminClient()
   const { data, error } = await admin.storage
