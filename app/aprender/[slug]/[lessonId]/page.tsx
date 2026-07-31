@@ -32,6 +32,13 @@ export default async function PlayerPage({ params }: Props) {
 
   if (!enrollment) redirect(`/cursos/${slug}`)
 
+  // Plan gate — fetch profile plan
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('plan')
+    .eq('id', user.id)
+    .single()
+
   // Get all modules + lessons for sidebar
   const { data: modules } = await supabase
     .from('modules')
@@ -42,11 +49,16 @@ export default async function PlayerPage({ params }: Props) {
   // Get current lesson
   const { data: lesson } = await supabase
     .from('lessons')
-    .select('id, title, description, video_url, pdf_url, duration_minutes, order_index, module_id')
+    .select('id, title, description, video_url, pdf_url, duration_minutes, order_index, module_id, is_free_preview')
     .eq('id', lessonId)
     .single()
 
   if (!lesson) notFound()
+
+  // Gate: free plan + non-preview lesson → redirect to pricing
+  if ((profile?.plan ?? 'free') === 'free' && !lesson.is_free_preview) {
+    redirect(`/precios?ref=paywall&course=${slug}`)
+  }
 
   // Get user progress
   const allLessonIds = (modules || []).flatMap(m =>
@@ -78,7 +90,7 @@ export default async function PlayerPage({ params }: Props) {
       courseSlug={slug}
       courseTitle={course.title}
       courseId={course.id}
-      lesson={lesson as { id: string; title: string; description: string | null; video_url: string | null; pdf_url: string | null; duration_minutes: number | null; order_index: number; module_id: string }}
+      lesson={lesson as { id: string; title: string; description: string | null; video_url: string | null; pdf_url: string | null; duration_minutes: number | null; order_index: number; module_id: string; is_free_preview: boolean }}
       modules={modules as unknown as Array<{ id: string; title: string; order_index: number; lessons: Array<{ id: string; title: string; duration_minutes: number | null; order_index: number; is_free_preview: boolean }> }>}
       completedIds={[...completedIds]}
       prevLessonId={prevLessonId}
