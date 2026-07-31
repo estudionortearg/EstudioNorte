@@ -27,12 +27,16 @@ export default function OnboardingWizard({ userName, userPlan }: Props) {
 
   async function complete(destination: 'cursos' | 'precios') {
     setCompleting(true)
-    await fetch('/api/onboarding/complete', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ interests: selectedInterests, destination }),
-    })
-    router.push(destination === 'cursos' ? '/cursos' : '/precios')
+    try {
+      await fetch('/api/onboarding/complete', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ interests: selectedInterests }),
+      })
+      router.push(destination === 'cursos' ? '/cursos' : '/precios')
+    } finally {
+      setCompleting(false)
+    }
   }
 
   // Shared styles
