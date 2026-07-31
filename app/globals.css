@@ -73,18 +73,16 @@
 
 html {
   background-color: var(--en-bg);
+  background-image:
+    radial-gradient(ellipse 80% 60% at 0% 0%, rgba(61,122,95,0.22) 0%, transparent 55%),
+    radial-gradient(ellipse 70% 50% at 100% 5%, rgba(232,115,90,0.18) 0%, transparent 55%),
+    radial-gradient(ellipse 40% 40% at 80% 60%, rgba(232,115,90,0.10) 0%, transparent 50%);
+  min-height: 100%;
   scroll-behavior: smooth;
 }
 
 body {
-  background-color: var(--en-bg);
-  /* Gradiente atmosférico fijo verde → coral */
-  background-image:
-    radial-gradient(ellipse 80% 60% at 0% 0%, rgba(61,122,95,0.18) 0%, transparent 55%),
-    radial-gradient(ellipse 70% 50% at 100% 5%, rgba(232,115,90,0.14) 0%, transparent 55%),
-    radial-gradient(ellipse 60% 50% at 50% 100%, rgba(61,122,95,0.10) 0%, transparent 60%),
-    radial-gradient(ellipse 40% 40% at 80% 60%, rgba(232,115,90,0.08) 0%, transparent 50%);
-  background-attachment: fixed;
+  background: transparent;
   color: var(--en-text);
   font-family: var(--font-body);
   -webkit-font-smoothing: antialiased;
