@@ -1,4 +1,4 @@
-import { createHmac } from 'crypto'
+import { createHmac, timingSafeEqual } from 'crypto'
 import { MercadoPagoConfig, Payment } from 'mercadopago'
 import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
@@ -23,7 +23,10 @@ function verifyMpSignature(request: NextRequest, dataId: string): boolean {
   const template = `id:${dataId};request-id:${xRequestId};ts:${ts};`
   const hmac = createHmac('sha256', webhookSecret).update(template).digest('hex')
 
-  return hmac === v1
+  const hmacBuf = Buffer.from(hmac, 'hex')
+  const v1Buf = Buffer.from(v1, 'hex')
+  if (hmacBuf.length !== v1Buf.length) return false
+  return timingSafeEqual(hmacBuf, v1Buf)
 }
 
 async function handlePaymentEvent(paymentId: string): Promise<void> {
@@ -128,7 +131,7 @@ async function handlePreapprovalEvent(preapprovalId: string): Promise<void> {
   const [userId, plan] = externalRef.split('|')
 
   if (preapproval.status === 'authorized') {
-    await admin.from('subscriptions').upsert(
+    const { error: upsertError } = await admin.from('subscriptions').upsert(
       {
         user_id: userId,
         plan,
@@ -139,14 +142,29 @@ async function handlePreapprovalEvent(preapprovalId: string): Promise<void> {
       },
       { onConflict: 'mp_preapproval_id' }
     )
-    await admin.from('profiles').update({ plan }).eq('id', userId)
+    if (upsertError) {
+      console.error('MP webhook preapproval: subscription upsert failed', upsertError)
+      return
+    }
+
+    const { error: updateError } = await admin.from('profiles').update({ plan }).eq('id', userId)
+    if (updateError) {
+      console.error('MP webhook preapproval: profile plan update failed', updateError)
+      // Don't return — subscription is recorded, profile will be fixed on next webhook
+    }
 
   } else if (preapproval.status === 'paused' || preapproval.status === 'cancelled') {
-    await admin
+    const { error: statusError } = await admin
       .from('subscriptions')
       .update({ status: preapproval.status, updated_at: new Date().toISOString() })
       .eq('mp_preapproval_id', preapproval.id)
-    await admin.from('profiles').update({ plan: 'free' }).eq('id', userId)
+    if (statusError) {
+      console.error('MP webhook preapproval: subscription status update failed', statusError)
+    }
+    const { error: downgradeError } = await admin.from('profiles').update({ plan: 'free' }).eq('id', userId)
+    if (downgradeError) {
+      console.error('MP webhook preapproval: profile downgrade failed', downgradeError)
+    }
   }
 }
 
