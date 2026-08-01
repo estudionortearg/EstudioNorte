@@ -77,8 +77,9 @@ function CurriculumModule({ module, lessons, index }: { module: string; lessons:
 }
 
 export default function CourseSalesPage({ course }: { course: CourseData }) {
+  const [tab, setTab] = useState<'curso' | 'plan'>('curso')
   const [loadingArs, setLoadingArs] = useState(false)
-  const [loadingUsd, setLoadingUsd] = useState(false)
+  const [loadingSub, setLoadingSub] = useState(false)
   const totalLessons = curriculum.reduce((acc, m) => acc + m.lessons.length, 0)
 
   const handleBuyArs = async () => {
@@ -96,19 +97,20 @@ export default function CourseSalesPage({ course }: { course: CourseData }) {
     setLoadingArs(false)
   }
 
-  const handleBuyUsd = async () => {
-    setLoadingUsd(true)
+  const handleSubscribe = async () => {
+    setLoadingSub(true)
     try {
-      const res = await fetch('/api/checkout/stripe', {
+      const res = await fetch('/api/checkout/subscription', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ courseSlug: course.slug, courseTitle: course.title, priceUsd: course.priceUsd }),
+        body: JSON.stringify({ plan: 'norte' }),
       })
       const data = await res.json()
-      if (data.url) window.location.href = data.url
-      else alert('Error al iniciar el pago. Intentá de nuevo.')
-    } catch { alert('Error al iniciar el pago. Intentá de nuevo.') }
-    setLoadingUsd(false)
+      if (data.init_point) window.location.href = data.init_point
+      else if (data.error === 'already_subscribed') window.location.href = '/dashboard'
+      else alert('Error al iniciar la suscripción. Intentá de nuevo.')
+    } catch { alert('Error al iniciar la suscripción. Intentá de nuevo.') }
+    setLoadingSub(false)
   }
 
   return (
@@ -239,82 +241,153 @@ export default function CourseSalesPage({ course }: { course: CourseData }) {
           <div style={{ position: 'sticky', top: '76px' }}>
             <div style={{ background: 'var(--en-surface)', border: '1.5px solid var(--en-border)', borderRadius: '24px', overflow: 'hidden', boxShadow: 'var(--en-shadow-lg)' }}>
 
-              {/* Thumbnail */}
-              <div style={{ height: '200px', background: 'linear-gradient(135deg, var(--en-green) 0%, var(--en-coral) 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
-                <div style={{ position: 'absolute', top: '-30px', right: '-30px', width: '140px', height: '140px', borderRadius: '50%', background: 'rgba(255,255,255,0.07)' }}/>
-                <svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.9)" strokeWidth="1.5">
-                  <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
-                </svg>
-                <div style={{ position: 'absolute', top: '12px', right: '12px', padding: '4px 10px', borderRadius: '20px', background: 'rgba(255,255,255,0.18)', border: '1px solid rgba(255,255,255,0.25)', backdropFilter: 'blur(4px)' }}>
-                  <span style={{ fontFamily: 'var(--font-body)', fontSize: '10px', fontWeight: 700, color: '#fff', letterSpacing: '0.5px' }}>VISTA PREVIA</span>
-                </div>
+              {/* Tab toggle */}
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', borderBottom: '1px solid var(--en-border)' }}>
+                <button
+                  onClick={() => setTab('curso')}
+                  style={{
+                    padding: '14px 8px', border: 'none', cursor: 'pointer', fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '13px',
+                    background: tab === 'curso' ? 'var(--en-surface)' : 'color-mix(in srgb, var(--en-border) 40%, var(--en-surface))',
+                    color: tab === 'curso' ? 'var(--en-green)' : 'var(--en-text-faint)',
+                    borderBottom: tab === 'curso' ? '2px solid var(--en-green)' : '2px solid transparent',
+                    transition: 'all 0.15s',
+                  }}
+                >
+                  Solo este curso
+                </button>
+                <button
+                  onClick={() => setTab('plan')}
+                  style={{
+                    padding: '14px 8px', border: 'none', cursor: 'pointer', fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '13px',
+                    background: tab === 'plan' ? 'var(--en-surface)' : 'color-mix(in srgb, var(--en-border) 40%, var(--en-surface))',
+                    color: tab === 'plan' ? 'var(--en-coral)' : 'var(--en-text-faint)',
+                    borderBottom: tab === 'plan' ? '2px solid var(--en-coral)' : '2px solid transparent',
+                    transition: 'all 0.15s',
+                    position: 'relative',
+                  }}
+                >
+                  Plan Norte
+                  <span style={{ marginLeft: '6px', fontSize: '10px', fontWeight: 700, padding: '2px 6px', borderRadius: '20px', background: 'color-mix(in srgb, var(--en-coral) 15%, transparent)', color: 'var(--en-coral)', letterSpacing: '0.3px' }}>
+                    MEJOR VALOR
+                  </span>
+                </button>
               </div>
 
               {/* Body */}
-              <div style={{ padding: '28px' }}>
-                {/* Price */}
-                <div style={{ marginBottom: '20px' }}>
-                  <div style={{ fontFamily: 'var(--font-display)', fontWeight: 900, fontSize: '44px', color: 'var(--en-text)', letterSpacing: '-2px', lineHeight: 1, marginBottom: '4px' }}>
-                    ${course.priceArs.toLocaleString('es-AR')}
-                    <span style={{ fontSize: '18px', fontWeight: 700, color: 'var(--en-text-soft)', letterSpacing: '-0.5px' }}> ARS</span>
-                  </div>
-                  <div style={{ fontFamily: 'var(--font-body)', fontSize: '13px', color: 'var(--en-text-faint)' }}>
-                    o USD {course.priceUsd} para pagos internacionales
-                  </div>
-                </div>
+              <div style={{ padding: '24px' }}>
 
-                {/* CTA Buttons */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '20px' }}>
-                  <button
-                    onClick={handleBuyArs}
-                    disabled={loadingArs}
-                    style={{ width: '100%', padding: '14px', borderRadius: '12px', border: 'none', cursor: loadingArs ? 'wait' : 'pointer', background: 'var(--en-green)', color: '#fff', fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '15px', opacity: loadingArs ? 0.7 : 1, boxShadow: 'var(--en-shadow-green)' }}
-                  >
-                    {loadingArs ? 'Redirigiendo...' : 'Comprar ahora (ARS) →'}
-                  </button>
-                  <button
-                    onClick={handleBuyUsd}
-                    disabled={loadingUsd}
-                    style={{ width: '100%', padding: '14px', borderRadius: '12px', cursor: loadingUsd ? 'wait' : 'pointer', background: 'transparent', border: '1.5px solid var(--en-border)', color: 'var(--en-text-soft)', fontFamily: 'var(--font-body)', fontWeight: 600, fontSize: '14px', opacity: loadingUsd ? 0.7 : 1 }}
-                  >
-                    {loadingUsd ? 'Redirecting...' : 'Pay in USD'}
-                  </button>
-                </div>
-
-                {/* Includes */}
-                <div style={{ borderTop: '1px solid var(--en-border)', paddingTop: '20px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                  {[
-                    `${curriculum.length} módulos · ${totalLessons} lecciones`,
-                    'Acceso de por vida + actualizaciones',
-                    'Certificado verificable en PDF',
-                    'Garantía de 7 días sin preguntas',
-                  ].map((item, i) => (
-                    <div key={i} style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-                      <svg width="14" height="14" viewBox="0 0 14 14" fill="none" style={{ flexShrink: 0 }}>
-                        <path d="M2 7L5.5 10.5L12 3.5" stroke="var(--en-green)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                      </svg>
-                      <span style={{ fontFamily: 'var(--font-body)', fontSize: '13px', color: 'var(--en-text-soft)' }}>{item}</span>
+                {tab === 'curso' && (
+                  <>
+                    {/* Precio individual */}
+                    <div style={{ marginBottom: '20px' }}>
+                      <div style={{ fontFamily: 'var(--font-display)', fontWeight: 900, fontSize: '40px', color: 'var(--en-text)', letterSpacing: '-2px', lineHeight: 1, marginBottom: '4px' }}>
+                        ${course.priceArs.toLocaleString('es-AR')}
+                        <span style={{ fontSize: '16px', fontWeight: 700, color: 'var(--en-text-soft)', letterSpacing: '-0.5px' }}> ARS</span>
+                      </div>
+                      <div style={{ fontFamily: 'var(--font-body)', fontSize: '12px', color: 'var(--en-text-faint)' }}>
+                        Pago único · Acceso de por vida
+                      </div>
                     </div>
-                  ))}
-                </div>
+
+                    <button
+                      onClick={handleBuyArs}
+                      disabled={loadingArs}
+                      style={{ width: '100%', padding: '14px', borderRadius: '12px', border: 'none', cursor: loadingArs ? 'wait' : 'pointer', background: 'var(--en-green)', color: '#fff', fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '15px', opacity: loadingArs ? 0.7 : 1, boxShadow: 'var(--en-shadow-green)', marginBottom: '20px' }}
+                    >
+                      {loadingArs ? 'Redirigiendo...' : 'Comprar este curso →'}
+                    </button>
+
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                      {[
+                        `${curriculum.length} módulos · ${totalLessons} lecciones`,
+                        'Acceso de por vida + actualizaciones',
+                        'Certificado verificable en PDF',
+                        'Garantía de 7 días sin preguntas',
+                      ].map((item, i) => (
+                        <div key={i} style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" style={{ flexShrink: 0 }}>
+                            <path d="M2 7L5.5 10.5L12 3.5" stroke="var(--en-green)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                          </svg>
+                          <span style={{ fontFamily: 'var(--font-body)', fontSize: '13px', color: 'var(--en-text-soft)' }}>{item}</span>
+                        </div>
+                      ))}
+                    </div>
+
+                    <button
+                      onClick={() => setTab('plan')}
+                      style={{ marginTop: '16px', width: '100%', padding: '10px', borderRadius: '10px', border: '1px solid var(--en-border)', cursor: 'pointer', background: 'transparent', fontFamily: 'var(--font-body)', fontSize: '12px', color: 'var(--en-text-faint)' }}
+                    >
+                      ¿Preferís acceso a todos los cursos? Ver Plan Norte →
+                    </button>
+                  </>
+                )}
+
+                {tab === 'plan' && (
+                  <>
+                    {/* Badge */}
+                    <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '4px 12px', borderRadius: '20px', background: 'color-mix(in srgb, var(--en-coral) 10%, transparent)', border: '1px solid color-mix(in srgb, var(--en-coral) 20%, transparent)', marginBottom: '16px' }}>
+                      <span style={{ fontFamily: 'var(--font-body)', fontSize: '11px', fontWeight: 700, color: 'var(--en-coral)', letterSpacing: '0.3px' }}>PLAN NORTE — ACCESO TOTAL</span>
+                    </div>
+
+                    {/* Precio suscripción */}
+                    <div style={{ marginBottom: '20px' }}>
+                      <div style={{ fontFamily: 'var(--font-display)', fontWeight: 900, fontSize: '40px', color: 'var(--en-text)', letterSpacing: '-2px', lineHeight: 1, marginBottom: '4px' }}>
+                        $7.000
+                        <span style={{ fontSize: '16px', fontWeight: 700, color: 'var(--en-text-soft)', letterSpacing: '-0.5px' }}> ARS/mes</span>
+                      </div>
+                      <div style={{ fontFamily: 'var(--font-body)', fontSize: '12px', color: 'var(--en-text-faint)' }}>
+                        Cancelás cuando querés · Sin permanencia
+                      </div>
+                    </div>
+
+                    {/* Comparativa de valor */}
+                    <div style={{ marginBottom: '20px', padding: '14px', borderRadius: '12px', background: 'color-mix(in srgb, var(--en-coral) 5%, var(--en-bg))', border: '1px solid color-mix(in srgb, var(--en-coral) 12%, transparent)' }}>
+                      <div style={{ fontFamily: 'var(--font-body)', fontSize: '12px', color: 'var(--en-text-soft)', lineHeight: 1.6 }}>
+                        <span style={{ textDecoration: 'line-through', opacity: 0.5 }}>${(course.priceArs).toLocaleString('es-AR')} solo este curso</span>
+                        <br/>
+                        <strong style={{ color: 'var(--en-coral)' }}>Con Norte accedés a los 5 cursos</strong> — {(5 * course.priceArs / 7000).toFixed(0)}x más valor.
+                      </div>
+                    </div>
+
+                    <button
+                      onClick={handleSubscribe}
+                      disabled={loadingSub}
+                      style={{ width: '100%', padding: '14px', borderRadius: '12px', border: 'none', cursor: loadingSub ? 'wait' : 'pointer', background: 'linear-gradient(135deg, var(--en-green), var(--en-coral))', color: '#fff', fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '15px', opacity: loadingSub ? 0.7 : 1, marginBottom: '20px' }}
+                    >
+                      {loadingSub ? 'Redirigiendo...' : 'Suscribirme a Norte →'}
+                    </button>
+
+                    {/* Incluye */}
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                      {[
+                        'Acceso a los 5 cursos disponibles',
+                        'Todos los cursos que se agreguen',
+                        'Certificados en todos los cursos',
+                        'Cancelás cuando querés',
+                        'Soporte prioritario',
+                      ].map((item, i) => (
+                        <div key={i} style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" style={{ flexShrink: 0 }}>
+                            <path d="M2 7L5.5 10.5L12 3.5" stroke="var(--en-coral)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                          </svg>
+                          <span style={{ fontFamily: 'var(--font-body)', fontSize: '13px', color: 'var(--en-text-soft)' }}>{item}</span>
+                        </div>
+                      ))}
+                    </div>
+
+                    <button
+                      onClick={() => setTab('curso')}
+                      style={{ marginTop: '16px', width: '100%', padding: '10px', borderRadius: '10px', border: '1px solid var(--en-border)', cursor: 'pointer', background: 'transparent', fontFamily: 'var(--font-body)', fontSize: '12px', color: 'var(--en-text-faint)' }}
+                    >
+                      Prefiero comprar solo este curso →
+                    </button>
+                  </>
+                )}
 
                 <p style={{ fontFamily: 'var(--font-body)', fontSize: '11px', color: 'var(--en-text-faint)', textAlign: 'center', marginTop: '16px', lineHeight: 1.6 }}>
-                  Pago seguro · Si no aprendés algo útil en 7 días, te devolvemos el dinero.
+                  Pago seguro vía MercadoPago · Garantía de 7 días
                 </p>
               </div>
-            </div>
-
-            {/* Plan upsell */}
-            <div style={{ marginTop: '16px', padding: '20px', background: 'color-mix(in srgb, var(--en-coral) 6%, var(--en-surface))', border: '1.5px solid color-mix(in srgb, var(--en-coral) 15%, transparent)', borderRadius: '16px' }}>
-              <div style={{ fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '13px', color: 'var(--en-coral)', marginBottom: '6px' }}>
-                ¿Querés acceso a todos los cursos?
-              </div>
-              <p style={{ fontFamily: 'var(--font-body)', fontSize: '13px', color: 'var(--en-text-soft)', lineHeight: 1.5, marginBottom: '12px' }}>
-                El plan Norte incluye este curso + todos los que se agreguen. Desde U$D 7/mes.
-              </p>
-              <Link href="/precios" style={{ fontFamily: 'var(--font-body)', fontWeight: 600, fontSize: '13px', color: 'var(--en-coral)', textDecoration: 'none' }}>
-                Ver planes →
-              </Link>
             </div>
           </div>
 
