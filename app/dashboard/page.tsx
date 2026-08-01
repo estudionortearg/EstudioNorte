@@ -146,10 +146,10 @@ export default async function DashboardPage() {
             /* Empty state */
             <div style={{ textAlign: 'center', paddingTop: '80px' }}>
               <h1 style={{ fontFamily: 'var(--font-display)', fontWeight: 900, fontSize: 'clamp(28px, 5vw, 48px)', letterSpacing: '-2px', color: 'var(--en-text)', marginBottom: '16px' }}>
-                Tu aprendizaje<br />empieza hoy
+                Tu primera marca<br />empieza acá
               </h1>
               <p style={{ fontFamily: 'var(--font-body)', color: 'var(--en-text-soft)', fontSize: '16px', marginBottom: '32px' }}>
-                Todavía no tenés cursos. Explorá el catálogo y empezá.
+                Todavía no tenés cursos. Elegí uno y empezá a diseñar tu marca con IA.
               </p>
               <Link href="/cursos" style={{
                 padding: '14px 28px', borderRadius: '12px',

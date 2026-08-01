@@ -80,13 +80,13 @@ export default async function GraciasPage({
               fontSize: 'clamp(28px, 5vw, 40px)', letterSpacing: '-1.5px',
               fontStyle: 'italic', color: 'var(--en-text)', marginBottom: '16px',
             }}>
-              Ya sos parte de Estudio Norte
+              Bienvenido a Estudio Norte
             </h1>
             <p style={{
               fontFamily: 'var(--font-body)', fontSize: '15px',
               color: 'var(--en-text-soft)', lineHeight: 1.7, marginBottom: '32px',
             }}>
-              Tu acceso está activado. Revisá tu email — te mandamos los detalles.
+              Tu acceso está activo. Ya podés empezar a diseñar tu marca con IA.
             </p>
             {curso && (
               <a

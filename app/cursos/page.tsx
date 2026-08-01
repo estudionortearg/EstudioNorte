@@ -3,7 +3,7 @@ import CourseCard from '@/components/courses/CourseCard'
 
 export const metadata: Metadata = {
   title: 'Cursos — Estudio Norte',
-  description: 'Cursos de IA y marketing digital para profesionales que quieren resultados.',
+  description: 'Cursos de diseño de marca con IA. Material práctico de Juan Gallino para crear identidades visuales y conseguir clientes.',
 }
 
 const courses = [
@@ -58,7 +58,7 @@ export default function CursosPage() {
             Lo que podés aprender
           </h1>
           <p style={{ color: 'var(--en-text-soft)', fontSize: '18px', maxWidth: '480px' }}>
-            Cursos diseñados para profesionales que quieren resultados, no teoría.
+            Diseño de marca con IA para emprendedores que quieren destacarse. Material de Juan Gallino, basado en trabajo real con clientes.
           </p>
         </div>
 

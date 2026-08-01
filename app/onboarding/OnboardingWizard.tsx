@@ -4,8 +4,8 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 
 const INTERESTS = [
-  'Análisis Técnico', 'Macroeconomía', 'Cripto',
-  'Acciones y Bolsa', 'Opciones y Derivados', 'Economía Argentina',
+  'Diseño de marca', 'Logo con IA', 'Canva avanzado',
+  'Contenido para redes', 'Conseguir clientes', 'Herramientas IA',
 ]
 
 interface Props {
@@ -88,7 +88,7 @@ export default function OnboardingWizard({ userName, userPlan }: Props) {
             Hola, {userName} 👋
           </h1>
           <p style={{ fontSize: '16px', color: 'var(--en-text-soft)', lineHeight: 1.6 }}>
-            Bienvenido a Estudio Norte. Acá vas a aprender finanzas de verdad.
+            Bienvenido a Estudio Norte. Acá vas a aprender a diseñar marcas con IA y a conseguir tus primeros clientes.
           </p>
         </div>
 
