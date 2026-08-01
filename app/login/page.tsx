@@ -1,16 +1,17 @@
 'use client'
 import { useState } from 'react'
 import { motion } from 'framer-motion'
+import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 import { Button, Input } from '@/components/ui'
 
 function MailSentIcon() {
   return (
     <svg width="48" height="48" viewBox="0 0 48 48" fill="none" style={{ margin: '0 auto 20px', display: 'block' }}>
-      <rect x="4" y="10" width="40" height="28" rx="4" stroke="var(--color-teal)" strokeWidth="1.5"/>
-      <path d="M4 14L24 26L44 14" stroke="var(--color-teal)" strokeWidth="1.5" strokeLinecap="round"/>
-      <path d="M32 32L38 38M38 32L32 38" stroke="var(--color-coral)" strokeWidth="1.5" strokeLinecap="round"/>
-      <path d="M34 35H42" stroke="var(--color-coral)" strokeWidth="1.5" strokeLinecap="round"/>
+      <rect x="4" y="10" width="40" height="28" rx="4" stroke="var(--en-green)" strokeWidth="1.5"/>
+      <path d="M4 14L24 26L44 14" stroke="var(--en-green)" strokeWidth="1.5" strokeLinecap="round"/>
+      <path d="M32 32L38 38M38 32L32 38" stroke="var(--en-coral)" strokeWidth="1.5" strokeLinecap="round"/>
+      <path d="M34 35H42" stroke="var(--en-coral)" strokeWidth="1.5" strokeLinecap="round"/>
     </svg>
   )
 }
@@ -19,92 +20,63 @@ function BrandPanel() {
   return (
     <div style={{
       position: 'relative', overflow: 'hidden',
-      background: 'linear-gradient(135deg, #0A0A14 0%, #0D1117 60%, #0A0E1A 100%)',
+      background: 'linear-gradient(135deg, var(--en-green) 0%, var(--en-coral) 100%)',
       display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center',
       padding: '64px 48px', gap: '0',
     }}>
-      {/* Grid lines decoration */}
-      <svg style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', opacity: 0.04 }} viewBox="0 0 400 600" preserveAspectRatio="xMidYMid slice">
-        {Array.from({ length: 10 }).map((_, i) => (
-          <line key={`v${i}`} x1={i * 44} y1="0" x2={i * 44} y2="600" stroke="white" strokeWidth="1"/>
-        ))}
-        {Array.from({ length: 14 }).map((_, i) => (
-          <line key={`h${i}`} x1="0" y1={i * 44} x2="400" y2={i * 44} stroke="white" strokeWidth="1"/>
-        ))}
-      </svg>
+      {/* Decorative circles */}
+      <div style={{ position: 'absolute', top: '-60px', right: '-60px', width: '280px', height: '280px', borderRadius: '50%', background: 'rgba(255,255,255,0.08)', pointerEvents: 'none' }}/>
+      <div style={{ position: 'absolute', bottom: '-80px', left: '-80px', width: '320px', height: '320px', borderRadius: '50%', background: 'rgba(255,255,255,0.05)', pointerEvents: 'none' }}/>
 
-      {/* Glow */}
-      <div style={{
-        position: 'absolute', top: '30%', left: '50%', transform: 'translate(-50%,-50%)',
-        width: '320px', height: '320px', borderRadius: '50%',
-        background: 'radial-gradient(circle, rgba(78,205,196,0.07) 0%, transparent 70%)',
-        pointerEvents: 'none',
-      }}/>
+      {/* Logo */}
+      <div style={{ position: 'relative', marginBottom: '40px' }}>
+        <div style={{
+          width: '72px', height: '72px', borderRadius: '20px',
+          background: 'rgba(255,255,255,0.2)',
+          backdropFilter: 'blur(12px)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          fontFamily: 'var(--font-display)', fontWeight: 900, fontSize: '26px', color: '#fff',
+        }}>EN</div>
+      </div>
 
-      {/* Animated rings */}
-      <motion.div
-        animate={{ rotate: 360 }}
-        transition={{ duration: 24, repeat: Infinity, ease: 'linear' }}
-        style={{ position: 'relative', marginBottom: '48px' }}
-      >
-        <svg width="160" height="160" viewBox="0 0 160 160">
-          <circle cx="80" cy="80" r="70" stroke="rgba(78,205,196,0.12)" strokeWidth="1" fill="none"/>
-          <circle cx="80" cy="80" r="52" stroke="rgba(78,205,196,0.18)" strokeWidth="1" fill="none" strokeDasharray="6 8"/>
-          <circle cx="80" cy="80" r="34" stroke="rgba(255,107,107,0.15)" strokeWidth="1" fill="none"/>
-          <circle cx="80" cy="80" r="8" fill="rgba(78,205,196,0.6)"/>
-          <circle cx="80" cy="10" r="4" fill="rgba(255,107,107,0.8)"/>
-          <circle cx="150" cy="80" r="3" fill="rgba(78,205,196,0.5)"/>
-          <circle cx="80" cy="150" r="3.5" fill="rgba(255,107,107,0.5)"/>
-        </svg>
-      </motion.div>
-
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8, delay: 0.2 }}
-        style={{ textAlign: 'center', position: 'relative' }}
-      >
+      <div style={{ textAlign: 'center', position: 'relative' }}>
         <p style={{
           fontFamily: 'var(--font-body)', fontSize: '11px', letterSpacing: '3px',
-          textTransform: 'uppercase', color: 'var(--color-teal)', marginBottom: '16px',
+          textTransform: 'uppercase', color: 'rgba(255,255,255,0.7)', marginBottom: '16px',
         }}>
           Estudio Norte
         </p>
         <h2 style={{
           fontFamily: 'var(--font-display)', fontWeight: 900,
           fontSize: 'clamp(28px, 3vw, 40px)', letterSpacing: '-1.5px',
-          color: 'var(--color-text)', lineHeight: 1.1, marginBottom: '20px',
+          color: '#fff', lineHeight: 1.1, marginBottom: '20px',
         }}>
-          Tu próximo nivel<br />empieza acá
+          Diseñá tu marca<br />con IA y propósito
         </h2>
         <p style={{
-          fontFamily: 'var(--font-body)', fontSize: '14px',
-          color: 'rgba(247,247,242,0.4)', lineHeight: 1.8, maxWidth: '280px', margin: '0 auto',
+          fontFamily: 'var(--font-body)', fontSize: '15px',
+          color: 'rgba(255,255,255,0.75)', lineHeight: 1.7, maxWidth: '280px', margin: '0 auto',
         }}>
-          Cursos de IA y marketing digital para profesionales del contenido.
+          Cursos prácticos para crear identidades de marca y conseguir tus primeros clientes.
         </p>
-      </motion.div>
+      </div>
 
       {/* Stats strip */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.8, delay: 0.5 }}
-        style={{
-          display: 'flex', gap: '32px', marginTop: '56px',
-          padding: '20px 32px',
-          background: 'rgba(255,255,255,0.03)',
-          border: '1px solid rgba(255,255,255,0.06)',
-          borderRadius: '12px',
-        }}
-      >
-        {[['1200+', 'Alumnos'], ['98%', 'Satisfacción'], ['7d', 'Garantía']].map(([val, lbl]) => (
+      <div style={{
+        display: 'flex', gap: '32px', marginTop: '48px',
+        padding: '20px 32px',
+        background: 'rgba(255,255,255,0.12)',
+        border: '1px solid rgba(255,255,255,0.2)',
+        borderRadius: '16px',
+        backdropFilter: 'blur(8px)',
+      }}>
+        {[['500+', 'Alumnos'], ['4.9★', 'Rating'], ['100%', 'Online']].map(([val, lbl]) => (
           <div key={lbl} style={{ textAlign: 'center' }}>
-            <div style={{ fontFamily: 'var(--font-display)', fontWeight: 900, fontSize: '22px', color: 'var(--color-teal)', letterSpacing: '-1px' }}>{val}</div>
-            <div style={{ fontFamily: 'var(--font-body)', fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', color: 'rgba(247,247,242,0.3)', marginTop: '2px' }}>{lbl}</div>
+            <div style={{ fontFamily: 'var(--font-display)', fontWeight: 900, fontSize: '22px', color: '#fff', letterSpacing: '-1px' }}>{val}</div>
+            <div style={{ fontFamily: 'var(--font-body)', fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', color: 'rgba(255,255,255,0.6)', marginTop: '2px' }}>{lbl}</div>
           </div>
         ))}
-      </motion.div>
+      </div>
     </div>
   )
 }
@@ -135,14 +107,14 @@ export default function LoginPage() {
   }
 
   return (
-    <div style={{ minHeight: '100vh', backgroundColor: 'var(--color-bg-deep)', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))' }}>
+    <div style={{ minHeight: '100vh', background: 'var(--en-bg)', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))' }}>
       {/* Left: Brand panel */}
       <BrandPanel />
 
       {/* Right: Form */}
       <div style={{
         display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center',
-        padding: '64px 48px', backgroundColor: 'var(--color-bg-deep)',
+        padding: '64px 48px', background: 'var(--en-surface)',
       }}>
         <motion.div
           initial={{ opacity: 0, x: 20 }}
@@ -155,19 +127,19 @@ export default function LoginPage() {
               <MailSentIcon />
               <h1 style={{
                 fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: '28px',
-                color: 'var(--color-text)', marginBottom: '12px', letterSpacing: '-0.5px',
+                color: 'var(--en-text)', marginBottom: '12px', letterSpacing: '-0.5px',
               }}>
                 Revisá tu email
               </h1>
-              <p style={{ color: 'rgba(247,247,242,0.45)', lineHeight: 1.7, fontSize: '15px' }}>
+              <p style={{ color: 'var(--en-text-soft)', lineHeight: 1.7, fontSize: '15px' }}>
                 Te mandamos un link de acceso a{' '}
-                <strong style={{ color: 'var(--color-text)' }}>{email}</strong>.
+                <strong style={{ color: 'var(--en-text)' }}>{email}</strong>.
                 <br />Hacé click en el link para entrar.
               </p>
               <div style={{
                 marginTop: '32px', padding: '16px', borderRadius: '10px',
-                background: 'rgba(78,205,196,0.06)', border: '1px solid rgba(78,205,196,0.15)',
-                fontSize: '13px', color: 'rgba(247,247,242,0.5)',
+                background: 'var(--en-green-08)', border: '1px solid var(--en-green-15)',
+                fontSize: '13px', color: 'var(--en-text-soft)',
               }}>
                 Si no lo ves en bandeja de entrada, revisá spam.
               </div>
@@ -175,14 +147,20 @@ export default function LoginPage() {
           ) : (
             <>
               <div style={{ marginBottom: '40px' }}>
+                <div style={{ marginBottom: '24px' }}>
+                  <Link href="/" style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                    <span style={{ width: '28px', height: '28px', borderRadius: '7px', background: 'var(--en-green)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontFamily: 'var(--font-display)', fontWeight: 900, fontSize: '11px' }}>EN</span>
+                    <span style={{ fontFamily: 'var(--font-body)', fontWeight: 600, fontSize: '14px', color: 'var(--en-text)' }}>Estudio Norte</span>
+                  </Link>
+                </div>
                 <h1 style={{
                   fontFamily: 'var(--font-display)', fontWeight: 900,
                   fontSize: 'clamp(28px, 4vw, 36px)', letterSpacing: '-1.5px',
-                  color: 'var(--color-text)', marginBottom: '10px',
+                  color: 'var(--en-text)', marginBottom: '10px',
                 }}>
                   Accedé a tus cursos
                 </h1>
-                <p style={{ color: 'rgba(247,247,242,0.4)', fontSize: '15px', lineHeight: 1.6 }}>
+                <p style={{ color: 'var(--en-text-soft)', fontSize: '15px', lineHeight: 1.6 }}>
                   Ingresá tu email y te mandamos un link de acceso. Sin contraseña.
                 </p>
               </div>
@@ -203,7 +181,7 @@ export default function LoginPage() {
               </form>
 
               <p style={{
-                marginTop: '32px', fontSize: '13px', color: 'rgba(247,247,242,0.25)',
+                marginTop: '32px', fontSize: '13px', color: 'var(--en-text-faint)',
                 textAlign: 'center', lineHeight: 1.6,
               }}>
                 Al continuar aceptás los términos de uso de Estudio Norte.
