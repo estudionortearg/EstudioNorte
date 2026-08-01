@@ -367,7 +367,7 @@ export default async function HomePage() {
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px', marginBottom: '24px' }}>
             {[
               { name: 'FREE', price: '$0', desc: 'Para explorar', features: ['1 lección de muestra', 'Catálogo completo', 'Comunidad lectura'], color: 'var(--en-text-soft)', highlight: false },
-              { name: 'NORTE', price: 'U$D 7/mes', desc: 'Para aprender en serio', features: ['Todos los cursos', 'Guías PDF', 'Tutor IA'], color: 'var(--en-green)', highlight: true },
+              { name: 'NORTE', price: 'U$D 7/mes', desc: 'Para aprender en serio', features: ['5 cursos incluidos', 'Cursos nuevos sin costo extra', 'Certificados'], color: 'var(--en-green)', highlight: true },
               { name: 'NORTE PRO', price: 'U$D 15/mes', desc: 'Para diferenciarte', features: ['Todo Norte', 'Certificados', 'Peer review'], color: 'var(--en-coral)', highlight: false },
             ].map(p => (
               <div key={p.name} style={{ background: p.highlight ? 'var(--en-green)' : 'var(--en-surface)', border: `1.5px solid ${p.highlight ? 'transparent' : 'var(--en-border)'}`, borderRadius: '20px', padding: '24px', boxShadow: p.highlight ? 'var(--en-shadow-green)' : 'var(--en-shadow-sm)', textAlign: 'left' }}>
