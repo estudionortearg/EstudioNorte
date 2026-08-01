@@ -54,6 +54,66 @@ const courses: Record<string, CourseData> = {
       'Profesionales que quieren renovar su marca personal con IA',
     ],
   },
+  'canva-pro-para-tu-marca': {
+    slug: 'canva-pro-para-tu-marca',
+    title: 'Canva Pro para tu marca — de plantilla a identidad propia',
+    subtitle: 'Dejá de usar plantillas genéricas. Aprendé a usar Canva Pro como un diseñador para construir una marca coherente y profesional.',
+    priceArs: 19000,
+    priceUsd: 19,
+    badge: 'Acceso de por vida · Actualizaciones incluidas',
+    whatYouLearn: [
+      'Configurar tu Brand Kit con colores, tipografías y logos',
+      'Crear plantillas propias para redes, presentaciones y materiales',
+      'Usar la IA de Canva para generar imágenes y textos de marca',
+      'Armar un sistema de piezas coherentes para todo el año',
+      'Exportar archivos listos para imprimir y para digital',
+    ],
+    forWho: [
+      'Emprendedores que quieren dejar de "improvisar" su diseño',
+      'Profesionales que usan Canva pero no saben todo lo que pueden hacer',
+      'Community managers que necesitan producir más en menos tiempo',
+    ],
+  },
+  'primeros-clientes-diseno': {
+    slug: 'primeros-clientes-diseno',
+    title: 'Conseguí tus primeros clientes de diseño',
+    subtitle: 'El sistema que uso para conseguir y retener clientes de diseño de marca. Sin publicidad paga, sin seguidores masivos.',
+    priceArs: 22000,
+    priceUsd: 22,
+    badge: 'Acceso de por vida · Actualizaciones incluidas',
+    whatYouLearn: [
+      'Definir tu nicho y propuesta de valor como diseñador',
+      'Armar un portfolio que convierte visitantes en clientes',
+      'Conseguir los primeros clientes con estrategia de contenido',
+      'Hacer propuestas comerciales que se aceptan',
+      'Cobrar lo que merecés y no bajar el precio',
+    ],
+    forWho: [
+      'Diseñadores que recién empiezan y no saben cómo conseguir clientes',
+      'Freelancers que trabajan por referidos pero quieren crecer',
+      'Profesionales que quieren pasar de empleados a independientes',
+    ],
+  },
+  'contenido-visual-ia-instagram': {
+    slug: 'contenido-visual-ia-instagram',
+    title: 'Contenido visual con IA para Instagram',
+    subtitle: 'Creá imágenes, carruseles y stories profesionales con IA sin saber diseño. Para marcas y emprendedores que quieren un feed coherente.',
+    priceArs: 18000,
+    priceUsd: 18,
+    badge: 'Acceso de por vida · Actualizaciones incluidas',
+    whatYouLearn: [
+      'Generar imágenes para posteos con IA que encajan con tu marca',
+      'Diseñar carruseles que educan y convierten seguidores en clientes',
+      'Crear stories y Reels covers con identidad visual coherente',
+      'Armar un calendario de contenido visual para un mes entero',
+      'Mantener consistencia visual sin esfuerzo semana a semana',
+    ],
+    forWho: [
+      'Emprendedores que quieren un feed profesional sin contratar un diseñador',
+      'Community managers que buscan acelerar la producción de contenido visual',
+      'Marcas pequeñas que necesitan comunicar mejor en Instagram',
+    ],
+  },
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
