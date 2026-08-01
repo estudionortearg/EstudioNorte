@@ -29,22 +29,21 @@ const PLANS = [
     name: 'NORTE',
     price: 'U$D 7',
     period: '/mes',
-    description: 'Para diseñar marcas con IA y conseguir clientes',
+    description: 'Acceso a todos los cursos + los que se agreguen',
     color: 'var(--en-green)',
     cta: 'Empezar plan Norte',
     ctaHref: '/login?plan=norte',
     ctaStyle: 'solid' as const,
     featured: true,
     features: [
-      'Todas las guías PDF',
-      'Comunidad completa (escribir, votar, responder)',
-      'Tutor IA en cada lección',
+      '5 cursos disponibles hoy',
+      'Todos los cursos nuevos sin costo extra',
+      'Certificado verificable en cada curso',
       'Clases en vivo con Juan',
       'Sistema XP + Badges + Racha',
-      'Recompensas por progreso',
-      'Descuento anual: 2 meses gratis',
+      'Cancelás cuando querés',
     ],
-    notIncluded: ['Peer review', 'Certificados verificables', 'Descuento cursos premium'],
+    notIncluded: ['Peer review', 'Descuento cursos premium'],
   },
   {
     name: 'NORTE PRO',
@@ -202,6 +201,49 @@ export default async function PreciosPage() {
             )}
           </div>
         ))}
+      </div>
+
+      {/* Cursos incluidos en Norte */}
+      <div style={{ maxWidth: '860px', margin: '0 auto', padding: '0 clamp(16px, 5vw, 64px) 80px' }}>
+        <div style={{ textAlign: 'center', marginBottom: '36px' }}>
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '4px 14px', borderRadius: '100px', background: 'color-mix(in srgb, var(--en-green) 10%, transparent)', marginBottom: '12px' }}>
+            <span style={{ fontFamily: 'var(--font-body)', fontSize: '11px', fontWeight: 700, color: 'var(--en-green)', letterSpacing: '0.5px' }}>INCLUIDO EN PLAN NORTE</span>
+          </div>
+          <h2 style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: 'clamp(22px, 3vw, 32px)', letterSpacing: '-1px', color: 'var(--en-text)', marginBottom: '8px' }}>
+            5 cursos disponibles hoy
+          </h2>
+          <p style={{ fontFamily: 'var(--font-body)', fontSize: '15px', color: 'var(--en-text-soft)' }}>
+            Con el plan Norte accedés a todos — y a los que se agreguen sin costo extra.
+          </p>
+        </div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 380px), 1fr))', gap: '12px' }}>
+          {[
+            { title: 'IA para Community Managers', price: '$25.000 ARS', badge: 'Más vendido', slug: 'ia-para-community-managers' },
+            { title: 'Tu Marca con IA', price: '$29.000 ARS', badge: 'Diseño', slug: 'tu-marca-con-ia' },
+            { title: 'Canva Pro para tu marca', price: '$19.000 ARS', badge: 'Canva', slug: 'canva-pro-para-tu-marca' },
+            { title: 'Conseguí tus primeros clientes de diseño', price: '$22.000 ARS', badge: 'Freelance', slug: 'primeros-clientes-diseno' },
+            { title: 'Contenido visual con IA para Instagram', price: '$18.000 ARS', badge: 'Instagram', slug: 'contenido-visual-ia-instagram' },
+          ].map((course) => (
+            <div key={course.slug} style={{ display: 'flex', alignItems: 'center', gap: '14px', padding: '16px 20px', borderRadius: '14px', background: 'var(--en-surface)', border: '1px solid var(--en-border)' }}>
+              <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: 'linear-gradient(135deg, var(--en-green), var(--en-coral))', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.9)" strokeWidth="2">
+                  <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+                </svg>
+              </div>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ fontFamily: 'var(--font-body)', fontWeight: 600, fontSize: '13px', color: 'var(--en-text)', lineHeight: 1.3, marginBottom: '3px' }}>{course.title}</div>
+                <div style={{ fontFamily: 'var(--font-body)', fontSize: '11px', color: 'var(--en-text-faint)' }}>
+                  <span style={{ textDecoration: 'line-through' }}>{course.price}</span>
+                  <span style={{ marginLeft: '6px', color: 'var(--en-green)', fontWeight: 600 }}>incluido en Norte</span>
+                </div>
+              </div>
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" style={{ flexShrink: 0 }}>
+                <path d="M2 7L5.5 10.5L12 3.5" stroke="var(--en-green)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </div>
+          ))}
+        </div>
       </div>
 
       {/* Nota ARS */}
