@@ -34,6 +34,26 @@ const courses: Record<string, CourseData> = {
       'Agencias que quieren escalar sin contratar',
     ],
   },
+  'tu-marca-con-ia': {
+    slug: 'tu-marca-con-ia',
+    title: 'Tu Marca con IA — de idea a identidad visual completa',
+    subtitle: 'Creá tu logo, definí tu paleta de colores, tipografía y sistema de marca usando IA. Sin experiencia previa en diseño.',
+    priceArs: 29000,
+    priceUsd: 29,
+    badge: 'Acceso de por vida · Actualizaciones incluidas',
+    whatYouLearn: [
+      'Crear un logo profesional con IA en menos de 2 horas',
+      'Definir paleta de colores y tipografías que comuniquen tu marca',
+      'Armar un mini sistema de marca listo para usar en cualquier soporte',
+      'Generar piezas para redes con coherencia visual usando Canva + IA',
+      'Presentar tu marca a clientes de manera profesional',
+    ],
+    forWho: [
+      'Emprendedores que quieren una marca propia sin pagar una agencia',
+      'Freelancers que necesitan una identidad visual para conseguir clientes',
+      'Profesionales que quieren renovar su marca personal con IA',
+    ],
+  },
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {

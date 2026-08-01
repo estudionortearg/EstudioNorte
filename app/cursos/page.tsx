@@ -15,7 +15,16 @@ const courses = [
     priceUsd: 25,
     badges: ['IA Práctica', 'Nuevo'],
     isFeatured: true,
-  }
+  },
+  {
+    slug: 'tu-marca-con-ia',
+    title: 'Tu Marca con IA — de idea a identidad visual completa',
+    subtitle: 'Creá tu logo, paleta, tipografía y sistema de marca con inteligencia artificial. Sin experiencia en diseño.',
+    priceArs: 29000,
+    priceUsd: 29,
+    badges: ['Diseño', 'IA'],
+    isFeatured: false,
+  },
 ]
 
 export default function CursosPage() {
