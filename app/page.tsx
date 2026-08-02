@@ -206,13 +206,13 @@ export default async function HomePage() {
         <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
           <div className="reveal" style={{ textAlign: 'center', marginBottom: '48px' }}>
             <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '6px 14px', borderRadius: '100px', background: 'var(--en-green-light)', marginBottom: '16px' }}>
-              <span style={{ fontFamily: 'var(--font-body)', fontSize: '12px', color: 'var(--en-green)', fontWeight: 600 }}>Para quién es esto</span>
+              <span style={{ fontFamily: 'var(--font-body)', fontSize: '12px', color: 'var(--en-green)', fontWeight: 600 }}>¿Esto es para vos?</span>
             </div>
             <h2 style={{ fontFamily: 'var(--font-display)', fontWeight: 900, fontSize: 'clamp(28px, 4vw, 48px)', letterSpacing: '-1.5px', color: 'var(--en-text)', marginBottom: '12px' }}>
-              No necesitás saber diseño.<br /><span style={{ color: 'var(--en-green)' }}>Solo querés resultados.</span>
+              Mientras vos dudás,<br /><span style={{ color: 'var(--en-green)' }}>otros ya lanzaron su marca.</span>
             </h2>
-            <p style={{ fontFamily: 'var(--font-body)', fontSize: '16px', color: 'var(--en-text-soft)', maxWidth: '480px', margin: '0 auto' }}>
-              Si tenés algo para ofrecer y tu marca no lo refleja, este es tu lugar.
+            <p style={{ fontFamily: 'var(--font-body)', fontSize: '16px', color: 'var(--en-text-soft)', maxWidth: '520px', margin: '0 auto' }}>
+              No hace falta experiencia en diseño. Hace falta decisión. Si vendés algo y tu imagen no lo refleja, cada día que pasa te cuesta clientes.
             </p>
           </div>
 
