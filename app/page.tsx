@@ -441,7 +441,7 @@ export default async function HomePage() {
               {/* Name + meta */}
               <div style={{ marginBottom: '16px' }}>
                 <h3 style={{ fontFamily: 'var(--font-display)', fontWeight: 900, fontSize: '24px', letterSpacing: '-0.8px', color: 'var(--en-text)', margin: '0 0 4px' }}>Juan Gallino</h3>
-                <p style={{ fontFamily: 'var(--font-body)', fontSize: '14px', color: 'var(--en-text-soft)', margin: '0 0 12px' }}>Diseñador de marca con IA · Rafaela, Santa Fe</p>
+                <p style={{ fontFamily: 'var(--font-body)', fontSize: '14px', color: 'var(--en-text-soft)', margin: '0 0 12px' }}>Diseño · IA · Marca · Contenido · Emprendimiento creativo</p>
 
                 {/* Stars + stats */}
                 <div style={{ display: 'flex', alignItems: 'center', gap: '20px', flexWrap: 'wrap' }}>
