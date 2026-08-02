@@ -174,6 +174,11 @@ export default function LoginPage() {
                   onChange={e => setEmail(e.target.value)}
                   required
                   error={error}
+                  style={{
+                    backgroundColor: 'var(--en-bg)',
+                    border: '1.5px solid var(--en-border)',
+                    color: 'var(--en-text)',
+                  }}
                 />
                 <Button variant="primary" type="submit" disabled={loading} style={{ width: '100%', marginTop: '8px' }}>
                   {loading ? 'Enviando...' : 'Enviame el link de acceso'}
