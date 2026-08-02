@@ -3,18 +3,11 @@ import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import Link from 'next/link'
 import { Metadata } from 'next'
-import Sidebar from '@/components/layout/Sidebar'
+import StudentSidebar from '@/components/layout/StudentSidebar'
 import BottomNav from '@/components/layout/BottomNav'
 import XPStreak from '@/components/gamification/XPStreak'
 
 export const metadata: Metadata = { title: 'Mi Dashboard — Estudio Norte' }
-
-function getGreeting() {
-  const hour = new Date().getHours()
-  if (hour < 12) return 'Buenos días'
-  if (hour < 19) return 'Buenas tardes'
-  return 'Buenas noches'
-}
 
 export default async function DashboardPage() {
   const supabase = await createClient()
@@ -58,29 +51,17 @@ export default async function DashboardPage() {
     nextLessonId?: string; nextLessonTitle?: string
   }>
 
-  // Gamification queries
   const { data: xpRow } = await supabase
-    .from('user_xp')
-    .select('total_xp')
-    .eq('user_id', user.id)
-    .single()
+    .from('user_xp').select('total_xp').eq('user_id', user.id).single()
 
   const { data: streakRow } = await supabase
-    .from('user_streaks')
-    .select('current_streak, longest_streak, last_activity_date')
-    .eq('user_id', user.id)
-    .single()
+    .from('user_streaks').select('current_streak, longest_streak, last_activity_date').eq('user_id', user.id).single()
 
   const { count: badgesCount } = await supabase
-    .from('user_badges')
-    .select('id', { count: 'exact', head: true })
-    .eq('user_id', user.id)
+    .from('user_badges').select('id', { count: 'exact', head: true }).eq('user_id', user.id)
 
   const { data: profile } = await supabase
-    .from('profiles')
-    .select('plan')
-    .eq('id', user.id)
-    .maybeSingle()
+    .from('profiles').select('plan').eq('id', user.id).maybeSingle()
 
   const activeCourses = validCourses.filter(c => c.progressPercent > 0 && c.progressPercent < 100)
   const completedCourses = validCourses.filter(c => c.progressPercent === 100)
@@ -88,206 +69,284 @@ export default async function DashboardPage() {
   const displayName = user.user_metadata?.full_name || user.email?.split('@')[0] || 'estudiante'
   const initials = displayName.slice(0, 2).toUpperCase()
   const userPlan = profile?.plan ?? 'free'
+  const planLabel = userPlan === 'norte_pro' ? 'Norte Pro' : userPlan === 'norte' ? 'Norte' : 'Gratuito'
+  const planColor = userPlan === 'norte_pro' ? 'var(--en-coral)' : userPlan === 'norte' ? 'var(--en-green)' : 'var(--en-text-faint)'
+
+  const STATS = [
+    { value: validCourses.length, label: 'Inscriptos', bg: 'var(--en-green-light)', color: 'var(--en-green)' },
+    { value: activeCourses.length, label: 'En progreso', bg: 'color-mix(in srgb, var(--en-coral) 10%, var(--en-surface))', color: 'var(--en-coral)' },
+    { value: completedCourses.length, label: 'Completados', bg: 'color-mix(in srgb, var(--en-green) 8%, var(--en-surface))', color: 'var(--en-green)' },
+  ]
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--en-bg)', display: 'flex' }}>
+    <div style={{ minHeight: '100vh', background: 'var(--en-bg)', paddingBottom: '80px' }}>
 
-      <Sidebar activeRoute="/dashboard" />
+      {/* Sticky top nav */}
+      <header style={{
+        position: 'sticky', top: 0, zIndex: 30,
+        background: 'var(--en-bg-blur)', backdropFilter: 'blur(16px)',
+        borderBottom: '1px solid var(--en-border)',
+      }}>
+        <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '0 clamp(16px, 4vw, 40px)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: '60px' }}>
+          <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '8px', textDecoration: 'none' }}>
+            <span style={{ width: '28px', height: '28px', borderRadius: '7px', background: 'var(--en-green)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', color: 'var(--en-white)', fontFamily: 'var(--font-display)', fontWeight: 900, fontSize: '11px' }}>EN</span>
+            <span style={{ fontFamily: 'var(--font-body)', fontWeight: 600, fontSize: '14px', color: 'var(--en-text)' }}>Estudio Norte</span>
+          </Link>
+          <Link href="/perfil" style={{
+            width: '36px', height: '36px', borderRadius: '50%',
+            background: 'var(--en-green-light)', border: '2px solid var(--en-green-30)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontFamily: 'var(--font-display)', fontWeight: 900, fontSize: '13px', color: 'var(--en-green)',
+            textDecoration: 'none', flexShrink: 0,
+          }}>
+            {initials}
+          </Link>
+        </div>
+      </header>
 
-      {/* Main content — con offset por sidebar en desktop */}
-      <div style={{ flex: 1, paddingLeft: '0', paddingBottom: '80px' }} className="md:pl-16">
+      <div style={{ maxWidth: '1100px', margin: '0 auto', padding: 'clamp(20px, 4vw, 32px) clamp(16px, 4vw, 40px)' }}>
 
-        {/* Top bar */}
+        {/* Profile banner */}
         <div style={{
-          position: 'sticky', top: 0, zIndex: 10,
-          background: 'var(--en-bg-blur)', backdropFilter: 'blur(16px)',
-          borderBottom: '1px solid var(--en-border)',
-          padding: '0 clamp(16px, 4vw, 40px)',
+          background: 'linear-gradient(135deg, var(--en-green) 0%, color-mix(in srgb, var(--en-green) 55%, var(--en-coral)) 100%)',
+          borderRadius: '20px', padding: 'clamp(24px, 4vw, 36px) clamp(24px, 4vw, 40px)',
+          marginBottom: '24px',
+          display: 'flex', alignItems: 'center', gap: '24px', flexWrap: 'wrap',
+          position: 'relative', overflow: 'hidden',
         }}>
-          <div style={{ maxWidth: '1000px', margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: '60px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <div>
-                <span style={{ fontFamily: 'var(--font-body)', fontSize: '12px', color: 'var(--en-text-soft)' }}>{getGreeting()}, </span>
-                <span style={{ fontFamily: 'var(--font-body)', fontSize: '12px', fontWeight: 600, color: 'var(--en-green)' }}>{displayName}</span>
-              </div>
-              {userPlan !== 'free' && (
-                <span style={{
-                  background: userPlan === 'norte_pro'
-                    ? 'color-mix(in srgb, var(--en-coral) 15%, transparent)'
-                    : 'color-mix(in srgb, var(--en-green) 15%, transparent)',
-                  color: userPlan === 'norte_pro' ? 'var(--en-coral)' : 'var(--en-green)',
-                  fontFamily: 'var(--font-body)',
-                  fontSize: '10px',
-                  fontWeight: 700,
-                  letterSpacing: '0.5px',
-                  textTransform: 'uppercase' as const,
-                  padding: '3px 8px',
-                  borderRadius: '6px',
-                }}>
-                  {userPlan === 'norte_pro' ? 'Norte Pro' : 'Norte'}
+          <div style={{ position: 'absolute', top: '-40px', right: '-40px', width: '160px', height: '160px', borderRadius: '50%', background: 'rgba(255,255,255,0.06)', pointerEvents: 'none' }}/>
+          <div style={{ position: 'absolute', bottom: '-24px', right: '40px', width: '100px', height: '100px', borderRadius: '50%', background: 'rgba(255,255,255,0.04)', pointerEvents: 'none' }}/>
+
+          {/* Avatar */}
+          <div style={{
+            width: '64px', height: '64px', borderRadius: '50%', flexShrink: 0,
+            background: 'rgba(255,255,255,0.2)',
+            border: '2.5px solid rgba(255,255,255,0.4)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontFamily: 'var(--font-display)', fontWeight: 900, fontSize: '20px', color: '#fff',
+            letterSpacing: '-1px',
+          }}>
+            {initials}
+          </div>
+
+          {/* Name + stats */}
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <p style={{ fontFamily: 'var(--font-body)', fontSize: '11px', color: 'rgba(255,255,255,0.65)', letterSpacing: '1.2px', textTransform: 'uppercase', marginBottom: '4px' }}>
+              Mi espacio de aprendizaje
+            </p>
+            <h1 style={{ fontFamily: 'var(--font-display)', fontWeight: 900, fontSize: 'clamp(18px, 3vw, 26px)', color: '#fff', letterSpacing: '-0.5px', lineHeight: 1.1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              {displayName}
+            </h1>
+            <div style={{ display: 'flex', gap: '16px', marginTop: '8px', flexWrap: 'wrap' }}>
+              <span style={{ fontFamily: 'var(--font-body)', fontSize: '13px', color: 'rgba(255,255,255,0.8)' }}>
+                {validCourses.length} {validCourses.length === 1 ? 'curso inscripto' : 'cursos inscriptos'}
+              </span>
+              {completedCourses.length > 0 && (
+                <span style={{ fontFamily: 'var(--font-body)', fontSize: '13px', color: 'rgba(255,255,255,0.8)' }}>
+                  {completedCourses.length} {completedCourses.length === 1 ? 'completado' : 'completados'}
                 </span>
               )}
             </div>
-            <Link href="/perfil" style={{
-              width: '36px', height: '36px', borderRadius: '50%',
-              background: 'var(--en-green-light)', border: `2px solid var(--en-green-30)`,
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontFamily: 'var(--font-display)', fontWeight: 900, fontSize: '13px', color: 'var(--en-green)',
-              textDecoration: 'none',
+          </div>
+
+          {/* Plan badge + CTA */}
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '10px', flexShrink: 0 }}>
+            <span style={{
+              fontFamily: 'var(--font-body)', fontSize: '11px', fontWeight: 700, letterSpacing: '0.8px',
+              textTransform: 'uppercase', padding: '5px 12px', borderRadius: '100px',
+              background: 'rgba(255,255,255,0.2)', color: '#fff', border: '1px solid rgba(255,255,255,0.3)',
             }}>
-              {initials}
+              {planLabel}
+            </span>
+            <Link href="/cursos" style={{
+              fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '13px',
+              padding: '9px 18px', borderRadius: '10px',
+              background: 'rgba(255,255,255,0.18)', color: '#fff',
+              border: '1px solid rgba(255,255,255,0.3)',
+              textDecoration: 'none', whiteSpace: 'nowrap', backdropFilter: 'blur(4px)',
+            }}>
+              Ver cursos →
             </Link>
           </div>
         </div>
 
-        <div style={{ maxWidth: '1000px', margin: '0 auto', padding: 'clamp(24px, 4vw, 48px) clamp(16px, 4vw, 40px)' }}>
+        {/* Two-column layout */}
+        <div style={{ display: 'flex', gap: '24px', alignItems: 'flex-start' }}>
 
-          {validCourses.length === 0 ? (
-            /* Empty state */
-            <div style={{ textAlign: 'center', paddingTop: '80px' }}>
-              <h1 style={{ fontFamily: 'var(--font-display)', fontWeight: 900, fontSize: 'clamp(28px, 5vw, 48px)', letterSpacing: '-2px', color: 'var(--en-text)', marginBottom: '16px' }}>
-                Tu primera marca<br />empieza acá
-              </h1>
-              <p style={{ fontFamily: 'var(--font-body)', color: 'var(--en-text-soft)', fontSize: '16px', marginBottom: '32px' }}>
-                Todavía no tenés cursos. Elegí uno y empezá a diseñar tu marca con IA.
-              </p>
-              <Link href="/cursos" style={{
-                padding: '14px 28px', borderRadius: '12px',
-                background: 'var(--en-green)', color: 'var(--en-white)',
-                fontFamily: 'var(--font-body)', fontWeight: 600, fontSize: '15px',
-                textDecoration: 'none',
+          <StudentSidebar activeRoute="/dashboard" displayName={displayName} />
+
+          {/* Main content */}
+          <main style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: '24px' }}>
+
+            {validCourses.length === 0 ? (
+              /* Empty state */
+              <div style={{
+                textAlign: 'center', paddingTop: '80px', paddingBottom: '80px',
+                border: '1.5px dashed var(--en-border)', borderRadius: '20px',
+                background: 'var(--en-surface)',
               }}>
-                Ver cursos disponibles →
-              </Link>
-            </div>
-          ) : (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
-
-              {/* XP, Racha, Badges */}
-              <XPStreak
-                totalXp={xpRow?.total_xp || 0}
-                currentStreak={streakRow?.current_streak || 0}
-                longestStreak={streakRow?.longest_streak || 0}
-                lastActivityDate={streakRow?.last_activity_date || null}
-                badgesCount={badgesCount || 0}
-              />
-
-              {/* Resume banner */}
-              {resumeCourse && resumeCourse.progressPercent > 0 && resumeCourse.progressPercent < 100 && (
-                <div style={{
-                  background: `linear-gradient(135deg, var(--en-green-08), var(--en-coral-05))`,
-                  border: `1.5px solid var(--en-green-15)`,
-                  borderRadius: '20px', padding: '28px 32px',
-                  display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '24px', flexWrap: 'wrap',
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--en-text-faint)" strokeWidth="1.2" style={{ marginBottom: '20px' }}>
+                  <path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/>
+                </svg>
+                <h2 style={{ fontFamily: 'var(--font-display)', fontWeight: 900, fontSize: '24px', letterSpacing: '-0.5px', color: 'var(--en-text)', marginBottom: '8px' }}>
+                  Todavía no tenés cursos
+                </h2>
+                <p style={{ fontFamily: 'var(--font-body)', color: 'var(--en-text-soft)', fontSize: '15px', marginBottom: '28px' }}>
+                  Elegí un curso y empezá a diseñar tu marca con IA.
+                </p>
+                <Link href="/cursos" style={{
+                  padding: '12px 24px', borderRadius: '12px',
+                  background: 'var(--en-green)', color: 'var(--en-white)',
+                  fontFamily: 'var(--font-body)', fontWeight: 600, fontSize: '14px',
+                  textDecoration: 'none',
                 }}>
-                  <div>
-                    <p style={{ fontFamily: 'var(--font-body)', fontSize: '11px', fontWeight: 700, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--en-green)', marginBottom: '6px' }}>
-                      Retomá donde lo dejaste
-                    </p>
-                    <h2 style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: '22px', color: 'var(--en-text)', letterSpacing: '-0.5px' }}>
-                      {resumeCourse.courseTitle}
-                    </h2>
-                    {resumeCourse.nextLessonTitle && (
-                      <p style={{ fontFamily: 'var(--font-body)', fontSize: '14px', color: 'var(--en-text-soft)', marginTop: '4px' }}>
-                        Próximo: {resumeCourse.nextLessonTitle}
-                      </p>
-                    )}
-                  </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '20px', flexShrink: 0 }}>
-                    <div style={{ textAlign: 'center' }}>
-                      <div style={{ fontFamily: 'var(--font-display)', fontWeight: 900, fontSize: '36px', color: 'var(--en-green)', letterSpacing: '-1.5px', lineHeight: 1 }}>
-                        {resumeCourse.progressPercent}%
+                  Ver cursos disponibles →
+                </Link>
+              </div>
+            ) : (
+              <>
+                {/* XP, Racha, Badges */}
+                <XPStreak
+                  totalXp={xpRow?.total_xp || 0}
+                  currentStreak={streakRow?.current_streak || 0}
+                  longestStreak={streakRow?.longest_streak || 0}
+                  lastActivityDate={streakRow?.last_activity_date || null}
+                  badgesCount={badgesCount || 0}
+                />
+
+                {/* Stat cards — HiStudy style */}
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px' }}>
+                  {STATS.map(({ value, label, bg, color }) => (
+                    <div key={label} style={{
+                      background: bg, borderRadius: '16px', padding: '20px 16px',
+                      border: `1.5px solid color-mix(in srgb, ${color} 20%, transparent)`,
+                      textAlign: 'center',
+                    }}>
+                      <div style={{
+                        width: '44px', height: '44px', borderRadius: '50%',
+                        background: `color-mix(in srgb, ${color} 15%, transparent)`,
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        margin: '0 auto 10px',
+                      }}>
+                        <span style={{ fontFamily: 'var(--font-display)', fontWeight: 900, fontSize: '18px', color, lineHeight: 1 }}>{value}</span>
                       </div>
-                      <div style={{ fontFamily: 'var(--font-body)', fontSize: '11px', color: 'var(--en-text-soft)' }}>completado</div>
+                      <p style={{ fontFamily: 'var(--font-body)', fontSize: '12px', color: 'var(--en-text-soft)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{label}</p>
                     </div>
-                    <Link
-                      href={resumeCourse.nextLessonId
-                        ? `/aprender/${resumeCourse.courseSlug}/${resumeCourse.nextLessonId}`
-                        : `/aprender/${resumeCourse.courseSlug}`}
-                      style={{
-                        padding: '12px 24px', borderRadius: '10px', textDecoration: 'none',
-                        background: 'var(--en-green)', color: 'var(--en-white)',
-                        fontFamily: 'var(--font-body)', fontSize: '14px', fontWeight: 600, whiteSpace: 'nowrap',
-                        boxShadow: 'var(--en-shadow-green-sm)',
-                      }}
-                    >
-                      Continuar →
+                  ))}
+                </div>
+
+                {/* Resume banner */}
+                {resumeCourse && resumeCourse.progressPercent > 0 && resumeCourse.progressPercent < 100 && (
+                  <div style={{
+                    background: 'var(--en-green-light)',
+                    border: '1.5px solid var(--en-green-15)',
+                    borderRadius: '18px', padding: '24px 28px',
+                    display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '20px', flexWrap: 'wrap',
+                  }}>
+                    <div>
+                      <p style={{ fontFamily: 'var(--font-body)', fontSize: '11px', fontWeight: 700, letterSpacing: '1.2px', textTransform: 'uppercase', color: 'var(--en-green)', marginBottom: '6px' }}>
+                        Retomá donde lo dejaste
+                      </p>
+                      <h2 style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: '18px', color: 'var(--en-text)', letterSpacing: '-0.3px' }}>
+                        {resumeCourse.courseTitle}
+                      </h2>
+                      {resumeCourse.nextLessonTitle && (
+                        <p style={{ fontFamily: 'var(--font-body)', fontSize: '13px', color: 'var(--en-text-soft)', marginTop: '4px' }}>
+                          Próximo: {resumeCourse.nextLessonTitle}
+                        </p>
+                      )}
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexShrink: 0 }}>
+                      <div style={{ textAlign: 'center' }}>
+                        <div style={{ fontFamily: 'var(--font-display)', fontWeight: 900, fontSize: '28px', color: 'var(--en-green)', letterSpacing: '-1px', lineHeight: 1 }}>
+                          {resumeCourse.progressPercent}%
+                        </div>
+                        <div style={{ fontFamily: 'var(--font-body)', fontSize: '10px', color: 'var(--en-text-soft)', marginTop: '2px' }}>completado</div>
+                      </div>
+                      <Link
+                        href={resumeCourse.nextLessonId
+                          ? `/aprender/${resumeCourse.courseSlug}/${resumeCourse.nextLessonId}`
+                          : `/aprender/${resumeCourse.courseSlug}`}
+                        style={{
+                          padding: '10px 20px', borderRadius: '10px', textDecoration: 'none',
+                          background: 'var(--en-green)', color: 'var(--en-white)',
+                          fontFamily: 'var(--font-body)', fontSize: '13px', fontWeight: 600, whiteSpace: 'nowrap',
+                          boxShadow: 'var(--en-shadow-green-sm)',
+                        }}
+                      >
+                        Continuar →
+                      </Link>
+                    </div>
+                  </div>
+                )}
+
+                {/* Mis cursos */}
+                <div>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px' }}>
+                    <h2 style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: '18px', color: 'var(--en-text)', letterSpacing: '-0.3px' }}>
+                      Mis cursos
+                    </h2>
+                    <Link href="/cursos" style={{ fontFamily: 'var(--font-body)', fontSize: '13px', color: 'var(--en-green)', textDecoration: 'none' }}>
+                      Explorar más →
                     </Link>
                   </div>
-                </div>
-              )}
-
-              {/* Stats */}
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: '12px' }}>
-                {[
-                  { value: validCourses.length, label: 'Inscriptos', color: 'var(--en-text)' },
-                  { value: activeCourses.length, label: 'En progreso', color: 'var(--en-coral)' },
-                  { value: completedCourses.length, label: 'Completados', color: 'var(--en-green)' },
-                ].map(({ value, label, color }) => (
-                  <div key={label} style={{
-                    background: 'var(--en-surface)', border: '1px solid var(--en-border)',
-                    borderRadius: '16px', padding: '20px 16px',
-                    boxShadow: 'var(--en-shadow-sm)',
-                  }}>
-                    <div style={{ fontFamily: 'var(--font-display)', fontWeight: 900, fontSize: '36px', color, letterSpacing: '-1.5px', lineHeight: 1 }}>
-                      {value}
-                    </div>
-                    <div style={{ fontFamily: 'var(--font-body)', fontSize: '12px', color: 'var(--en-text-soft)', marginTop: '4px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                      {label}
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              {/* Cursos */}
-              <div>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
-                  <h2 style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: '20px', color: 'var(--en-text)', letterSpacing: '-0.5px' }}>
-                    Mis cursos
-                  </h2>
-                  <Link href="/cursos" style={{ fontFamily: 'var(--font-body)', fontSize: '13px', color: 'var(--en-green)', textDecoration: 'none' }}>
-                    Explorar más →
-                  </Link>
-                </div>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 280px), 1fr))', gap: '14px' }}>
-                  {validCourses.map(course => {
-                    const isComplete = course.progressPercent === 100
-                    return (
-                      <Link key={course.courseSlug}
-                        href={course.nextLessonId
-                          ? `/aprender/${course.courseSlug}/${course.nextLessonId}`
-                          : `/aprender/${course.courseSlug}`}
-                        style={{ textDecoration: 'none' }}
-                      >
-                        <div style={{
-                          background: 'var(--en-surface)', border: '1px solid var(--en-border)',
-                          borderRadius: '16px', padding: '20px',
-                          boxShadow: 'var(--en-shadow-sm)', transition: 'box-shadow 0.2s ease',
-                        }}>
-                          <h3 style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: '16px', color: 'var(--en-text)', letterSpacing: '-0.3px', marginBottom: '12px' }}>
-                            {course.courseTitle}
-                          </h3>
-                          {/* Progress bar */}
-                          <div style={{ height: '4px', borderRadius: '2px', background: 'var(--en-track-bg)', marginBottom: '8px' }}>
-                            <div style={{ height: '100%', borderRadius: '2px', background: isComplete ? 'var(--en-green)' : 'var(--en-coral)', width: `${course.progressPercent}%`, transition: 'width 0.3s ease' }}/>
-                          </div>
-                          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                            <span style={{ fontFamily: 'var(--font-body)', fontSize: '12px', color: 'var(--en-text-soft)' }}>
-                              {course.completedLessons}/{course.totalLessons} lecciones
-                            </span>
-                            <span style={{ fontFamily: 'var(--font-body)', fontSize: '12px', fontWeight: 600, color: isComplete ? 'var(--en-green)' : 'var(--en-coral)' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                    {validCourses.map(course => {
+                      const isComplete = course.progressPercent === 100
+                      return (
+                        <Link key={course.courseSlug}
+                          href={course.nextLessonId
+                            ? `/aprender/${course.courseSlug}/${course.nextLessonId}`
+                            : `/aprender/${course.courseSlug}`}
+                          style={{ textDecoration: 'none' }}
+                        >
+                          <div style={{
+                            background: 'var(--en-surface)', border: '1px solid var(--en-border)',
+                            borderRadius: '14px', padding: '18px 20px',
+                            display: 'flex', alignItems: 'center', gap: '16px',
+                          }}>
+                            {/* Progress circle */}
+                            <div style={{
+                              width: '44px', height: '44px', borderRadius: '50%', flexShrink: 0,
+                              background: isComplete ? 'var(--en-green-light)' : 'color-mix(in srgb, var(--en-coral) 10%, var(--en-surface))',
+                              display: 'flex', alignItems: 'center', justifyContent: 'center',
+                              fontFamily: 'var(--font-display)', fontWeight: 900, fontSize: '13px',
+                              color: isComplete ? 'var(--en-green)' : 'var(--en-coral)',
+                            }}>
                               {course.progressPercent}%
-                            </span>
+                            </div>
+                            {/* Title + progress */}
+                            <div style={{ flex: 1, minWidth: 0 }}>
+                              <h3 style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: '15px', color: 'var(--en-text)', letterSpacing: '-0.2px', marginBottom: '8px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                {course.courseTitle}
+                              </h3>
+                              <div style={{ height: '4px', borderRadius: '2px', background: 'var(--en-track-bg)' }}>
+                                <div style={{ height: '100%', borderRadius: '2px', background: isComplete ? 'var(--en-green)' : 'var(--en-coral)', width: `${course.progressPercent}%`, transition: 'width 0.3s ease' }}/>
+                              </div>
+                              <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '6px' }}>
+                                <span style={{ fontFamily: 'var(--font-body)', fontSize: '11px', color: 'var(--en-text-faint)' }}>
+                                  {course.completedLessons}/{course.totalLessons} lecciones
+                                </span>
+                                {isComplete && (
+                                  <span style={{ fontFamily: 'var(--font-body)', fontSize: '11px', fontWeight: 700, color: 'var(--en-green)' }}>
+                                    ✓ Completado
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                            {/* Chevron */}
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--en-text-faint)" strokeWidth="2" style={{ flexShrink: 0 }}>
+                              <polyline points="9,18 15,12 9,6"/>
+                            </svg>
                           </div>
-                        </div>
-                      </Link>
-                    )
-                  })}
+                        </Link>
+                      )
+                    })}
+                  </div>
                 </div>
-              </div>
-
-            </div>
-          )}
+              </>
+            )}
+          </main>
         </div>
       </div>
 

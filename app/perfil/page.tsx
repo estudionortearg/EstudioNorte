@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import PerfilClient from './PerfilClient'
+import BottomNav from '@/components/layout/BottomNav'
 import { Metadata } from 'next'
 
 export const metadata: Metadata = { title: 'Mi Perfil — Estudio Norte' }
@@ -12,7 +13,7 @@ export default async function PerfilPage() {
 
   const { data: profile } = await supabase
     .from('profiles')
-    .select('full_name, avatar_url, created_at')
+    .select('full_name, avatar_url, created_at, plan')
     .eq('id', user.id)
     .single()
 
@@ -70,19 +71,23 @@ export default async function PerfilPage() {
   }))
 
   return (
-    <PerfilClient
-      email={user.email || ''}
-      fullName={profile?.full_name || ''}
-      avatarUrl={profile?.avatar_url || null}
-      createdAt={profile?.created_at || user.created_at}
-      enrollmentsCount={(enrollments || []).length}
-      lessonsCompleted={(progressRows || []).length}
-      payments={payments || []}
-      allBadges={allBadges || []}
-      earnedBadges={earnedBadges}
-      activeRewards={activeRewards || []}
-      myRequests={(myRequests || []).map((r: any) => ({ ...r, rewards: Array.isArray(r.rewards) ? r.rewards[0] ?? null : r.rewards }))}
-      totalXp={xpRow?.total_xp || 0}
-    />
+    <>
+      <PerfilClient
+        email={user.email || ''}
+        fullName={profile?.full_name || ''}
+        avatarUrl={profile?.avatar_url || null}
+        createdAt={profile?.created_at || user.created_at}
+        plan={profile?.plan || 'free'}
+        enrollmentsCount={(enrollments || []).length}
+        lessonsCompleted={(progressRows || []).length}
+        payments={payments || []}
+        allBadges={allBadges || []}
+        earnedBadges={earnedBadges}
+        activeRewards={activeRewards || []}
+        myRequests={(myRequests || []).map((r: any) => ({ ...r, rewards: Array.isArray(r.rewards) ? r.rewards[0] ?? null : r.rewards }))}
+        totalXp={xpRow?.total_xp || 0}
+      />
+      <BottomNav activeRoute="/perfil" />
+    </>
   )
 }
