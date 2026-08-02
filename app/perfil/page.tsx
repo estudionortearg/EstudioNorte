@@ -13,7 +13,7 @@ export default async function PerfilPage() {
 
   const { data: profile } = await supabase
     .from('profiles')
-    .select('full_name, avatar_url, created_at, plan')
+    .select('full_name, avatar_url, banner_url, created_at, plan')
     .eq('id', user.id)
     .single()
 
@@ -76,6 +76,7 @@ export default async function PerfilPage() {
         email={user.email || ''}
         fullName={profile?.full_name || ''}
         avatarUrl={profile?.avatar_url || null}
+        bannerUrl={profile?.banner_url || null}
         createdAt={profile?.created_at || user.created_at}
         plan={profile?.plan || 'free'}
         enrollmentsCount={(enrollments || []).length}

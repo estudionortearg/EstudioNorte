@@ -33,6 +33,7 @@ interface Props {
   email: string
   fullName: string
   avatarUrl: string | null
+  bannerUrl: string | null
   createdAt: string
   plan: string
   enrollmentsCount: number
@@ -44,6 +45,18 @@ interface Props {
   myRequests: RewardRequest[]
   totalXp: number
 }
+
+// Preset banner gradients
+const BANNER_PRESETS = [
+  { key: 'linear-gradient(135deg, #16a34a 0%, #15803d 60%, #166534 100%)', label: 'Verde' },
+  { key: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 60%, #1e3a8a 100%)', label: 'Azul' },
+  { key: 'linear-gradient(135deg, #7c3aed 0%, #6d28d9 60%, #4c1d95 100%)', label: 'Violeta' },
+  { key: 'linear-gradient(135deg, #dc2626 0%, #b91c1c 60%, #991b1b 100%)', label: 'Rojo' },
+  { key: 'linear-gradient(135deg, #d97706 0%, #b45309 60%, #92400e 100%)', label: 'Naranja' },
+  { key: 'linear-gradient(135deg, #0f172a 0%, #1e293b 60%, #334155 100%)', label: 'Noche' },
+]
+
+const DEFAULT_BANNER = 'linear-gradient(135deg, #16a34a 0%, #15803d 60%, #166534 100%)'
 
 function RedeemButton({ rewardId, canAfford, hasPending }: { rewardId: string; canAfford: boolean; hasPending: boolean }) {
   const [loading, setLoading] = useState(false)
@@ -99,7 +112,7 @@ const TABS = [
 
 type Tab = typeof TABS[number]['key']
 
-export default function PerfilClient({ email, fullName, avatarUrl, createdAt, plan, enrollmentsCount, lessonsCompleted, payments, allBadges, earnedBadges, activeRewards, myRequests, totalXp }: Props) {
+export default function PerfilClient({ email, fullName, avatarUrl, bannerUrl, createdAt, plan, enrollmentsCount, lessonsCompleted, payments, allBadges, earnedBadges, activeRewards, myRequests, totalXp }: Props) {
   const [name, setName] = useState(fullName)
   const [inputName, setInputName] = useState(fullName)
   const [saving, setSaving] = useState(false)
@@ -107,11 +120,30 @@ export default function PerfilClient({ email, fullName, avatarUrl, createdAt, pl
   const [activeTab, setActiveTab] = useState<Tab>('info')
   const inputRef = useRef<HTMLInputElement>(null)
 
+  // Avatar state
+  const [currentAvatar, setCurrentAvatar] = useState<string | null>(avatarUrl)
+  const [avatarUploading, setAvatarUploading] = useState(false)
+  const avatarInputRef = useRef<HTMLInputElement>(null)
+
+  // Banner state
+  const [currentBanner, setCurrentBanner] = useState<string | null>(bannerUrl)
+  const [bannerPickerOpen, setBannerPickerOpen] = useState(false)
+  const [bannerUploading, setBannerUploading] = useState(false)
+  const bannerInputRef = useRef<HTMLInputElement>(null)
+
   const memberSince = new Date(createdAt).toLocaleDateString('es-AR', { month: 'long', year: 'numeric' })
   const initials = getInitials(name || inputName, email)
   const displayName = name || email.split('@')[0]
   const isDirty = inputName !== name
   const planLabel = plan === 'norte_pro' ? 'Norte Pro' : plan === 'norte' ? 'Norte' : 'Gratuito'
+
+  const bannerStyle = (() => {
+    const b = currentBanner || DEFAULT_BANNER
+    if (b.startsWith('http')) {
+      return { backgroundImage: `url(${b})`, backgroundSize: 'cover', backgroundPosition: 'center' }
+    }
+    return { background: b }
+  })()
 
   const handleSave = async () => {
     if (!isDirty || saving) return
@@ -127,6 +159,49 @@ export default function PerfilClient({ email, fullName, avatarUrl, createdAt, pl
       setTimeout(() => setSaved(false), 2500)
     } finally {
       setSaving(false)
+    }
+  }
+
+  const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    setAvatarUploading(true)
+    const form = new FormData()
+    form.append('file', file)
+    try {
+      const res = await fetch('/api/perfil/avatar', { method: 'POST', body: form })
+      const data = await res.json()
+      if (data.url) setCurrentAvatar(data.url)
+    } finally {
+      setAvatarUploading(false)
+      e.target.value = ''
+    }
+  }
+
+  const handleBannerPreset = async (gradient: string) => {
+    setBannerPickerOpen(false)
+    setCurrentBanner(gradient)
+    await fetch('/api/perfil/banner', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ gradient }),
+    })
+  }
+
+  const handleBannerImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    setBannerUploading(true)
+    setBannerPickerOpen(false)
+    const form = new FormData()
+    form.append('file', file)
+    try {
+      const res = await fetch('/api/perfil/banner', { method: 'POST', body: form })
+      const data = await res.json()
+      if (data.url) setCurrentBanner(data.url)
+    } finally {
+      setBannerUploading(false)
+      e.target.value = ''
     }
   }
 
@@ -153,27 +228,53 @@ export default function PerfilClient({ email, fullName, avatarUrl, createdAt, pl
 
         {/* Profile banner */}
         <div style={{
-          background: 'linear-gradient(135deg, var(--en-green) 0%, color-mix(in srgb, var(--en-green) 55%, var(--en-coral)) 100%)',
+          ...bannerStyle,
           borderRadius: '20px', padding: 'clamp(24px, 4vw, 36px) clamp(24px, 4vw, 40px)',
           marginBottom: '24px',
           display: 'flex', alignItems: 'center', gap: '24px', flexWrap: 'wrap',
           position: 'relative', overflow: 'hidden',
         }}>
+          {/* Decorative circle */}
           <div style={{ position: 'absolute', top: '-40px', right: '-40px', width: '160px', height: '160px', borderRadius: '50%', background: 'rgba(255,255,255,0.06)', pointerEvents: 'none' }}/>
 
-          {/* Avatar */}
-          <div style={{
-            width: '64px', height: '64px', borderRadius: '50%', flexShrink: 0,
-            background: 'rgba(255,255,255,0.2)',
-            border: '2.5px solid rgba(255,255,255,0.4)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontFamily: 'var(--font-display)', fontWeight: 900, fontSize: '20px', color: '#fff',
-            letterSpacing: '-1px',
-            overflow: 'hidden',
-          }}>
-            {avatarUrl ? (
-              <img src={avatarUrl} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }}/>
-            ) : initials}
+          {/* Avatar with edit overlay */}
+          <div style={{ position: 'relative', flexShrink: 0 }}>
+            <div style={{
+              width: '72px', height: '72px', borderRadius: '50%',
+              background: 'rgba(255,255,255,0.2)',
+              border: '2.5px solid rgba(255,255,255,0.4)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              fontFamily: 'var(--font-display)', fontWeight: 900, fontSize: '22px', color: '#fff',
+              letterSpacing: '-1px', overflow: 'hidden',
+            }}>
+              {currentAvatar ? (
+                <img src={currentAvatar} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }}/>
+              ) : initials}
+            </div>
+            {/* Camera button */}
+            <button
+              onClick={() => avatarInputRef.current?.click()}
+              disabled={avatarUploading}
+              title="Cambiar foto de perfil"
+              style={{
+                position: 'absolute', bottom: '-2px', right: '-4px',
+                width: '26px', height: '26px', borderRadius: '50%',
+                background: '#fff', border: '2px solid rgba(255,255,255,0.6)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                cursor: 'pointer', boxShadow: '0 1px 4px rgba(0,0,0,0.25)',
+                padding: 0,
+              }}
+            >
+              {avatarUploading ? (
+                <span style={{ fontSize: '10px', color: '#666' }}>…</span>
+              ) : (
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#333" strokeWidth="2.2">
+                  <path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/>
+                  <circle cx="12" cy="13" r="4"/>
+                </svg>
+              )}
+            </button>
+            <input ref={avatarInputRef} type="file" accept="image/*" style={{ display: 'none' }} onChange={handleAvatarChange}/>
           </div>
 
           {/* Info */}
@@ -194,7 +295,7 @@ export default function PerfilClient({ email, fullName, avatarUrl, createdAt, pl
             </div>
           </div>
 
-          {/* Plan badge */}
+          {/* Plan badge + XP */}
           <div style={{ flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '10px' }}>
             <span style={{
               fontFamily: 'var(--font-body)', fontSize: '11px', fontWeight: 700, letterSpacing: '0.8px',
@@ -207,7 +308,85 @@ export default function PerfilClient({ email, fullName, avatarUrl, createdAt, pl
               {totalXp} XP
             </span>
           </div>
+
+          {/* Banner edit button */}
+          <div style={{ position: 'relative' }}>
+            <button
+              onClick={() => setBannerPickerOpen(p => !p)}
+              title="Cambiar fondo del banner"
+              style={{
+                display: 'flex', alignItems: 'center', gap: '6px',
+                padding: '7px 12px', borderRadius: '9px', cursor: 'pointer',
+                background: 'rgba(255,255,255,0.18)', border: '1px solid rgba(255,255,255,0.3)',
+                color: '#fff', fontFamily: 'var(--font-body)', fontSize: '12px', fontWeight: 500,
+              }}
+            >
+              {bannerUploading ? '...' : (
+                <>
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
+                    <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                  </svg>
+                  Editar fondo
+                </>
+              )}
+            </button>
+
+            {/* Banner picker dropdown */}
+            {bannerPickerOpen && (
+              <div style={{
+                position: 'absolute', right: 0, top: 'calc(100% + 8px)', zIndex: 50,
+                background: 'var(--en-surface)', border: '1px solid var(--en-border)',
+                borderRadius: '14px', padding: '14px',
+                boxShadow: 'var(--en-shadow-lg)',
+                width: '240px',
+              }}>
+                <p style={{ fontFamily: 'var(--font-body)', fontSize: '11px', fontWeight: 600, color: 'var(--en-text-soft)', letterSpacing: '0.5px', textTransform: 'uppercase', marginBottom: '10px' }}>
+                  Presets
+                </p>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px', marginBottom: '12px' }}>
+                  {BANNER_PRESETS.map(p => (
+                    <button
+                      key={p.key}
+                      onClick={() => handleBannerPreset(p.key)}
+                      title={p.label}
+                      style={{
+                        height: '40px', borderRadius: '8px', background: p.key, border: '2px solid transparent',
+                        cursor: 'pointer', padding: 0,
+                        outline: currentBanner === p.key ? '2px solid var(--en-green)' : 'none',
+                        outlineOffset: '2px',
+                      }}
+                    />
+                  ))}
+                </div>
+                <div style={{ borderTop: '1px solid var(--en-border)', paddingTop: '10px' }}>
+                  <button
+                    onClick={() => bannerInputRef.current?.click()}
+                    style={{
+                      width: '100%', padding: '9px', borderRadius: '9px', cursor: 'pointer',
+                      background: 'transparent', border: '1.5px dashed var(--en-border)',
+                      color: 'var(--en-text-soft)', fontFamily: 'var(--font-body)', fontSize: '12px',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
+                    }}
+                  >
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17,8 12,3 7,8"/><line x1="12" y1="3" x2="12" y2="15"/>
+                    </svg>
+                    Subir imagen
+                  </button>
+                </div>
+                <input ref={bannerInputRef} type="file" accept="image/*" style={{ display: 'none' }} onChange={handleBannerImageChange}/>
+              </div>
+            )}
+          </div>
         </div>
+
+        {/* Backdrop to close picker */}
+        {bannerPickerOpen && (
+          <div
+            onClick={() => setBannerPickerOpen(false)}
+            style={{ position: 'fixed', inset: 0, zIndex: 49 }}
+          />
+        )}
 
         {/* Two-column layout */}
         <div style={{ display: 'flex', gap: '24px', alignItems: 'flex-start' }}>
@@ -282,6 +461,45 @@ export default function PerfilClient({ email, fullName, avatarUrl, createdAt, pl
                   <p style={{ fontFamily: 'var(--font-body)', fontSize: '11px', color: 'var(--en-text-faint)', marginTop: '8px' }}>
                     Este nombre aparece en tus certificados
                   </p>
+                </div>
+
+                {/* Avatar section */}
+                <div style={{ padding: '24px', borderRadius: '16px', background: 'var(--en-surface)', border: '1px solid var(--en-border)' }}>
+                  <label style={{ display: 'block', fontFamily: 'var(--font-body)', fontSize: '12px', fontWeight: 600, letterSpacing: '0.4px', textTransform: 'uppercase', color: 'var(--en-text-soft)', marginBottom: '14px' }}>
+                    Foto de perfil
+                  </label>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                    <div style={{
+                      width: '64px', height: '64px', borderRadius: '50%', flexShrink: 0,
+                      background: 'var(--en-green)',
+                      border: '2px solid var(--en-border)',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      fontFamily: 'var(--font-display)', fontWeight: 900, fontSize: '20px', color: '#fff',
+                      overflow: 'hidden',
+                    }}>
+                      {currentAvatar
+                        ? <img src={currentAvatar} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }}/>
+                        : initials
+                      }
+                    </div>
+                    <div>
+                      <button
+                        onClick={() => avatarInputRef.current?.click()}
+                        disabled={avatarUploading}
+                        style={{
+                          padding: '9px 18px', borderRadius: '9px', cursor: 'pointer',
+                          background: 'var(--en-green)', border: 'none',
+                          color: '#fff', fontFamily: 'var(--font-body)', fontSize: '13px', fontWeight: 600,
+                          opacity: avatarUploading ? 0.6 : 1, display: 'block', marginBottom: '6px',
+                        }}
+                      >
+                        {avatarUploading ? 'Subiendo...' : 'Subir foto'}
+                      </button>
+                      <p style={{ fontFamily: 'var(--font-body)', fontSize: '11px', color: 'var(--en-text-faint)' }}>
+                        JPG, PNG o WebP · máx. 5 MB
+                      </p>
+                    </div>
+                  </div>
                 </div>
 
                 <div style={{ padding: '24px', borderRadius: '16px', background: 'var(--en-surface)', border: '1px solid var(--en-border)' }}>
