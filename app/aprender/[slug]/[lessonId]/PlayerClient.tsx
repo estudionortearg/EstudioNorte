@@ -75,7 +75,12 @@ export default function PlayerClient({
   const [isPending, startTransition] = useTransition()
   const [badgesEarned, setBadgesEarned] = useState<BadgeInfo[]>([])
   const [xpEarned, setXpEarned] = useState(0)
-  const [sidebarTab, setSidebarTab] = useState<'modules' | 'ranking'>('modules')
+  const [sidebarTab, setSidebarTab] = useState<'modules' | 'ranking' | 'preguntas'>('modules')
+  const [lessonQuestions, setLessonQuestions] = useState<any[]>([])
+  const [questionsLoaded, setQuestionsLoaded] = useState(false)
+  const [questionBody, setQuestionBody] = useState('')
+  const [questionTitle, setQuestionTitle] = useState('')
+  const [sendingQuestion, setSendingQuestion] = useState(false)
 
   const isCurrentComplete = completed.has(lesson.id)
   const progressPercent = totalCount > 0 ? Math.round((completed.size / totalCount) * 100) : 0
@@ -99,6 +104,32 @@ export default function PlayerClient({
         setTimeout(() => router.push(`/aprender/${courseSlug}/${nextLessonId}`), 500)
       }
     })
+  }
+
+  const loadLessonQuestions = async () => {
+    const res = await fetch(`/api/community/posts?lesson_id=${lesson.id}&limit=50`)
+    if (res.ok) {
+      const data = await res.json()
+      setLessonQuestions(data.posts || [])
+    }
+    setQuestionsLoaded(true)
+  }
+
+  const handleSubmitQuestion = async () => {
+    if (!questionTitle.trim() || !questionBody.trim()) return
+    setSendingQuestion(true)
+    const res = await fetch('/api/community/posts', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ title: questionTitle.trim(), body: questionBody.trim(), lesson_id: lesson.id }),
+    })
+    if (res.ok) {
+      const data = await res.json()
+      setLessonQuestions(prev => [data.post, ...prev])
+      setQuestionTitle('')
+      setQuestionBody('')
+    }
+    setSendingQuestion(false)
   }
 
   return (
@@ -333,10 +364,13 @@ export default function PlayerClient({
                 borderBottom: '1px solid var(--en-border)',
                 marginBottom: '8px',
               }}>
-                {(['modules', 'ranking'] as const).map(tab => (
+                {(['modules', 'ranking', 'preguntas'] as const).map(tab => (
                   <button
                     key={tab}
-                    onClick={() => setSidebarTab(tab)}
+                    onClick={() => {
+                      setSidebarTab(tab)
+                      if (tab === 'preguntas' && !questionsLoaded) loadLessonQuestions()
+                    }}
                     style={{
                       flex: 1, padding: '7px', borderRadius: '8px', border: 'none', cursor: 'pointer',
                       background: sidebarTab === tab ? 'var(--en-green-light)' : 'transparent',
@@ -344,7 +378,7 @@ export default function PlayerClient({
                       fontFamily: 'var(--font-body)', fontSize: '12px', fontWeight: sidebarTab === tab ? 600 : 400,
                     }}
                   >
-                    {tab === 'modules' ? 'Módulos' : 'Ranking'}
+                    {tab === 'modules' ? 'Módulos' : tab === 'ranking' ? 'Ranking' : 'Preguntas'}
                   </button>
                 ))}
               </div>
@@ -404,8 +438,19 @@ export default function PlayerClient({
                     </div>
                   ))}
                 </>
-              ) : (
+              ) : sidebarTab === 'ranking' ? (
                 <RankingPanel courseId={courseId} userId={userId} />
+              ) : (
+                <LessonQuestionsPanel
+                  lessonId={lesson.id}
+                  questions={lessonQuestions}
+                  questionTitle={questionTitle}
+                  questionBody={questionBody}
+                  sending={sendingQuestion}
+                  onTitleChange={setQuestionTitle}
+                  onBodyChange={setQuestionBody}
+                  onSubmit={handleSubmitQuestion}
+                />
               )}
             </aside>
           )}
@@ -420,6 +465,118 @@ export default function PlayerClient({
           xpEarned={xpEarned}
           onClose={() => setBadgesEarned([])}
         />
+      )}
+    </div>
+  )
+}
+
+function LessonQuestionsPanel({
+  lessonId, questions, questionTitle, questionBody, sending,
+  onTitleChange, onBodyChange, onSubmit,
+}: {
+  lessonId: string
+  questions: any[]
+  questionTitle: string
+  questionBody: string
+  sending: boolean
+  onTitleChange: (v: string) => void
+  onBodyChange: (v: string) => void
+  onSubmit: () => void
+}) {
+  const [expanded, setExpanded] = useState<string | null>(null)
+
+  return (
+    <div style={{ padding: '0 12px' }}>
+      <p style={{ fontFamily: 'var(--font-body)', fontSize: '11px', fontWeight: 700, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--en-text-soft)', marginBottom: '12px', padding: '0 4px' }}>
+        Preguntas de esta lección
+      </p>
+
+      {/* Form nueva pregunta */}
+      <div style={{ background: 'var(--en-bg)', border: '1px solid var(--en-border)', borderRadius: '10px', padding: '12px', marginBottom: '12px' }}>
+        <p style={{ fontFamily: 'var(--font-body)', fontSize: '11px', fontWeight: 600, color: 'var(--en-text)', marginBottom: '8px' }}>
+          Hacer una pregunta +10 XP
+        </p>
+        <input
+          value={questionTitle}
+          onChange={e => onTitleChange(e.target.value)}
+          placeholder="Título (ej: ¿Cómo aplico X?)"
+          style={{
+            width: '100%', padding: '8px 10px', borderRadius: '7px', boxSizing: 'border-box',
+            background: 'var(--en-white)', border: '1.5px solid var(--en-border)',
+            color: 'var(--en-text)', fontSize: '12px', fontFamily: 'var(--font-body)',
+            outline: 'none', marginBottom: '6px',
+          }}
+        />
+        <textarea
+          value={questionBody}
+          onChange={e => onBodyChange(e.target.value)}
+          placeholder="Detallá tu pregunta..."
+          rows={3}
+          style={{
+            width: '100%', padding: '8px 10px', borderRadius: '7px', boxSizing: 'border-box',
+            background: 'var(--en-white)', border: '1.5px solid var(--en-border)',
+            color: 'var(--en-text)', fontSize: '12px', fontFamily: 'var(--font-body)',
+            outline: 'none', resize: 'none', lineHeight: 1.5, marginBottom: '8px',
+          }}
+        />
+        <button
+          onClick={onSubmit}
+          disabled={sending || !questionTitle.trim() || !questionBody.trim()}
+          style={{
+            width: '100%', padding: '8px', borderRadius: '7px', border: 'none', cursor: 'pointer',
+            background: 'var(--en-green)', color: '#fff',
+            fontFamily: 'var(--font-body)', fontSize: '12px', fontWeight: 600,
+            opacity: (sending || !questionTitle.trim() || !questionBody.trim()) ? 0.55 : 1,
+          }}
+        >
+          {sending ? 'Enviando...' : 'Publicar pregunta'}
+        </button>
+      </div>
+
+      {/* Lista de preguntas */}
+      {questions.length === 0 ? (
+        <p style={{ fontFamily: 'var(--font-body)', fontSize: '12px', color: 'var(--en-text-faint)', textAlign: 'center', padding: '16px 0' }}>
+          Aún no hay preguntas. ¡Sé el primero!
+        </p>
+      ) : (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          {questions.map((q: any) => (
+            <div key={q.id} style={{
+              background: 'var(--en-bg)', border: '1px solid var(--en-border)',
+              borderLeft: q.solution_reply_id ? '3px solid var(--en-green)' : '1px solid var(--en-border)',
+              borderRadius: '9px', padding: '10px 12px', cursor: 'pointer',
+            }}
+              onClick={() => setExpanded(expanded === q.id ? null : q.id)}
+            >
+              <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '6px' }}>
+                <p style={{ fontFamily: 'var(--font-body)', fontSize: '12px', fontWeight: 600, color: 'var(--en-text)', lineHeight: 1.4, flex: 1 }}>
+                  {q.solution_reply_id && <span style={{ color: 'var(--en-green)', marginRight: '4px' }}>✅</span>}
+                  {q.title}
+                </p>
+                <span style={{ fontSize: '10px', color: 'var(--en-text-faint)', whiteSpace: 'nowrap' }}>
+                  {q.reply_count} resp.
+                </span>
+              </div>
+              {expanded === q.id && (
+                <p style={{ fontFamily: 'var(--font-body)', fontSize: '12px', color: 'var(--en-text-soft)', lineHeight: 1.5, marginTop: '6px', whiteSpace: 'pre-wrap' }}>
+                  {q.body}
+                </p>
+              )}
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '6px' }}>
+                <span style={{ fontFamily: 'var(--font-body)', fontSize: '10px', color: 'var(--en-text-faint)' }}>
+                  {q.profiles?.full_name || 'Alumno'}
+                </span>
+                <Link
+                  href={`/comunidad/post/${q.id}`}
+                  onClick={e => e.stopPropagation()}
+                  style={{ fontFamily: 'var(--font-body)', fontSize: '10px', color: 'var(--en-green)', textDecoration: 'none' }}
+                >
+                  Ver hilo →
+                </Link>
+              </div>
+            </div>
+          ))}
+        </div>
       )}
     </div>
   )

@@ -28,7 +28,7 @@ export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
 
   // Protect private routes — auth only
-  const privateRoutes = ['/dashboard', '/aprender', '/perfil', '/certificados', '/mis-cursos']
+  const privateRoutes = ['/dashboard', '/aprender', '/perfil', '/certificados', '/mis-cursos', '/comunidad']
   const isPrivateRoute = privateRoutes.some(route => pathname.startsWith(route))
 
   if (isPrivateRoute && !user) {
@@ -88,6 +88,8 @@ export const config = {
     '/certificados/:path*',
     '/mis-cursos',
     '/mis-cursos/:path*',
+    '/comunidad',
+    '/comunidad/:path*',
     '/admin/:path*',
     '/onboarding',
     '/onboarding/:path*',
