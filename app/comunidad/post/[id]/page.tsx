@@ -21,7 +21,7 @@ export default async function PostPage({ params }: { params: Promise<{ id: strin
 
   const { data: post } = await supabase
     .from('community_posts')
-    .select('id, title, body, category, lesson_id, solution_reply_id, is_pinned, is_locked, reply_count, reaction_count, created_at, user_id, profiles!user_id(full_name, avatar_url, is_admin)')
+    .select('id, title, body, category, lesson_id, solution_reply_id, is_pinned, is_locked, status, reply_count, reaction_count, created_at, user_id, profiles!user_id(full_name, avatar_url, is_admin)')
     .eq('id', id)
     .single()
 
