@@ -55,6 +55,16 @@ const navItems = [
       </svg>
     ),
   },
+  {
+    href: '/admin/cupones',
+    label: 'Cupones',
+    icon: (
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+        <rect x="1" y="5" width="14" height="6" rx="1.5" stroke="currentColor" strokeWidth="1.3"/>
+        <path d="M10 5V4a2 2 0 0 0-4 0v1M10 11v1a2 2 0 0 1-4 0v-1" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/>
+      </svg>
+    ),
+  },
 ]
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {

@@ -2,6 +2,7 @@ import Stripe from 'stripe'
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { sendWelcomeEmail } from '@/lib/email/resend'
+import { recordCouponUse } from '@/lib/coupons/record-use'
 
 export async function POST(request: NextRequest) {
   const body = await request.text()
@@ -26,6 +27,9 @@ export async function POST(request: NextRequest) {
   const courseSlug = session.metadata?.courseSlug
   const customerEmail = session.customer_email
   const amountTotal = session.amount_total // in cents
+  const couponId = session.metadata?.couponId || ''
+  const metaUserId = session.metadata?.userId || ''
+  const discountUsd = parseFloat(session.metadata?.discountUsd || '0')
 
   if (!courseSlug || !customerEmail) {
     console.error('Stripe webhook: missing courseSlug or customerEmail')
@@ -84,6 +88,16 @@ export async function POST(request: NextRequest) {
     course_id: course.id,
     expires_at: null,
   })
+
+  // Record coupon use
+  if (couponId && metaUserId) {
+    await recordCouponUse(supabase, {
+      couponId,
+      userId: metaUserId,
+      courseSlug,
+      discountAmountUsd: discountUsd,
+    })
+  }
 
   // Send welcome email
   try {

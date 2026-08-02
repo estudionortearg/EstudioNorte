@@ -3,6 +3,7 @@ import { MercadoPagoConfig, Payment } from 'mercadopago'
 import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { sendWelcomeEmail } from '@/lib/email/resend'
+import { recordCouponUse } from '@/lib/coupons/record-use'
 
 function verifyMpSignature(request: NextRequest, dataId: string): boolean {
   const webhookSecret = process.env.MP_WEBHOOK_SECRET
@@ -42,10 +43,17 @@ async function handlePaymentEvent(paymentId: string): Promise<void> {
   if (payment.status !== 'approved') return
 
   const payerEmail = payment.payer?.email
-  const courseSlug = payment.external_reference
+  const externalRef = payment.external_reference ?? ''
 
   // Subscription payments have external_reference like "<uuid>|norte" — skip
-  if (courseSlug?.includes('|')) return
+  // New course payments use format: "<courseSlug>|<couponId>|<userId>"
+  const parts = externalRef.split('|')
+  const isSubscription = parts.length === 2 && ['norte', 'norte_pro'].includes(parts[1])
+  if (isSubscription) return
+
+  const courseSlug = parts[0] || ''
+  const couponId = parts[1] || ''
+  const metaUserId = parts[2] || ''
 
   if (!payerEmail || !courseSlug) {
     console.error('MP webhook payment: missing payer email or course slug')
@@ -94,6 +102,17 @@ async function handlePaymentEvent(paymentId: string): Promise<void> {
     course_id: course.id,
     expires_at: null,
   })
+
+  // Record coupon use
+  const userId = metaUserId || user.id
+  if (couponId && userId) {
+    await recordCouponUse(admin, {
+      couponId,
+      userId,
+      courseSlug,
+      discountAmountArs: 0, // MP doesn't track discount separately here
+    })
+  }
 
   try {
     await sendWelcomeEmail({

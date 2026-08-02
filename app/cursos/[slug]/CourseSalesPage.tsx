@@ -61,13 +61,55 @@ export default function CourseSalesPage({ course, curriculum }: { course: Course
   const [loadingSub, setLoadingSub] = useState(false)
   const totalLessons = curriculum.reduce((acc, m) => acc + m.lessons.length, 0)
 
+  // Coupon state
+  const [couponCode, setCouponCode] = useState('')
+  const [couponLoading, setCouponLoading] = useState(false)
+  const [couponError, setCouponError] = useState('')
+  const [appliedCoupon, setAppliedCoupon] = useState<{
+    coupon_id: string
+    code: string
+    discount_ars: number
+    final_ars: number
+  } | null>(null)
+
+  const handleApplyCoupon = async () => {
+    const code = couponCode.trim().toUpperCase()
+    if (!code) return
+    setCouponLoading(true)
+    setCouponError('')
+    setAppliedCoupon(null)
+    try {
+      const res = await fetch('/api/coupons/validate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code, course_slug: course.slug, price_ars: course.priceArs }),
+      })
+      const data = await res.json()
+      if (!res.ok) {
+        setCouponError(data.error || 'Código inválido')
+      } else {
+        setAppliedCoupon({ coupon_id: data.coupon_id, code: data.code, discount_ars: data.discount_ars, final_ars: data.final_ars })
+      }
+    } catch {
+      setCouponError('Error al validar el código')
+    }
+    setCouponLoading(false)
+  }
+
   const handleBuyArs = async () => {
     setLoadingArs(true)
     try {
       const res = await fetch('/api/checkout/mercadopago', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ courseSlug: course.slug, courseTitle: course.title, priceArs: course.priceArs }),
+        body: JSON.stringify({
+          courseSlug: course.slug,
+          courseTitle: course.title,
+          priceArs: course.priceArs,
+          couponCode: appliedCoupon?.code,
+          couponId: appliedCoupon?.coupon_id,
+          discountArs: appliedCoupon?.discount_ars ?? 0,
+        }),
       })
       const data = await res.json()
       if (data.init_point) window.location.href = data.init_point
@@ -259,13 +301,65 @@ export default function CourseSalesPage({ course, curriculum }: { course: Course
                   <>
                     {/* Precio individual */}
                     <div style={{ marginBottom: '20px' }}>
-                      <div style={{ fontFamily: 'var(--font-display)', fontWeight: 900, fontSize: '40px', color: 'var(--en-text)', letterSpacing: '-2px', lineHeight: 1, marginBottom: '4px' }}>
-                        ${course.priceArs.toLocaleString('es-AR')}
-                        <span style={{ fontSize: '16px', fontWeight: 700, color: 'var(--en-text-soft)', letterSpacing: '-0.5px' }}> ARS</span>
-                      </div>
+                      {appliedCoupon ? (
+                        <>
+                          <div style={{ fontFamily: 'var(--font-display)', fontWeight: 900, fontSize: '28px', color: 'var(--en-text-faint)', letterSpacing: '-1px', lineHeight: 1, textDecoration: 'line-through', marginBottom: '2px' }}>
+                            ${course.priceArs.toLocaleString('es-AR')} ARS
+                          </div>
+                          <div style={{ fontFamily: 'var(--font-display)', fontWeight: 900, fontSize: '40px', color: 'var(--en-green)', letterSpacing: '-2px', lineHeight: 1, marginBottom: '4px' }}>
+                            ${appliedCoupon.final_ars.toLocaleString('es-AR')}
+                            <span style={{ fontSize: '16px', fontWeight: 700, letterSpacing: '-0.5px' }}> ARS</span>
+                          </div>
+                        </>
+                      ) : (
+                        <div style={{ fontFamily: 'var(--font-display)', fontWeight: 900, fontSize: '40px', color: 'var(--en-text)', letterSpacing: '-2px', lineHeight: 1, marginBottom: '4px' }}>
+                          ${course.priceArs.toLocaleString('es-AR')}
+                          <span style={{ fontSize: '16px', fontWeight: 700, color: 'var(--en-text-soft)', letterSpacing: '-0.5px' }}> ARS</span>
+                        </div>
+                      )}
                       <div style={{ fontFamily: 'var(--font-body)', fontSize: '12px', color: 'var(--en-text-faint)' }}>
                         Pago único · Acceso de por vida
                       </div>
+                    </div>
+
+                    {/* Cupón de descuento */}
+                    <div style={{ marginBottom: '16px' }}>
+                      {appliedCoupon ? (
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 14px', borderRadius: '10px', background: 'color-mix(in srgb, var(--en-green) 8%, var(--en-surface))', border: '1.5px solid var(--en-green)' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7L5.5 10.5L12 3.5" stroke="var(--en-green)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                            <span style={{ fontFamily: 'var(--font-body)', fontSize: '13px', fontWeight: 600, color: 'var(--en-green)' }}>
+                              {appliedCoupon.code} — {appliedCoupon.discount_ars > 0 ? `-$${appliedCoupon.discount_ars.toLocaleString('es-AR')} ARS` : 'descuento aplicado'}
+                            </span>
+                          </div>
+                          <button onClick={() => { setAppliedCoupon(null); setCouponCode(''); setCouponError('') }} style={{ background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'var(--font-body)', fontSize: '12px', color: 'var(--en-text-faint)', padding: '0 4px' }}>
+                            ✕
+                          </button>
+                        </div>
+                      ) : (
+                        <div>
+                          <div style={{ display: 'flex', gap: '8px' }}>
+                            <input
+                              type="text"
+                              value={couponCode}
+                              onChange={e => { setCouponCode(e.target.value); setCouponError('') }}
+                              onKeyDown={e => e.key === 'Enter' && handleApplyCoupon()}
+                              placeholder="¿Tenés un código?"
+                              style={{ flex: 1, padding: '9px 12px', borderRadius: '9px', border: `1.5px solid ${couponError ? 'var(--en-coral)' : 'var(--en-border)'}`, background: 'var(--en-surface)', color: 'var(--en-text)', fontFamily: 'var(--font-body)', fontSize: '13px', outline: 'none' }}
+                            />
+                            <button
+                              onClick={handleApplyCoupon}
+                              disabled={couponLoading || !couponCode.trim()}
+                              style={{ padding: '9px 14px', borderRadius: '9px', border: '1.5px solid var(--en-border)', background: 'var(--en-surface)', color: 'var(--en-text)', fontFamily: 'var(--font-body)', fontSize: '13px', fontWeight: 600, cursor: couponLoading || !couponCode.trim() ? 'default' : 'pointer', opacity: couponLoading || !couponCode.trim() ? 0.5 : 1, whiteSpace: 'nowrap' }}
+                            >
+                              {couponLoading ? '...' : 'Aplicar'}
+                            </button>
+                          </div>
+                          {couponError && (
+                            <p style={{ fontFamily: 'var(--font-body)', fontSize: '12px', color: 'var(--en-coral)', margin: '6px 0 0' }}>{couponError}</p>
+                          )}
+                        </div>
+                      )}
                     </div>
 
                     <button
