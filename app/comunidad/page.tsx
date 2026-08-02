@@ -20,13 +20,6 @@ export default async function ComunidadPage() {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/login')
 
-  const { count: enrollCount } = await supabase
-    .from('enrollments')
-    .select('id', { count: 'exact', head: true })
-    .eq('user_id', user.id)
-
-  if (!enrollCount || enrollCount === 0) redirect('/cursos')
-
   const { data: profile } = await supabase.from('profiles').select('full_name, avatar_url').eq('id', user.id).maybeSingle()
   const displayName = profile?.full_name || user.email?.split('@')[0] || 'alumno'
 
