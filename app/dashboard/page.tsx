@@ -1,4 +1,3 @@
-// app/dashboard/page.tsx
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import Link from 'next/link'
@@ -52,152 +51,121 @@ export default async function DashboardPage() {
     nextLessonId?: string; nextLessonTitle?: string
   }>
 
-  const { data: xpRow } = await supabase
-    .from('user_xp').select('total_xp').eq('user_id', user.id).single()
-
-  const { data: streakRow } = await supabase
-    .from('user_streaks').select('current_streak, longest_streak, last_activity_date').eq('user_id', user.id).single()
-
-  const { count: badgesCount } = await supabase
-    .from('user_badges').select('id', { count: 'exact', head: true }).eq('user_id', user.id)
-
-  const { data: profile } = await supabase
-    .from('profiles').select('plan').eq('id', user.id).maybeSingle()
+  const { data: xpRow } = await supabase.from('user_xp').select('total_xp').eq('user_id', user.id).single()
+  const { data: streakRow } = await supabase.from('user_streaks').select('current_streak, longest_streak, last_activity_date').eq('user_id', user.id).single()
+  const { count: badgesCount } = await supabase.from('user_badges').select('id', { count: 'exact', head: true }).eq('user_id', user.id)
+  const { data: profile } = await supabase.from('profiles').select('plan, full_name').eq('id', user.id).maybeSingle()
 
   const activeCourses = validCourses.filter(c => c.progressPercent > 0 && c.progressPercent < 100)
   const completedCourses = validCourses.filter(c => c.progressPercent === 100)
   const resumeCourse = activeCourses[0] || validCourses[0]
-  const displayName = user.user_metadata?.full_name || user.email?.split('@')[0] || 'estudiante'
+  const displayName = profile?.full_name || user.email?.split('@')[0] || 'estudiante'
   const initials = displayName.slice(0, 2).toUpperCase()
   const userPlan = profile?.plan ?? 'free'
   const planLabel = userPlan === 'norte_pro' ? 'Norte Pro' : userPlan === 'norte' ? 'Norte' : 'Gratuito'
   const planColor = userPlan === 'norte_pro' ? 'var(--en-coral)' : userPlan === 'norte' ? 'var(--en-green)' : 'var(--en-text-faint)'
 
   const STATS = [
-    { value: validCourses.length, label: 'Inscriptos', bg: 'var(--en-green-light)', color: 'var(--en-green)' },
-    { value: activeCourses.length, label: 'En progreso', bg: 'color-mix(in srgb, var(--en-coral) 10%, var(--en-surface))', color: 'var(--en-coral)' },
-    { value: completedCourses.length, label: 'Completados', bg: 'color-mix(in srgb, var(--en-green) 8%, var(--en-surface))', color: 'var(--en-green)' },
+    { value: validCourses.length, label: 'Inscriptos', icon: '📚', color: 'var(--en-green)', bg: 'var(--en-green-light)', border: 'var(--en-green-15)' },
+    { value: activeCourses.length, label: 'En progreso', icon: '⏳', color: 'var(--en-coral)', bg: 'color-mix(in srgb, var(--en-coral) 8%, var(--en-surface))', border: 'color-mix(in srgb, var(--en-coral) 18%, transparent)' },
+    { value: completedCourses.length, label: 'Completados', icon: '🏆', color: 'var(--en-green)', bg: 'color-mix(in srgb, var(--en-green) 6%, var(--en-surface))', border: 'var(--en-green-15)' },
   ]
 
   return (
     <div style={{ minHeight: '100vh', background: 'var(--en-bg)', paddingBottom: '80px' }}>
 
-      {/* Sticky top nav */}
+      {/* Top nav */}
       <header style={{
         position: 'sticky', top: 0, zIndex: 30,
         background: 'var(--en-bg-blur)', backdropFilter: 'blur(16px)',
         borderBottom: '1px solid var(--en-border)',
       }}>
-        <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '0 clamp(16px, 4vw, 40px)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: '60px' }}>
+        <div style={{ maxWidth: '1140px', margin: '0 auto', padding: '0 clamp(16px, 4vw, 40px)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: '60px' }}>
           <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '8px', textDecoration: 'none' }}>
-            <span style={{ width: '28px', height: '28px', borderRadius: '7px', background: 'var(--en-green)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', color: 'var(--en-white)', fontFamily: 'var(--font-display)', fontWeight: 900, fontSize: '11px' }}>EN</span>
+            <span style={{ width: '28px', height: '28px', borderRadius: '7px', background: 'var(--en-green)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontFamily: 'var(--font-display)', fontWeight: 900, fontSize: '11px' }}>EN</span>
             <span style={{ fontFamily: 'var(--font-body)', fontWeight: 600, fontSize: '14px', color: 'var(--en-text)' }}>Estudio Norte</span>
           </Link>
-          <Link href="/perfil" style={{
-            width: '36px', height: '36px', borderRadius: '50%',
-            background: 'var(--en-green-light)', border: '2px solid var(--en-green-30)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontFamily: 'var(--font-display)', fontWeight: 900, fontSize: '13px', color: 'var(--en-green)',
-            textDecoration: 'none', flexShrink: 0,
-          }}>
-            {initials}
-          </Link>
-        </div>
-      </header>
-
-      <div style={{ maxWidth: '1100px', margin: '0 auto', padding: 'clamp(20px, 4vw, 32px) clamp(16px, 4vw, 40px)' }}>
-
-        {/* Profile banner */}
-        <div style={{
-          background: 'linear-gradient(135deg, var(--en-green) 0%, color-mix(in srgb, var(--en-green) 55%, var(--en-coral)) 100%)',
-          borderRadius: '20px', padding: 'clamp(24px, 4vw, 36px) clamp(24px, 4vw, 40px)',
-          marginBottom: '24px',
-          display: 'flex', alignItems: 'center', gap: '24px', flexWrap: 'wrap',
-          position: 'relative', overflow: 'hidden',
-        }}>
-          <div style={{ position: 'absolute', top: '-40px', right: '-40px', width: '160px', height: '160px', borderRadius: '50%', background: 'rgba(255,255,255,0.06)', pointerEvents: 'none' }}/>
-          <div style={{ position: 'absolute', bottom: '-24px', right: '40px', width: '100px', height: '100px', borderRadius: '50%', background: 'rgba(255,255,255,0.04)', pointerEvents: 'none' }}/>
-
-          {/* Avatar */}
-          <div style={{
-            width: '64px', height: '64px', borderRadius: '50%', flexShrink: 0,
-            background: 'rgba(255,255,255,0.2)',
-            border: '2.5px solid rgba(255,255,255,0.4)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontFamily: 'var(--font-display)', fontWeight: 900, fontSize: '20px', color: '#fff',
-            letterSpacing: '-1px',
-          }}>
-            {initials}
-          </div>
-
-          {/* Name + stats */}
-          <div style={{ flex: 1, minWidth: 0 }}>
-            <p style={{ fontFamily: 'var(--font-body)', fontSize: '11px', color: 'rgba(255,255,255,0.65)', letterSpacing: '1.2px', textTransform: 'uppercase', marginBottom: '4px' }}>
-              Mi espacio de aprendizaje
-            </p>
-            <h1 style={{ fontFamily: 'var(--font-display)', fontWeight: 900, fontSize: 'clamp(18px, 3vw, 26px)', color: '#fff', letterSpacing: '-0.5px', lineHeight: 1.1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-              {displayName}
-            </h1>
-            <div style={{ display: 'flex', gap: '16px', marginTop: '8px', flexWrap: 'wrap' }}>
-              <span style={{ fontFamily: 'var(--font-body)', fontSize: '13px', color: 'rgba(255,255,255,0.8)' }}>
-                {validCourses.length} {validCourses.length === 1 ? 'curso inscripto' : 'cursos inscriptos'}
-              </span>
-              {completedCourses.length > 0 && (
-                <span style={{ fontFamily: 'var(--font-body)', fontSize: '13px', color: 'rgba(255,255,255,0.8)' }}>
-                  {completedCourses.length} {completedCourses.length === 1 ? 'completado' : 'completados'}
-                </span>
-              )}
-            </div>
-          </div>
-
-          {/* Plan badge + CTA */}
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '10px', flexShrink: 0 }}>
-            <span style={{
-              fontFamily: 'var(--font-body)', fontSize: '11px', fontWeight: 700, letterSpacing: '0.8px',
-              textTransform: 'uppercase', padding: '5px 12px', borderRadius: '100px',
-              background: 'rgba(255,255,255,0.2)', color: '#fff', border: '1px solid rgba(255,255,255,0.3)',
-            }}>
-              {planLabel}
-            </span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
             <Link href="/cursos" style={{
-              fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '13px',
-              padding: '9px 18px', borderRadius: '10px',
-              background: 'rgba(255,255,255,0.18)', color: '#fff',
-              border: '1px solid rgba(255,255,255,0.3)',
-              textDecoration: 'none', whiteSpace: 'nowrap', backdropFilter: 'blur(4px)',
+              fontFamily: 'var(--font-body)', fontSize: '13px', fontWeight: 500,
+              color: 'var(--en-text-soft)', textDecoration: 'none', padding: '6px 12px',
+              borderRadius: '8px', transition: 'background 0.15s',
             }}>
-              Ver cursos →
+              Cursos
+            </Link>
+            <Link href="/perfil" style={{
+              width: '34px', height: '34px', borderRadius: '50%',
+              background: 'var(--en-green)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              fontFamily: 'var(--font-display)', fontWeight: 900, fontSize: '12px', color: '#fff',
+              textDecoration: 'none', flexShrink: 0,
+            }}>
+              {initials}
             </Link>
           </div>
         </div>
+      </header>
 
-        {/* Two-column layout */}
-        <div style={{ display: 'flex', gap: '24px', alignItems: 'flex-start' }}>
+      <div style={{ maxWidth: '1140px', margin: '0 auto', padding: 'clamp(24px, 4vw, 40px) clamp(16px, 4vw, 40px)' }}>
+        <div style={{ display: 'flex', gap: '28px', alignItems: 'flex-start' }}>
 
           <StudentSidebar activeRoute="/dashboard" displayName={displayName} />
 
           {/* Main content */}
-          <main style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: '24px' }}>
+          <main style={{ flex: 1, minWidth: 0 }}>
+
+            {/* Page heading — estilo HiStudy */}
+            <div style={{
+              background: 'var(--en-surface)', border: '1px solid var(--en-border)',
+              borderRadius: '16px', padding: '28px 32px', marginBottom: '20px',
+            }}>
+              <h1 style={{
+                fontFamily: 'var(--font-display)', fontWeight: 900,
+                fontSize: 'clamp(26px, 4vw, 36px)', letterSpacing: '-1.5px',
+                color: 'var(--en-text)', marginBottom: '10px', lineHeight: 1.1,
+              }}>
+                Dashboard
+              </h1>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+                <p style={{ fontFamily: 'var(--font-body)', fontSize: '15px', color: 'var(--en-text-soft)', lineHeight: 1.5 }}>
+                  Hola, <strong style={{ color: 'var(--en-text)', fontWeight: 600 }}>{displayName}</strong> —{' '}
+                  {validCourses.length === 0
+                    ? 'todavía no empezaste ningún curso.'
+                    : activeCourses.length > 0
+                      ? `tenés ${activeCourses.length} ${activeCourses.length === 1 ? 'curso en progreso' : 'cursos en progreso'}.`
+                      : `completaste ${completedCourses.length} ${completedCourses.length === 1 ? 'curso' : 'cursos'}. ¡Excelente!`
+                  }
+                </p>
+                <span style={{
+                  fontFamily: 'var(--font-body)', fontSize: '11px', fontWeight: 700, letterSpacing: '0.6px',
+                  textTransform: 'uppercase', padding: '4px 10px', borderRadius: '100px',
+                  color: planColor,
+                  border: `1px solid ${planColor}`,
+                  background: `color-mix(in srgb, ${planColor} 8%, transparent)`,
+                  flexShrink: 0,
+                }}>
+                  {planLabel}
+                </span>
+              </div>
+            </div>
 
             {validCourses.length === 0 ? (
               /* Empty state */
               <div style={{
-                textAlign: 'center', paddingTop: '80px', paddingBottom: '80px',
-                border: '1.5px dashed var(--en-border)', borderRadius: '20px',
+                textAlign: 'center', paddingTop: '64px', paddingBottom: '64px',
+                border: '1.5px dashed var(--en-border)', borderRadius: '16px',
                 background: 'var(--en-surface)',
               }}>
-                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--en-text-faint)" strokeWidth="1.2" style={{ marginBottom: '20px' }}>
-                  <path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/>
-                </svg>
-                <h2 style={{ fontFamily: 'var(--font-display)', fontWeight: 900, fontSize: '24px', letterSpacing: '-0.5px', color: 'var(--en-text)', marginBottom: '8px' }}>
+                <div style={{ fontSize: '40px', marginBottom: '16px' }}>📚</div>
+                <h2 style={{ fontFamily: 'var(--font-display)', fontWeight: 900, fontSize: '22px', letterSpacing: '-0.5px', color: 'var(--en-text)', marginBottom: '8px' }}>
                   Todavía no tenés cursos
                 </h2>
-                <p style={{ fontFamily: 'var(--font-body)', color: 'var(--en-text-soft)', fontSize: '15px', marginBottom: '28px' }}>
+                <p style={{ fontFamily: 'var(--font-body)', color: 'var(--en-text-soft)', fontSize: '14px', marginBottom: '24px' }}>
                   Elegí un curso y empezá a diseñar tu marca con IA.
                 </p>
                 <Link href="/cursos" style={{
-                  padding: '12px 24px', borderRadius: '12px',
-                  background: 'var(--en-green)', color: 'var(--en-white)',
+                  padding: '11px 22px', borderRadius: '10px',
+                  background: 'var(--en-green)', color: '#fff',
                   fontFamily: 'var(--font-body)', fontWeight: 600, fontSize: '14px',
                   textDecoration: 'none',
                 }}>
@@ -205,8 +173,37 @@ export default async function DashboardPage() {
                 </Link>
               </div>
             ) : (
-              <>
-                {/* XP, Racha, Badges */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+
+                {/* Stats */}
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '14px' }}>
+                  {STATS.map(({ value, label, icon, color, bg, border }) => (
+                    <div key={label} style={{
+                      background: bg, borderRadius: '14px', padding: '20px 18px',
+                      border: `1px solid ${border}`,
+                      display: 'flex', alignItems: 'center', gap: '14px',
+                    }}>
+                      <div style={{
+                        width: '44px', height: '44px', borderRadius: '12px', flexShrink: 0,
+                        background: `color-mix(in srgb, ${color} 14%, white)`,
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        fontSize: '20px',
+                      }}>
+                        {icon}
+                      </div>
+                      <div>
+                        <div style={{ fontFamily: 'var(--font-display)', fontWeight: 900, fontSize: '26px', color: 'var(--en-text)', letterSpacing: '-1px', lineHeight: 1 }}>
+                          {value}
+                        </div>
+                        <div style={{ fontFamily: 'var(--font-body)', fontSize: '12px', color: 'var(--en-text-soft)', marginTop: '3px' }}>
+                          {label}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* XP + Racha */}
                 <XPStreak
                   totalXp={xpRow?.total_xp || 0}
                   currentStreak={streakRow?.current_streak || 0}
@@ -215,83 +212,57 @@ export default async function DashboardPage() {
                   badgesCount={badgesCount || 0}
                 />
 
-                {/* Stat cards — HiStudy style */}
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px' }}>
-                  {STATS.map(({ value, label, bg, color }) => (
-                    <div key={label} style={{
-                      background: bg, borderRadius: '16px', padding: '20px 16px',
-                      border: `1.5px solid color-mix(in srgb, ${color} 20%, transparent)`,
-                      textAlign: 'center',
-                    }}>
-                      <div style={{
-                        width: '44px', height: '44px', borderRadius: '50%',
-                        background: `color-mix(in srgb, ${color} 15%, transparent)`,
-                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        margin: '0 auto 10px',
-                      }}>
-                        <span style={{ fontFamily: 'var(--font-display)', fontWeight: 900, fontSize: '18px', color, lineHeight: 1 }}>{value}</span>
-                      </div>
-                      <p style={{ fontFamily: 'var(--font-body)', fontSize: '12px', color: 'var(--en-text-soft)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{label}</p>
-                    </div>
-                  ))}
-                </div>
-
-                {/* Resume banner */}
+                {/* Retomar curso */}
                 {resumeCourse && resumeCourse.progressPercent > 0 && resumeCourse.progressPercent < 100 && (
                   <div style={{
-                    background: 'var(--en-green-light)',
-                    border: '1.5px solid var(--en-green-15)',
-                    borderRadius: '18px', padding: '24px 28px',
+                    background: 'var(--en-surface)', border: '1px solid var(--en-border)',
+                    borderRadius: '14px', padding: '20px 24px',
                     display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '20px', flexWrap: 'wrap',
                   }}>
-                    <div>
-                      <p style={{ fontFamily: 'var(--font-body)', fontSize: '11px', fontWeight: 700, letterSpacing: '1.2px', textTransform: 'uppercase', color: 'var(--en-green)', marginBottom: '6px' }}>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <p style={{ fontFamily: 'var(--font-body)', fontSize: '11px', fontWeight: 700, letterSpacing: '1px', textTransform: 'uppercase', color: 'var(--en-green)', marginBottom: '5px' }}>
                         Retomá donde lo dejaste
                       </p>
-                      <h2 style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: '18px', color: 'var(--en-text)', letterSpacing: '-0.3px' }}>
+                      <h3 style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: '17px', color: 'var(--en-text)', letterSpacing: '-0.3px', marginBottom: '10px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                         {resumeCourse.courseTitle}
-                      </h2>
-                      {resumeCourse.nextLessonTitle && (
-                        <p style={{ fontFamily: 'var(--font-body)', fontSize: '13px', color: 'var(--en-text-soft)', marginTop: '4px' }}>
-                          Próximo: {resumeCourse.nextLessonTitle}
-                        </p>
-                      )}
-                    </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexShrink: 0 }}>
-                      <div style={{ textAlign: 'center' }}>
-                        <div style={{ fontFamily: 'var(--font-display)', fontWeight: 900, fontSize: '28px', color: 'var(--en-green)', letterSpacing: '-1px', lineHeight: 1 }}>
-                          {resumeCourse.progressPercent}%
+                      </h3>
+                      {/* Progress bar */}
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                        <div style={{ flex: 1, height: '5px', borderRadius: '100px', background: 'var(--en-border)', overflow: 'hidden' }}>
+                          <div style={{ height: '100%', width: `${resumeCourse.progressPercent}%`, borderRadius: '100px', background: 'var(--en-green)', transition: 'width 0.4s ease' }}/>
                         </div>
-                        <div style={{ fontFamily: 'var(--font-body)', fontSize: '10px', color: 'var(--en-text-soft)', marginTop: '2px' }}>completado</div>
+                        <span style={{ fontFamily: 'var(--font-body)', fontSize: '12px', color: 'var(--en-text-soft)', flexShrink: 0 }}>
+                          {resumeCourse.progressPercent}%
+                        </span>
                       </div>
-                      <Link
-                        href={resumeCourse.nextLessonId
-                          ? `/aprender/${resumeCourse.courseSlug}/${resumeCourse.nextLessonId}`
-                          : `/aprender/${resumeCourse.courseSlug}`}
-                        style={{
-                          padding: '10px 20px', borderRadius: '10px', textDecoration: 'none',
-                          background: 'var(--en-green)', color: 'var(--en-white)',
-                          fontFamily: 'var(--font-body)', fontSize: '13px', fontWeight: 600, whiteSpace: 'nowrap',
-                          boxShadow: 'var(--en-shadow-green-sm)',
-                        }}
-                      >
-                        Continuar →
-                      </Link>
                     </div>
+                    <Link
+                      href={resumeCourse.nextLessonId
+                        ? `/aprender/${resumeCourse.courseSlug}/${resumeCourse.nextLessonId}`
+                        : `/aprender/${resumeCourse.courseSlug}`}
+                      style={{
+                        padding: '11px 22px', borderRadius: '10px', textDecoration: 'none',
+                        background: 'var(--en-green)', color: '#fff',
+                        fontFamily: 'var(--font-body)', fontSize: '13px', fontWeight: 600, whiteSpace: 'nowrap',
+                        flexShrink: 0,
+                      }}
+                    >
+                      Continuar →
+                    </Link>
                   </div>
                 )}
 
-                {/* Mis cursos — HiStudy progress bar style */}
-                <div style={{ background: 'var(--en-surface)', border: '1.5px solid var(--en-border)', borderRadius: '18px', padding: '24px 28px' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '24px' }}>
-                    <h2 style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: '18px', color: 'var(--en-text)', letterSpacing: '-0.3px' }}>
+                {/* Mis cursos */}
+                <div style={{ background: 'var(--en-surface)', border: '1px solid var(--en-border)', borderRadius: '14px', padding: '24px 28px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
+                    <h2 style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: '17px', color: 'var(--en-text)', letterSpacing: '-0.3px' }}>
                       Mis cursos
                     </h2>
-                    <Link href="/cursos" style={{ fontFamily: 'var(--font-body)', fontSize: '13px', color: 'var(--en-green)', textDecoration: 'none' }}>
-                      Explorar más →
+                    <Link href="/mis-cursos" style={{ fontFamily: 'var(--font-body)', fontSize: '13px', color: 'var(--en-green)', textDecoration: 'none', fontWeight: 500 }}>
+                      Ver todos →
                     </Link>
                   </div>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
                     {validCourses.map(course => (
                       <ProgressBar
                         key={course.courseSlug}
@@ -307,7 +278,8 @@ export default async function DashboardPage() {
                     ))}
                   </div>
                 </div>
-              </>
+
+              </div>
             )}
           </main>
         </div>

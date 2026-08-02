@@ -37,10 +37,10 @@ function NavItem({ href, label, icon, isActive }: { href: string; label: string;
       href={href}
       style={{
         display: 'flex', alignItems: 'center', gap: '10px',
-        padding: '10px 14px', borderRadius: '10px',
+        padding: '11px 16px', borderRadius: '10px',
         textDecoration: 'none',
-        background: isActive ? 'var(--en-green-light)' : 'transparent',
-        color: isActive ? 'var(--en-green)' : 'var(--en-text-soft)',
+        background: isActive ? 'var(--en-green)' : 'transparent',
+        color: isActive ? '#fff' : 'var(--en-text-soft)',
         fontFamily: 'var(--font-body)', fontSize: '14px', fontWeight: isActive ? 600 : 400,
         transition: 'background 0.15s, color 0.15s',
         marginBottom: '2px',
@@ -60,51 +60,54 @@ export default function StudentSidebar({ activeRoute, displayName }: Props) {
 
   return (
     <aside
-      style={{ width: '224px', flexShrink: 0 }}
+      style={{ width: '220px', flexShrink: 0 }}
       className="hidden md:block"
     >
       <div style={{
-        border: '1.5px solid var(--en-border)',
+        border: '1px solid var(--en-border)',
         borderRadius: '16px',
         background: 'var(--en-surface)',
         overflow: 'hidden',
         position: 'sticky',
         top: '76px',
       }}>
-        {/* Welcome header */}
-        <div style={{ padding: '16px 20px 14px', borderBottom: '1px solid var(--en-border)' }}>
-          <p style={{
-            fontFamily: 'var(--font-body)', fontSize: '10px', letterSpacing: '1.2px',
-            textTransform: 'uppercase', color: 'var(--en-text-faint)', marginBottom: '4px',
-          }}>
-            Bienvenido
-          </p>
-          <p style={{
-            fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: '15px',
-            color: 'var(--en-text)', letterSpacing: '-0.3px',
-            overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-          }}>
-            {displayName}
-          </p>
+        {/* User pill at top */}
+        <div style={{ padding: '16px 16px 12px', borderBottom: '1px solid var(--en-border)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <div style={{
+              width: '34px', height: '34px', borderRadius: '50%', flexShrink: 0,
+              background: 'var(--en-green)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              fontFamily: 'var(--font-display)', fontWeight: 900, fontSize: '12px', color: '#fff',
+            }}>
+              {displayName.slice(0, 2).toUpperCase()}
+            </div>
+            <div style={{ minWidth: 0 }}>
+              <p style={{
+                fontFamily: 'var(--font-body)', fontWeight: 600, fontSize: '13px',
+                color: 'var(--en-text)',
+                overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+              }}>
+                {displayName}
+              </p>
+              <p style={{ fontFamily: 'var(--font-body)', fontSize: '11px', color: 'var(--en-text-faint)' }}>
+                Alumno
+              </p>
+            </div>
+          </div>
         </div>
 
         {/* Main nav */}
-        <div style={{ padding: '10px 10px 6px' }}>
+        <div style={{ padding: '10px 8px 8px' }}>
           {NAV_MAIN.map(({ href, label, icon }) => (
             <NavItem key={href} href={href} label={label} icon={icon} isActive={isActive(href)} />
           ))}
         </div>
 
-        {/* User section */}
-        <div style={{ padding: '6px 10px 10px', borderTop: '1px solid var(--en-border)' }}>
-          <p style={{
-            fontFamily: 'var(--font-body)', fontSize: '10px', letterSpacing: '1.2px',
-            textTransform: 'uppercase', color: 'var(--en-text-faint)', padding: '8px 14px 6px',
-          }}>
-            Usuario
-          </p>
+        {/* Bottom section */}
+        <div style={{ padding: '6px 8px 10px', borderTop: '1px solid var(--en-border)' }}>
           <NavItem
-            href="/perfil#configuracion"
+            href="/perfil"
             label="Configuración"
             isActive={false}
             icon={<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/></svg>}
@@ -114,10 +117,10 @@ export default function StudentSidebar({ activeRoute, displayName }: Props) {
               type="submit"
               style={{
                 width: '100%', display: 'flex', alignItems: 'center', gap: '10px',
-                padding: '10px 14px', borderRadius: '10px', cursor: 'pointer',
+                padding: '11px 16px', borderRadius: '10px', cursor: 'pointer',
                 background: 'transparent', border: 'none',
                 color: 'var(--en-coral)', fontFamily: 'var(--font-body)', fontSize: '14px',
-                textAlign: 'left', transition: 'background 0.15s',
+                fontWeight: 400, textAlign: 'left', transition: 'background 0.15s',
               }}
             >
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
