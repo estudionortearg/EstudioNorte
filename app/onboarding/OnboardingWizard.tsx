@@ -34,17 +34,21 @@ export default function OnboardingWizard({ userName, userPlan }: Props) {
       const supabase = createClient()
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) {
-        router.push('/login')
+        window.location.href = '/login'
         return
       }
-      await supabase
+      const { error } = await supabase
         .from('profiles')
         .update({ onboarding_completed: true, interests: selectedInterests })
         .eq('id', user.id)
-      // Navigate — middleware lets them through now that onboarding_completed = true
-      router.push(destination === 'precios' ? '/precios' : '/dashboard')
+      if (error) {
+        setCompleteError(`Error al guardar: ${error.message}`)
+        return
+      }
+      // Full page navigation — avoids stale JS chunk issues after deploys
+      window.location.href = destination === 'precios' ? '/precios' : '/dashboard'
     } catch (err) {
-      setCompleteError('Hubo un error. Intentá de nuevo.')
+      setCompleteError('Hubo un error de red. Intentá de nuevo.')
       console.error(err)
     } finally {
       setCompleting(false)
