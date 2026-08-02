@@ -39,8 +39,7 @@ export default function OnboardingWizard({ userName, userPlan }: Props) {
       }
       const { error } = await supabase
         .from('profiles')
-        .update({ onboarding_completed: true, interests: selectedInterests })
-        .eq('id', user.id)
+        .upsert({ id: user.id, onboarding_completed: true, interests: selectedInterests })
       if (error) {
         setCompleteError(`Error al guardar: ${error.message}`)
         return
