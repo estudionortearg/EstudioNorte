@@ -258,60 +258,94 @@ export default async function HomePage() {
           </div>
 
           {courses.length > 0 ? (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '20px' }}>
-              {courses.map((course, i) => (
-                <Link key={course.slug} href={`/cursos/${course.slug}`} style={{ textDecoration: 'none' }}>
-                  <div style={{ background: 'var(--en-surface)', border: '1.5px solid var(--en-border)', borderRadius: '20px', overflow: 'hidden', height: '100%', display: 'flex', flexDirection: 'column' }}>
-                    <div style={{ height: '180px', background: i % 2 === 0 ? 'linear-gradient(135deg, var(--en-green) 0%, var(--en-coral) 100%)' : 'linear-gradient(135deg, var(--en-coral) 0%, var(--en-green) 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
-                      {i === 0 && (
-                        <span style={{ position: 'absolute', top: '12px', left: '12px', background: '#fff', color: 'var(--en-green)', fontFamily: 'var(--font-body)', fontSize: '10px', fontWeight: 700, padding: '3px 10px', borderRadius: '100px', letterSpacing: '0.5px' }}>RECOMENDADO</span>
-                      )}
-                      <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.9)" strokeWidth="1.5">
-                        <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
-                      </svg>
-                    </div>
-                    <div style={{ padding: '24px', flex: 1, display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                      <h3 style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: '17px', color: 'var(--en-text)', letterSpacing: '-0.3px', lineHeight: 1.25 }}>{course.title}</h3>
-                      {course.subtitle && (
-                        <p style={{ fontFamily: 'var(--font-body)', fontSize: '13px', color: 'var(--en-text-soft)', lineHeight: 1.5, flex: 1 }}>{course.subtitle}</p>
-                      )}
-                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 'auto', paddingTop: '12px', borderTop: '1px solid var(--en-border)' }}>
-                        <span style={{ fontFamily: 'var(--font-display)', fontWeight: 900, fontSize: '20px', color: 'var(--en-text)', letterSpacing: '-0.5px' }}>
-                          {course.price_ars > 0 ? `$${course.price_ars.toLocaleString('es-AR')} ARS` : 'Gratis'}
-                        </span>
-                        <span style={{ fontFamily: 'var(--font-body)', fontSize: '13px', fontWeight: 600, color: 'var(--en-green)', background: 'var(--en-green-light)', padding: '5px 12px', borderRadius: '20px' }}>
-                          Ver curso →
-                        </span>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', maxWidth: '780px' }}>
+              {courses.slice(0, 4).map((course, i) => {
+                const GRADIENTS = [
+                  'linear-gradient(135deg, #0fba81 0%, #ff6b6b 100%)',
+                  'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                  'linear-gradient(135deg, #f7971e 0%, #ffd200 100%)',
+                  'linear-gradient(135deg, #11998e 0%, #38ef7d 100%)',
+                ]
+                const bg = GRADIENTS[i % GRADIENTS.length]
+                return (
+                  <Link key={course.slug} href={`/cursos/${course.slug}`} style={{ textDecoration: 'none', display: 'block' }}>
+                    <div style={{ display: 'flex', background: 'var(--en-surface)', border: '1px solid var(--en-border)', borderRadius: '16px', overflow: 'hidden', boxShadow: 'var(--en-shadow-sm)' }}>
+                      <div style={{ flexShrink: 0, width: '140px', background: bg, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', justifyContent: 'flex-end', padding: '14px 12px', position: 'relative' }}>
+                        <div style={{ position: 'absolute', top: '10px', left: '10px' }}>
+                          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.7)" strokeWidth="1.5"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+                        </div>
+                        {i === 0 && (
+                          <span style={{ fontFamily: 'var(--font-body)', fontSize: '9px', fontWeight: 700, color: '#fff', background: 'rgba(255,255,255,0.2)', padding: '2px 7px', borderRadius: '100px', letterSpacing: '0.5px', backdropFilter: 'blur(4px)' }}>DESTACADO</span>
+                        )}
+                      </div>
+                      <div style={{ flex: 1, padding: '18px 20px', display: 'flex', flexDirection: 'column', minWidth: 0 }}>
+                        <div style={{ display: 'flex', gap: '3px', marginBottom: '6px' }}>
+                          {[1,2,3,4,5].map(s => <svg key={s} width="10" height="10" viewBox="0 0 24 24" fill="var(--en-coral)"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>)}
+                        </div>
+                        <h3 style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: '15px', color: 'var(--en-text)', letterSpacing: '-0.3px', lineHeight: 1.25, marginBottom: '6px', overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' as const }}>{course.title}</h3>
+                        {course.subtitle && (
+                          <p style={{ fontFamily: 'var(--font-body)', fontSize: '12px', color: 'var(--en-text-soft)', lineHeight: 1.5, flex: 1, overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' as const, marginBottom: '12px' }}>{course.subtitle}</p>
+                        )}
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: '10px', borderTop: '1px solid var(--en-border)' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                            <div style={{ width: '18px', height: '18px', borderRadius: '50%', background: 'linear-gradient(135deg, var(--en-green), var(--en-coral))', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                              <span style={{ fontFamily: 'var(--font-display)', fontWeight: 900, fontSize: '6px', color: '#fff' }}>JG</span>
+                            </div>
+                            <span style={{ fontFamily: 'var(--font-body)', fontSize: '11px', color: 'var(--en-text-faint)' }}>Juan Gallino</span>
+                          </div>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                            <span style={{ fontFamily: 'var(--font-display)', fontWeight: 900, fontSize: '15px', color: 'var(--en-text)', letterSpacing: '-0.5px' }}>
+                              {course.price_ars > 0 ? `$${course.price_ars.toLocaleString('es-AR')}` : 'Gratis'}
+                            </span>
+                            <span style={{ fontFamily: 'var(--font-body)', fontSize: '11px', fontWeight: 700, color: 'var(--en-green)', background: 'var(--en-green-light)', padding: '4px 10px', borderRadius: '20px', whiteSpace: 'nowrap' }}>Ver →</span>
+                          </div>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </Link>
-              ))}
+                  </Link>
+                )
+              })}
             </div>
           ) : (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '20px' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', maxWidth: '780px' }}>
               {[
-                { title: 'Tu Marca con IA — de 0 a cliente', subtitle: 'Logo, identidad visual y primeros clientes. El proceso completo con IA.', tag: 'Nuevo' },
-                { title: 'Canva Avanzado para Emprendedores', subtitle: 'Diseñá piezas para redes, presentaciones y materiales de venta sin ser diseñador.', tag: 'Popular' },
-                { title: 'ChatGPT para Contenido de Marca', subtitle: 'Generá copies, captions y estrategia de contenido con IA en la mitad del tiempo.', tag: 'Próximamente' },
-              ].map((c, i) => (
-                <div key={c.title} style={{ background: 'var(--en-surface)', border: '1.5px solid var(--en-border)', borderRadius: '20px', overflow: 'hidden', display: 'flex', flexDirection: 'column', opacity: c.tag === 'Próximamente' ? 0.7 : 1 }}>
-                  <div style={{ height: '180px', background: i % 2 === 0 ? 'linear-gradient(135deg, var(--en-green) 0%, var(--en-coral) 100%)' : 'linear-gradient(135deg, var(--en-coral) 0%, var(--en-green) 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
-                    <span style={{ position: 'absolute', top: '12px', left: '12px', background: 'rgba(255,255,255,0.2)', color: '#fff', fontFamily: 'var(--font-body)', fontSize: '10px', fontWeight: 700, padding: '3px 10px', borderRadius: '100px', backdropFilter: 'blur(4px)' }}>{c.tag}</span>
-                    <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.9)" strokeWidth="1.5"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
-                  </div>
-                  <div style={{ padding: '24px', flex: 1, display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                    <h3 style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: '17px', color: 'var(--en-text)', letterSpacing: '-0.3px', lineHeight: 1.25 }}>{c.title}</h3>
-                    <p style={{ fontFamily: 'var(--font-body)', fontSize: '13px', color: 'var(--en-text-soft)', lineHeight: 1.5, flex: 1 }}>{c.subtitle}</p>
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 'auto', paddingTop: '12px', borderTop: '1px solid var(--en-border)' }}>
-                      <span style={{ fontFamily: 'var(--font-display)', fontWeight: 900, fontSize: '20px', color: 'var(--en-text)', letterSpacing: '-0.5px' }}>Gratis</span>
-                      <Link href="/cursos" style={{ fontFamily: 'var(--font-body)', fontSize: '13px', fontWeight: 600, color: 'var(--en-green)', background: 'var(--en-green-light)', padding: '5px 12px', borderRadius: '20px', textDecoration: 'none' }}>
-                        {c.tag === 'Próximamente' ? 'Avisame →' : 'Ver curso →'}
-                      </Link>
+                { slug: 'tu-marca-con-ia', title: 'Tu Marca con IA — de 0 a cliente', subtitle: 'Logo, identidad visual y primeros clientes. El proceso completo con IA.', price_ars: 29000 },
+                { slug: 'canva-pro-para-tu-marca', title: 'Canva Pro para tu marca — de plantilla a identidad propia', subtitle: 'Dejá de usar plantillas genéricas. Aprendé a usar Canva Pro como un diseñador profesional.', price_ars: 19000 },
+                { slug: 'ia-para-community-managers', title: 'IA para Community Managers que quieren trabajar distinto', subtitle: 'Aprendé a usar inteligencia artificial en tu trabajo diario. Sin teoría vacía.', price_ars: 25000 },
+              ].map((c, i) => {
+                const GRADIENTS = ['linear-gradient(135deg, #0fba81 0%, #ff6b6b 100%)', 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', 'linear-gradient(135deg, #f7971e 0%, #ffd200 100%)']
+                const bg = GRADIENTS[i % GRADIENTS.length]
+                return (
+                  <Link key={c.slug} href={`/cursos/${c.slug}`} style={{ textDecoration: 'none', display: 'block' }}>
+                    <div style={{ display: 'flex', background: 'var(--en-surface)', border: '1px solid var(--en-border)', borderRadius: '16px', overflow: 'hidden', boxShadow: 'var(--en-shadow-sm)' }}>
+                      <div style={{ flexShrink: 0, width: '140px', background: bg, display: 'flex', alignItems: 'flex-end', padding: '14px 12px', position: 'relative' }}>
+                        <div style={{ position: 'absolute', top: '10px', left: '10px' }}>
+                          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.7)" strokeWidth="1.5"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+                        </div>
+                      </div>
+                      <div style={{ flex: 1, padding: '18px 20px', display: 'flex', flexDirection: 'column', minWidth: 0 }}>
+                        <div style={{ display: 'flex', gap: '3px', marginBottom: '6px' }}>
+                          {[1,2,3,4,5].map(s => <svg key={s} width="10" height="10" viewBox="0 0 24 24" fill="var(--en-coral)"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>)}
+                        </div>
+                        <h3 style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: '15px', color: 'var(--en-text)', letterSpacing: '-0.3px', lineHeight: 1.25, marginBottom: '6px', overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' as const }}>{c.title}</h3>
+                        <p style={{ fontFamily: 'var(--font-body)', fontSize: '12px', color: 'var(--en-text-soft)', lineHeight: 1.5, flex: 1, overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' as const, marginBottom: '12px' }}>{c.subtitle}</p>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: '10px', borderTop: '1px solid var(--en-border)' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                            <div style={{ width: '18px', height: '18px', borderRadius: '50%', background: 'linear-gradient(135deg, var(--en-green), var(--en-coral))', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                              <span style={{ fontFamily: 'var(--font-display)', fontWeight: 900, fontSize: '6px', color: '#fff' }}>JG</span>
+                            </div>
+                            <span style={{ fontFamily: 'var(--font-body)', fontSize: '11px', color: 'var(--en-text-faint)' }}>Juan Gallino</span>
+                          </div>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                            <span style={{ fontFamily: 'var(--font-display)', fontWeight: 900, fontSize: '15px', color: 'var(--en-text)', letterSpacing: '-0.5px' }}>${c.price_ars.toLocaleString('es-AR')}</span>
+                            <span style={{ fontFamily: 'var(--font-body)', fontSize: '11px', fontWeight: 700, color: 'var(--en-green)', background: 'var(--en-green-light)', padding: '4px 10px', borderRadius: '20px' }}>Ver →</span>
+                          </div>
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                </div>
-              ))}
+                  </Link>
+                )
+              })}
             </div>
           )}
         </div>

@@ -100,8 +100,9 @@ export default function CursosPage() {
 
         <div style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))',
-          gap: '24px',
+          gridTemplateColumns: '1fr',
+          gap: '16px',
+          maxWidth: '780px',
         }}>
           {courses.map(course => (
             <CourseCard key={course.slug} {...course} />
