@@ -246,7 +246,7 @@ export default function PerfilClient({ email, fullName, avatarUrl, createdAt, pl
               <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
 
                 <div style={{ padding: '24px', borderRadius: '16px', background: 'var(--en-surface)', border: '1px solid var(--en-border)' }}>
-                  <label style={{ display: 'block', fontFamily: 'var(--font-body)', fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase', color: 'var(--en-text-faint)', marginBottom: '10px' }}>
+                  <label style={{ display: 'block', fontFamily: 'var(--font-body)', fontSize: '12px', fontWeight: 600, letterSpacing: '0.4px', textTransform: 'uppercase', color: 'var(--en-text-soft)', marginBottom: '10px' }}>
                     Nombre completo
                   </label>
                   <div style={{ display: 'flex', gap: '10px' }}>
@@ -257,10 +257,11 @@ export default function PerfilClient({ email, fullName, avatarUrl, createdAt, pl
                       onKeyDown={e => e.key === 'Enter' && handleSave()}
                       placeholder="Tu nombre completo"
                       style={{
-                        flex: 1, padding: '11px 14px', borderRadius: '10px',
-                        background: 'var(--en-bg)', border: `1.5px solid ${isDirty ? 'var(--en-green)' : 'var(--en-border)'}`,
-                        color: 'var(--en-text)', fontSize: '14px', fontFamily: 'var(--font-body)',
+                        flex: 1, padding: '13px 16px', borderRadius: '10px',
+                        background: 'var(--en-white)', border: `2px solid ${isDirty ? 'var(--en-green)' : 'var(--en-border)'}`,
+                        color: 'var(--en-text)', fontSize: '15px', fontFamily: 'var(--font-body)',
                         outline: 'none', transition: 'border-color 0.2s',
+                        boxShadow: isDirty ? '0 0 0 3px color-mix(in srgb, var(--en-green) 12%, transparent)' : 'none',
                       }}
                     />
                     <button
@@ -284,10 +285,10 @@ export default function PerfilClient({ email, fullName, avatarUrl, createdAt, pl
                 </div>
 
                 <div style={{ padding: '24px', borderRadius: '16px', background: 'var(--en-surface)', border: '1px solid var(--en-border)' }}>
-                  <label style={{ display: 'block', fontFamily: 'var(--font-body)', fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase', color: 'var(--en-text-faint)', marginBottom: '10px' }}>
+                  <label style={{ display: 'block', fontFamily: 'var(--font-body)', fontSize: '12px', fontWeight: 600, letterSpacing: '0.4px', textTransform: 'uppercase', color: 'var(--en-text-soft)', marginBottom: '10px' }}>
                     Email
                   </label>
-                  <div style={{ padding: '11px 14px', borderRadius: '10px', background: 'var(--en-bg)', border: '1px solid var(--en-border)', color: 'var(--en-text-soft)', fontSize: '14px', fontFamily: 'var(--font-body)' }}>
+                  <div style={{ padding: '13px 16px', borderRadius: '10px', background: 'color-mix(in srgb, var(--en-border) 30%, var(--en-white))', border: '2px solid var(--en-border)', color: 'var(--en-text-soft)', fontSize: '15px', fontFamily: 'var(--font-body)' }}>
                     {email}
                   </div>
                   <p style={{ fontFamily: 'var(--font-body)', fontSize: '11px', color: 'var(--en-text-faint)', marginTop: '8px' }}>
