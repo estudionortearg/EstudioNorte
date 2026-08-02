@@ -385,11 +385,12 @@ export default async function HomePage() {
         <div style={{ maxWidth: '900px', margin: '0 auto' }}>
           <div className="reveal" style={{ background: 'var(--en-surface)', border: '1.5px solid var(--en-border)', borderRadius: '24px', overflow: 'hidden', boxShadow: 'var(--en-shadow-lg)' }}>
 
-            {/* Banner */}
+            {/* Banner — reemplazá con tu foto: poné juan-banner.jpg en /public/ y descomentá la línea de abajo */}
             <div style={{
               height: '200px', position: 'relative', overflow: 'hidden',
               background: 'linear-gradient(135deg, var(--en-green) 0%, var(--en-coral) 100%)',
             }}>
+              {/* <img src="/juan-banner.jpg" alt="" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center top' }} /> */}
               {/* Decorative circles */}
               <div style={{ position: 'absolute', top: '-60px', right: '-60px', width: '240px', height: '240px', borderRadius: '50%', background: 'rgba(255,255,255,0.07)' }}/>
               <div style={{ position: 'absolute', bottom: '-40px', left: '30%', width: '160px', height: '160px', borderRadius: '50%', background: 'rgba(255,255,255,0.05)' }}/>
@@ -411,6 +412,8 @@ export default async function HomePage() {
 
               {/* Avatar overlapping banner */}
               <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: '20px' }}>
+                {/* Foto de perfil — poné juan-foto.jpg en /public/ y reemplazá las iniciales por: */}
+                {/* <img src="/juan-foto.jpg" alt="Juan Gallino" style={{ width:'100px', height:'100px', borderRadius:'50%', objectFit:'cover', border:'4px solid var(--en-surface)', marginTop:'-50px', flexShrink:0, boxShadow:'var(--en-shadow)' }} /> */}
                 <div style={{
                   width: '100px', height: '100px', borderRadius: '50%',
                   background: 'linear-gradient(135deg, var(--en-green) 0%, var(--en-coral) 100%)',
