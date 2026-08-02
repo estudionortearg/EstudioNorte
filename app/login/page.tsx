@@ -3,7 +3,7 @@ import { useState } from 'react'
 import { motion } from 'framer-motion'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
-import { Button, Input } from '@/components/ui'
+import { Button } from '@/components/ui'
 
 function MailSentIcon() {
   return (
@@ -166,20 +166,33 @@ export default function LoginPage() {
               </div>
 
               <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                <Input
-                  type="email"
-                  label="Email"
-                  placeholder="tu@email.com"
-                  value={email}
-                  onChange={e => setEmail(e.target.value)}
-                  required
-                  error={error}
-                  style={{
-                    backgroundColor: '#F5F7FA',
-                    border: '1.5px solid #C5CAD5',
-                    color: '#192335',
-                  }}
-                />
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                  <label style={{ fontFamily: 'var(--font-body)', fontSize: '13px', fontWeight: 600, color: '#6B7385' }}>
+                    Email
+                  </label>
+                  <input
+                    type="email"
+                    placeholder="tu@email.com"
+                    value={email}
+                    onChange={e => setEmail(e.target.value)}
+                    required
+                    style={{
+                      backgroundColor: '#F5F7FA',
+                      border: '1.5px solid #C5CAD5',
+                      borderRadius: '8px',
+                      padding: '12px 16px',
+                      fontSize: '15px',
+                      color: '#192335',
+                      width: '100%',
+                      outline: 'none',
+                      fontFamily: 'var(--font-body)',
+                      boxSizing: 'border-box',
+                    }}
+                    onFocus={e => { e.currentTarget.style.borderColor = '#4ECDC4' }}
+                    onBlur={e => { e.currentTarget.style.borderColor = '#C5CAD5' }}
+                  />
+                  {error && <span style={{ color: '#FF6B6B', fontSize: '12px' }}>{error}</span>}
+                </div>
                 <Button variant="primary" type="submit" disabled={loading} style={{ width: '100%', marginTop: '8px' }}>
                   {loading ? 'Enviando...' : 'Enviame el link de acceso'}
                 </Button>
