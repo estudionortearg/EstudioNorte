@@ -467,10 +467,10 @@ export default async function HomePage() {
               <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0,1fr) auto', gap: '32px', alignItems: 'start' }}>
                 <div>
                   <p style={{ fontFamily: 'var(--font-body)', fontSize: '15px', color: 'var(--en-text-soft)', lineHeight: 1.75, marginBottom: '12px' }}>
-                    Diseñador de marcas con IA, basado en Rafaela, Santa Fe. Trabajo con emprendedores y profesionales que quieren construir una identidad visual que se destaque — usando inteligencia artificial para ir más rápido y más lejos.
+                    Empecé diseñando marcas para emprendedores que no podían pagar una agencia. Con el tiempo, incorporé IA y descubrí que podía hacer el triple en la mitad de tiempo — con mejores resultados para mis clientes.
                   </p>
                   <p style={{ fontFamily: 'var(--font-body)', fontSize: '15px', color: 'var(--en-text-soft)', lineHeight: 1.75 }}>
-                    Lo que enseño acá es el proceso exacto que uso con mis propios clientes. Sin relleno, sin teoría vacía.
+                    Ese proceso es lo que enseño acá. Sin relleno, sin rodeos. Lo que realmente funciona.
                   </p>
 
                   {/* Social links */}
