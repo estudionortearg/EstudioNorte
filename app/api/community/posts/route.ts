@@ -100,7 +100,7 @@ async function awardCommunityXP(admin: ReturnType<typeof createAdminClient>, use
   const xp = xpMap[type]
 
   await admin.from('user_xp').upsert({ user_id: userId, total_xp: xp }, { onConflict: 'user_id' })
-  await admin.rpc('increment_xp', { p_user_id: userId, p_xp: xp }).catch(() => {})
+  await admin.rpc('increment_xp', { p_user_id: userId, p_xp: xp }).then(() => {}, () => {})
 
   // Badge: primer aporte
   if (type === 'post') {
@@ -108,7 +108,7 @@ async function awardCommunityXP(admin: ReturnType<typeof createAdminClient>, use
     if (count === 1) {
       const { data: badge } = await admin.from('badges').select('id').eq('slug', 'primer_aporte').single()
       if (badge) {
-        await admin.from('user_badges').insert({ user_id: userId, badge_id: badge.id }).onConflict?.catch?.(() => {})
+        await admin.from('user_badges').insert({ user_id: userId, badge_id: badge.id }).then(() => {}, () => {})
       }
     }
   }

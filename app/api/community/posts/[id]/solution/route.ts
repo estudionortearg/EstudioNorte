@@ -32,10 +32,10 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
   if (reply_id) {
     const { data: reply } = await admin.from('community_replies').select('user_id').eq('id', reply_id).single()
     if (reply?.user_id) {
-      await admin.rpc('increment_xp', { p_user_id: reply.user_id, p_xp: 50 }).catch(() => {})
+      await admin.rpc('increment_xp', { p_user_id: reply.user_id, p_xp: 50 }).then(() => {}, () => {})
       const { data: badge } = await admin.from('badges').select('id').eq('slug', 'guia_comunidad').single()
       if (badge) {
-        await admin.from('user_badges').insert({ user_id: reply.user_id, badge_id: badge.id }).catch(() => {})
+        await admin.from('user_badges').insert({ user_id: reply.user_id, badge_id: badge.id }).then(() => {}, () => {})
       }
     }
   }

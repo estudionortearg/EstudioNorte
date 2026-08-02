@@ -113,8 +113,8 @@ export default async function CategoryPage({ params }: { params: Promise<{ categ
                     <Link key={post.id} href={`/comunidad/post/${post.id}`} style={{
                       display: 'flex', alignItems: 'flex-start', gap: '14px', padding: '16px 18px',
                       borderRadius: '12px', textDecoration: 'none',
-                      background: 'var(--en-surface)', border: `1px solid ${isSolved ? 'var(--en-green-15)' : 'var(--en-border)'}`,
                       background: isSolved ? 'color-mix(in srgb, var(--en-green) 3%, var(--en-surface))' : 'var(--en-surface)',
+                      border: `1px solid ${isSolved ? 'var(--en-green-15)' : 'var(--en-border)'}`,
                     } as any}>
                       {/* Avatar */}
                       <div style={{

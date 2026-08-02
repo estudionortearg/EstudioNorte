@@ -53,7 +53,7 @@ export async function POST(req: Request) {
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
 
   // XP por respuesta
-  await admin.rpc('increment_xp', { p_user_id: user.id, p_xp: 5 }).catch(() => {})
+  await admin.rpc('increment_xp', { p_user_id: user.id, p_xp: 5 }).then(() => {}, () => {})
 
   // Badge: colaborador (10 respuestas)
   const { count } = await admin
@@ -66,7 +66,7 @@ export async function POST(req: Request) {
   if (count === 10) {
     const { data: badge } = await admin.from('badges').select('id, slug, name, emoji, description').eq('slug', 'colaborador').single()
     if (badge) {
-      await admin.from('user_badges').insert({ user_id: user.id, badge_id: badge.id }).catch(() => {})
+      await admin.from('user_badges').insert({ user_id: user.id, badge_id: badge.id }).then(() => {}, () => {})
       badge_earned = badge
     }
   }
