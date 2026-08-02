@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation'
 import { Metadata } from 'next'
 import CourseSalesPage from './CourseSalesPage'
+import { createAdminClient } from '@/lib/supabase/admin'
 
 export interface CourseData {
   slug: string
@@ -127,5 +128,21 @@ export default async function CoursePage({ params }: { params: Promise<{ slug: s
   const { slug } = await params
   const course = courses[slug]
   if (!course) notFound()
-  return <CourseSalesPage course={course} />
+
+  const admin = createAdminClient()
+  const { data: courseRow } = await admin.from('courses').select('id').eq('slug', slug).maybeSingle()
+  const curriculum = courseRow ? await admin
+    .from('modules')
+    .select('title, order_index, lessons(title, order_index)')
+    .eq('course_id', courseRow.id)
+    .order('order_index')
+    .then(({ data }) => (data || []).map(m => ({
+      module: m.title,
+      lessons: ((m.lessons as { title: string; order_index: number }[]) || [])
+        .sort((a, b) => a.order_index - b.order_index)
+        .map(l => l.title),
+    })))
+    : []
+
+  return <CourseSalesPage course={course} curriculum={curriculum} />
 }

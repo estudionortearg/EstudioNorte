@@ -4,36 +4,15 @@ import Link from 'next/link'
 import { useState } from 'react'
 import { CourseData } from './page'
 
-const curriculum = [
-  {
-    module: 'Módulo 1 — Por qué la IA cambia todo para un CM',
-    lessons: ['Qué hace la IA que vos no podés hacer solo', 'Las 5 herramientas que uso todos los días', 'Tu nuevo flujo de trabajo con IA'],
-  },
-  {
-    module: 'Módulo 2 — Generación de contenido con IA',
-    lessons: ['Prompt engineering para redes sociales', 'Un mes de contenido en una tarde', 'Adaptar para IG, TikTok y LinkedIn sin esfuerzo'],
-  },
-  {
-    module: 'Módulo 3 — Tu voz + IA',
-    lessons: ['Cómo la IA suena como vos (no como un robot)', 'Revisar y pulir sin perder autenticidad', 'Casos reales con clientes míos'],
-  },
-  {
-    module: 'Módulo 4 — Automatizaciones sin código',
-    lessons: ['Zapier y Make para CMs', 'Reportes automáticos para clientes', 'Flujos que te liberan 5+ horas semanales'],
-  },
-  {
-    module: 'Módulo 5 — Subir tus tarifas con IA como argumento',
-    lessons: ['Cómo presentar IA a tus clientes', 'Tu propuesta de valor diferencial', 'Cobrar más por hacer mejor trabajo'],
-  },
-]
+export type CurriculumItem = { module: string; lessons: string[] }
 
-function CurriculumModule({ module, lessons, index }: { module: string; lessons: string[]; index: number }) {
+function CurriculumModule({ module, lessons, index, total }: { module: string; lessons: string[]; index: number; total: number }) {
   const [open, setOpen] = useState(index === 0)
 
   return (
     <div style={{
       border: '1px solid var(--en-border)',
-      borderRadius: index === 0 ? '12px 12px 0 0' : index === curriculum.length - 1 ? '0 0 12px 12px' : '0',
+      borderRadius: index === 0 ? '12px 12px 0 0' : index === total - 1 ? '0 0 12px 12px' : '0',
       background: open ? 'color-mix(in srgb, var(--en-green) 4%, var(--en-surface))' : 'var(--en-surface)',
       marginTop: index > 0 ? '-1px' : '0',
       overflow: 'hidden',
@@ -76,7 +55,7 @@ function CurriculumModule({ module, lessons, index }: { module: string; lessons:
   )
 }
 
-export default function CourseSalesPage({ course }: { course: CourseData }) {
+export default function CourseSalesPage({ course, curriculum }: { course: CourseData; curriculum: CurriculumItem[] }) {
   const [tab, setTab] = useState<'curso' | 'plan'>('curso')
   const [loadingArs, setLoadingArs] = useState(false)
   const [loadingSub, setLoadingSub] = useState(false)
@@ -197,7 +176,7 @@ export default function CourseSalesPage({ course }: { course: CourseData }) {
               </div>
               <div>
                 {curriculum.map((item, i) => (
-                  <CurriculumModule key={i} index={i} {...item} />
+                  <CurriculumModule key={i} index={i} total={curriculum.length} {...item} />
                 ))}
               </div>
             </section>
