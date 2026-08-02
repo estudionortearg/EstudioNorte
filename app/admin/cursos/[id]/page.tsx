@@ -20,7 +20,7 @@ export default async function EditCursoPage({ params }: Props) {
 
   const { data: modules } = await admin
     .from('modules')
-    .select('id, title, order_index, lessons(id, title, description, is_free_preview, duration_minutes, xp_value, order_index, pdf_url)')
+    .select('id, title, order_index, lessons(id, title, description, is_free_preview, duration_minutes, order_index, pdf_url)')
     .eq('course_id', id)
     .order('order_index')
 
@@ -38,5 +38,5 @@ export default async function EditCursoPage({ params }: Props) {
 interface Lesson {
   id: string; title: string; description: string | null
   is_free_preview: boolean; duration_minutes: number | null
-  xp_value: number; order_index: number; pdf_url: string | null
+  order_index: number; pdf_url: string | null
 }

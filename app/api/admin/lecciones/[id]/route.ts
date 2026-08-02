@@ -20,7 +20,7 @@ export async function PATCH(req: Request, { params }: Params) {
   const admin = result.admin
 
   const body = await req.json()
-  const allowed = ['title', 'description', 'is_free_preview', 'duration_minutes', 'xp_value', 'order_index', 'pdf_url']
+  const allowed = ['title', 'description', 'is_free_preview', 'duration_minutes', 'order_index', 'pdf_url']
   const updates: Record<string, unknown> = {}
   for (const key of allowed) {
     if (key in body) updates[key] = body[key]

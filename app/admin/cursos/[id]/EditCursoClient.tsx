@@ -9,7 +9,6 @@ interface Lesson {
   description: string | null
   is_free_preview: boolean
   duration_minutes: number | null
-  xp_value: number
   order_index: number
   pdf_url: string | null
 }
@@ -159,7 +158,6 @@ export default function EditCursoClient({ course, initialModules }: Props) {
         description: lesson.description || null,
         is_free_preview: lesson.is_free_preview,
         duration_minutes: lesson.duration_minutes || null,
-        xp_value: lesson.xp_value || 10,
       }),
     })
     if (res.ok) {
@@ -373,15 +371,9 @@ export default function EditCursoClient({ course, initialModules }: Props) {
                               <label style={labelStyle}>Descripción</label>
                               <textarea style={{ ...inputStyle, minHeight: '60px', resize: 'vertical' }} value={lesson.description || ''} onChange={e => updateLessonField(mod.id, lesson.id, 'description', e.target.value)} />
                             </div>
-                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
-                              <div>
-                                <label style={labelStyle}>Duración (min)</label>
-                                <input style={inputStyle} type="number" value={lesson.duration_minutes ?? ''} onChange={e => updateLessonField(mod.id, lesson.id, 'duration_minutes', e.target.value ? Number(e.target.value) : null)} />
-                              </div>
-                              <div>
-                                <label style={labelStyle}>XP</label>
-                                <input style={inputStyle} type="number" value={lesson.xp_value} onChange={e => updateLessonField(mod.id, lesson.id, 'xp_value', Number(e.target.value) || 10)} />
-                              </div>
+                            <div>
+                              <label style={labelStyle}>Duración (min)</label>
+                              <input style={inputStyle} type="number" value={lesson.duration_minutes ?? ''} onChange={e => updateLessonField(mod.id, lesson.id, 'duration_minutes', e.target.value ? Number(e.target.value) : null)} />
                             </div>
                             <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontFamily: 'var(--font-body)', fontSize: '13px', color: 'var(--color-text)' }}>
                               <input type="checkbox" checked={lesson.is_free_preview} onChange={e => updateLessonField(mod.id, lesson.id, 'is_free_preview', e.target.checked)} style={{ accentColor: 'var(--color-teal)' }} />
