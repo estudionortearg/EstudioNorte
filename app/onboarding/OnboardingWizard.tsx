@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { createClient } from '@/lib/supabase/client'
 
 const INTERESTS = [
   'Diseño de marca', 'Logo con IA', 'Canva avanzado',
@@ -30,17 +31,17 @@ export default function OnboardingWizard({ userName, userPlan }: Props) {
     setCompleting(true)
     setCompleteError('')
     try {
-      const res = await fetch('/api/onboarding/complete', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ interests: selectedInterests }),
-      })
-      if (!res.ok) {
-        // Mark as best-effort — still navigate so the user isn't stuck
-        console.error('onboarding complete failed:', await res.text())
+      const supabase = createClient()
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) {
+        router.push('/login')
+        return
       }
-      // Always redirect to dashboard — middleware will let them through once
-      // onboarding_completed = true is persisted
+      await supabase
+        .from('profiles')
+        .update({ onboarding_completed: true, interests: selectedInterests })
+        .eq('id', user.id)
+      // Navigate — middleware lets them through now that onboarding_completed = true
       router.push(destination === 'precios' ? '/precios' : '/dashboard')
     } catch (err) {
       setCompleteError('Hubo un error. Intentá de nuevo.')
