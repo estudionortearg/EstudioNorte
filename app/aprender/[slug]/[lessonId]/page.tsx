@@ -22,22 +22,26 @@ export default async function PlayerPage({ params }: Props) {
 
   if (!course) notFound()
 
-  // Check enrollment
-  const { data: enrollment } = await supabase
-    .from('enrollments')
-    .select('id')
-    .eq('user_id', user.id)
-    .eq('course_id', course.id)
-    .single()
-
-  if (!enrollment) redirect(`/cursos/${slug}`)
-
   // Plan gate — fetch profile plan
   const { data: profile } = await supabase
     .from('profiles')
     .select('plan')
     .eq('id', user.id)
     .maybeSingle()
+
+  const plan = profile?.plan ?? 'free'
+  const hasPaidPlan = plan === 'norte' || plan === 'norte_pro'
+
+  // Check enrollment (compra individual del curso)
+  const { data: enrollment } = await supabase
+    .from('enrollments')
+    .select('id')
+    .eq('user_id', user.id)
+    .eq('course_id', course.id)
+    .maybeSingle()
+
+  // Acceso: plan pago (Norte/Norte Pro) O compra individual
+  if (!hasPaidPlan && !enrollment) redirect(`/cursos/${slug}`)
 
   // Get all modules + lessons for sidebar
   const { data: modules } = await supabase
@@ -55,10 +59,6 @@ export default async function PlayerPage({ params }: Props) {
 
   if (!lesson) notFound()
 
-  // Gate: free plan + non-preview lesson → redirect to pricing
-  if ((profile?.plan ?? 'free') === 'free' && !lesson.is_free_preview) {
-    redirect(`/precios?ref=paywall&course=${slug}`)
-  }
 
   // Get user progress
   const allLessonIds = (modules || []).flatMap(m =>
