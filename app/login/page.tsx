@@ -175,9 +175,9 @@ export default function LoginPage() {
                   required
                   error={error}
                   style={{
-                    backgroundColor: 'var(--en-bg)',
-                    border: '1.5px solid var(--en-border)',
-                    color: 'var(--en-text)',
+                    backgroundColor: '#F5F7FA',
+                    border: '1.5px solid #C5CAD5',
+                    color: '#192335',
                   }}
                 />
                 <Button variant="primary" type="submit" disabled={loading} style={{ width: '100%', marginTop: '8px' }}>
