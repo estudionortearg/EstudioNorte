@@ -15,17 +15,17 @@ export default async function HomePage() {
   const courses = await getPublishedCourses()
 
   const OUTCOMES = [
-    { emoji: '🎨', title: 'Diseñás tu propio logo con IA', desc: 'Sin saber de diseño. Sin pagar un diseñador. Con herramientas que cualquiera puede usar.' },
-    { emoji: '📐', title: 'Armás una identidad visual completa', desc: 'Paleta, tipografía, estilo visual — todo coherente y listo para aplicar en cualquier soporte.' },
-    { emoji: '📣', title: 'Generás contenido que vende', desc: 'Textos, imágenes y posts para redes sociales usando IA como si fuera tu equipo creativo.' },
-    { emoji: '🤝', title: 'Conseguís tus primeros clientes', desc: 'El proceso real que usa Juan con sus propios clientes para cerrar proyectos de marca.' },
+    { title: 'Diseñás tu propio logo con IA', desc: 'Sin saber de diseño. Sin pagar un diseñador. Con herramientas que cualquiera puede usar.' },
+    { title: 'Armás una identidad visual completa', desc: 'Paleta, tipografía, estilo visual — todo coherente y listo para aplicar en cualquier soporte.' },
+    { title: 'Generás contenido que vende', desc: 'Textos, imágenes y posts para redes sociales usando IA como si fuera tu equipo creativo.' },
+    { title: 'Conseguís tus primeros clientes', desc: 'El proceso real que usa Juan con sus propios clientes para cerrar proyectos de marca.' },
   ]
 
   const AUDIENCE = [
-    { icon: '🧑‍💼', who: 'Emprendedores', desc: 'Que quieren una marca profesional sin invertir miles de pesos en agencias.' },
-    { icon: '🎓', who: 'Recién egresados', desc: 'Que necesitan diferenciarse para conseguir su primer cliente o trabajo.' },
-    { icon: '📱', who: 'Community managers', desc: 'Que ya manejan redes pero quieren agregar diseño y marca a sus servicios.' },
-    { icon: '🛍️', who: 'Dueños de negocio', desc: 'Que venden algo pero cuya marca no los representa como merecen.' },
+    { who: 'Emprendedores', desc: 'Que quieren una marca profesional sin invertir miles de pesos en agencias.' },
+    { who: 'Recién egresados', desc: 'Que necesitan diferenciarse para conseguir su primer cliente o trabajo.' },
+    { who: 'Community managers', desc: 'Que ya manejan redes pero quieren agregar diseño y marca a sus servicios.' },
+    { who: 'Dueños de negocio', desc: 'Que venden algo pero cuya marca no los representa como merecen.' },
   ]
 
   return (
@@ -101,13 +101,13 @@ export default async function HomePage() {
             </div>
           </div>
 
-          {/* Right: visual */}
+          {/* Right: featured course card */}
           <div style={{ position: 'relative', display: 'flex', justifyContent: 'center', padding: '24px' }}>
             <div style={{ background: 'var(--en-surface)', borderRadius: '20px', boxShadow: 'var(--en-shadow-lg)', padding: '28px', width: '100%', maxWidth: '340px', border: '1px solid var(--en-border)' }}>
               <div style={{ background: 'linear-gradient(135deg, var(--en-green) 0%, var(--en-coral) 100%)', borderRadius: '12px', height: '160px', marginBottom: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', overflow: 'hidden' }}>
                 <div style={{ position: 'absolute', top: '-20px', right: '-20px', width: '100px', height: '100px', borderRadius: '50%', background: 'rgba(255,255,255,0.08)' }}/>
                 <svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.5" opacity="0.9">
-                  <circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/>
+                  <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
                 </svg>
               </div>
               <div style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: '15px', color: 'var(--en-text)', marginBottom: '4px', letterSpacing: '-0.3px' }}>
@@ -128,8 +128,10 @@ export default async function HomePage() {
             </div>
 
             {/* Floating: XP */}
-            <div style={{ position: 'absolute', top: '8px', right: '0px', background: 'var(--en-surface)', borderRadius: '14px', boxShadow: 'var(--en-shadow-sm)', padding: '10px 14px', border: '1px solid var(--en-border)', display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <span style={{ fontSize: '18px' }}>⚡</span>
+            <div style={{ position: 'absolute', top: '8px', right: '0px', background: 'var(--en-surface)', borderRadius: '14px', boxShadow: 'var(--en-shadow-sm)', padding: '10px 14px', border: '1px solid var(--en-border)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--en-green)" strokeWidth="2">
+                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+              </svg>
               <div>
                 <div style={{ fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '13px', color: 'var(--en-text)' }}>+250 XP</div>
                 <div style={{ fontFamily: 'var(--font-body)', fontSize: '10px', color: 'var(--en-text-soft)' }}>al completar</div>
@@ -137,8 +139,10 @@ export default async function HomePage() {
             </div>
 
             {/* Floating: students */}
-            <div style={{ position: 'absolute', bottom: '8px', left: '0px', background: 'var(--en-surface)', borderRadius: '14px', boxShadow: 'var(--en-shadow-sm)', padding: '10px 14px', border: '1px solid var(--en-border)', display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <span style={{ fontSize: '18px' }}>🎓</span>
+            <div style={{ position: 'absolute', bottom: '8px', left: '0px', background: 'var(--en-surface)', borderRadius: '14px', boxShadow: 'var(--en-shadow-sm)', padding: '10px 14px', border: '1px solid var(--en-border)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--en-green)" strokeWidth="2">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+              </svg>
               <div>
                 <div style={{ fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '13px', color: 'var(--en-text)' }}>500+</div>
                 <div style={{ fontFamily: 'var(--font-body)', fontSize: '10px', color: 'var(--en-text-soft)' }}>alumnos activos</div>
@@ -152,13 +156,13 @@ export default async function HomePage() {
       <section style={{ padding: '0 clamp(16px, 5vw, 64px) 80px', maxWidth: '1200px', margin: '0 auto' }}>
         <div style={{ display: 'flex', background: 'var(--en-surface)', borderRadius: '16px', border: '1px solid var(--en-border)', boxShadow: 'var(--en-shadow-sm)', overflow: 'hidden', flexWrap: 'wrap' }}>
           {[
-            { value: '500+', label: 'Alumnos activos', icon: '👥' },
-            { value: '4.9★', label: 'Rating promedio', icon: '⭐' },
-            { value: '100%', label: 'Online y a tu ritmo', icon: '🎯' },
-            { value: 'IA', label: 'Integrada en todo', icon: '🤖' },
+            { value: '500+', label: 'Alumnos activos', icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--en-green)" strokeWidth="1.8"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> },
+            { value: '4.9', label: 'Rating promedio', icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="var(--en-coral)" stroke="none"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg> },
+            { value: '100%', label: 'Online y a tu ritmo', icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--en-green)" strokeWidth="1.8"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> },
+            { value: 'IA', label: 'Integrada en cada curso', icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--en-green)" strokeWidth="1.8"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 9h6M9 12h6M9 15h4"/></svg> },
           ].map(({ value, label, icon }, i) => (
-            <div key={label} style={{ flex: '1', minWidth: '140px', padding: '24px 28px', borderRight: i < 3 ? '1px solid var(--en-border)' : 'none', display: 'flex', gap: '12px', alignItems: 'center' }}>
-              <span style={{ fontSize: '22px' }}>{icon}</span>
+            <div key={label} style={{ flex: '1', minWidth: '140px', padding: '24px 28px', borderRight: i < 3 ? '1px solid var(--en-border)' : 'none', display: 'flex', gap: '14px', alignItems: 'center' }}>
+              <div style={{ flexShrink: 0 }}>{icon}</div>
               <div>
                 <div style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: '22px', color: 'var(--en-text)', letterSpacing: '-0.8px' }}>{value}</div>
                 <div style={{ fontFamily: 'var(--font-body)', fontSize: '12px', color: 'var(--en-text-soft)' }}>{label}</div>
@@ -173,7 +177,7 @@ export default async function HomePage() {
         <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: '48px' }}>
             <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '6px 14px', borderRadius: '100px', background: 'var(--en-green-light)', marginBottom: '16px' }}>
-              <span style={{ fontFamily: 'var(--font-body)', fontSize: '12px', color: 'var(--en-green)', fontWeight: 600 }}>¿Esto es para vos?</span>
+              <span style={{ fontFamily: 'var(--font-body)', fontSize: '12px', color: 'var(--en-green)', fontWeight: 600 }}>Para quién es esto</span>
             </div>
             <h2 style={{ fontFamily: 'var(--font-display)', fontWeight: 900, fontSize: 'clamp(28px, 4vw, 48px)', letterSpacing: '-1.5px', color: 'var(--en-text)', marginBottom: '12px' }}>
               Diseñado para quienes <span style={{ color: 'var(--en-green)' }}>arrancan de cero</span>
@@ -184,9 +188,13 @@ export default async function HomePage() {
           </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '16px' }}>
-            {AUDIENCE.map(({ icon, who, desc }) => (
+            {AUDIENCE.map(({ who, desc }) => (
               <div key={who} style={{ background: 'var(--en-surface)', border: '1.5px solid var(--en-border)', borderRadius: '18px', padding: '28px 24px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                <span style={{ fontSize: '32px' }}>{icon}</span>
+                <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: 'var(--en-green-light)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--en-green)" strokeWidth="2">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+                  </svg>
+                </div>
                 <div style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: '18px', color: 'var(--en-text)', letterSpacing: '-0.3px' }}>{who}</div>
                 <p style={{ fontFamily: 'var(--font-body)', fontSize: '14px', color: 'var(--en-text-soft)', lineHeight: 1.6 }}>{desc}</p>
               </div>
@@ -213,9 +221,11 @@ export default async function HomePage() {
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-              {OUTCOMES.map(({ emoji, title, desc }) => (
+              {OUTCOMES.map(({ title, desc }, i) => (
                 <div key={title} style={{ display: 'flex', gap: '16px', alignItems: 'flex-start', padding: '20px', background: 'var(--en-surface)', border: '1px solid var(--en-border)', borderRadius: '16px' }}>
-                  <span style={{ fontSize: '28px', flexShrink: 0 }}>{emoji}</span>
+                  <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: 'var(--en-green-light)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontFamily: 'var(--font-display)', fontWeight: 900, fontSize: '13px', color: 'var(--en-green)' }}>
+                    {String(i + 1).padStart(2, '0')}
+                  </div>
                   <div>
                     <div style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: '15px', color: 'var(--en-text)', marginBottom: '4px', letterSpacing: '-0.2px' }}>{title}</div>
                     <div style={{ fontFamily: 'var(--font-body)', fontSize: '13px', color: 'var(--en-text-soft)', lineHeight: 1.5 }}>{desc}</div>
@@ -251,8 +261,7 @@ export default async function HomePage() {
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '20px' }}>
               {courses.map((course, i) => (
                 <Link key={course.slug} href={`/cursos/${course.slug}`} style={{ textDecoration: 'none' }}>
-                  <div style={{ background: 'var(--en-surface)', border: '1.5px solid var(--en-border)', borderRadius: '20px', overflow: 'hidden', height: '100%', display: 'flex', flexDirection: 'column', transition: 'transform 0.2s ease, box-shadow 0.2s ease' }}>
-                    {/* Thumbnail */}
+                  <div style={{ background: 'var(--en-surface)', border: '1.5px solid var(--en-border)', borderRadius: '20px', overflow: 'hidden', height: '100%', display: 'flex', flexDirection: 'column' }}>
                     <div style={{ height: '180px', background: i % 2 === 0 ? 'linear-gradient(135deg, var(--en-green) 0%, var(--en-coral) 100%)' : 'linear-gradient(135deg, var(--en-coral) 0%, var(--en-green) 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
                       {i === 0 && (
                         <span style={{ position: 'absolute', top: '12px', left: '12px', background: '#fff', color: 'var(--en-green)', fontFamily: 'var(--font-body)', fontSize: '10px', fontWeight: 700, padding: '3px 10px', borderRadius: '100px', letterSpacing: '0.5px' }}>RECOMENDADO</span>
@@ -261,7 +270,6 @@ export default async function HomePage() {
                         <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
                       </svg>
                     </div>
-                    {/* Content */}
                     <div style={{ padding: '24px', flex: 1, display: 'flex', flexDirection: 'column', gap: '10px' }}>
                       <h3 style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: '17px', color: 'var(--en-text)', letterSpacing: '-0.3px', lineHeight: 1.25 }}>{course.title}</h3>
                       {course.subtitle && (
@@ -281,12 +289,11 @@ export default async function HomePage() {
               ))}
             </div>
           ) : (
-            /* Placeholder si no hay cursos publicados aún */
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '20px' }}>
               {[
-                { title: 'Tu Marca con IA — de 0 a cliente', subtitle: 'Logo, identidad visual y primeros clientes. El proceso completo con IA.', tag: 'Nuevo', color: 'from-green to-coral' },
-                { title: 'Canva Avanzado para Emprendedores', subtitle: 'Diseñá piezas para redes, presentaciones y materiales de venta sin ser diseñador.', tag: 'Popular', color: 'from-coral to-green' },
-                { title: 'ChatGPT para Contenido de Marca', subtitle: 'Generá copies, captions y estrategia de contenido con IA en la mitad del tiempo.', tag: 'Próximamente', color: 'from-green to-coral' },
+                { title: 'Tu Marca con IA — de 0 a cliente', subtitle: 'Logo, identidad visual y primeros clientes. El proceso completo con IA.', tag: 'Nuevo' },
+                { title: 'Canva Avanzado para Emprendedores', subtitle: 'Diseñá piezas para redes, presentaciones y materiales de venta sin ser diseñador.', tag: 'Popular' },
+                { title: 'ChatGPT para Contenido de Marca', subtitle: 'Generá copies, captions y estrategia de contenido con IA en la mitad del tiempo.', tag: 'Próximamente' },
               ].map((c, i) => (
                 <div key={c.title} style={{ background: 'var(--en-surface)', border: '1.5px solid var(--en-border)', borderRadius: '20px', overflow: 'hidden', display: 'flex', flexDirection: 'column', opacity: c.tag === 'Próximamente' ? 0.7 : 1 }}>
                   <div style={{ height: '180px', background: i % 2 === 0 ? 'linear-gradient(135deg, var(--en-green) 0%, var(--en-coral) 100%)' : 'linear-gradient(135deg, var(--en-coral) 0%, var(--en-green) 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
@@ -315,11 +322,17 @@ export default async function HomePage() {
         <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
           <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0,1fr) minmax(0,1fr)', gap: '64px', alignItems: 'center' }}>
 
-            {/* Avatar placeholder */}
+            {/* Photo placeholder — humanized */}
             <div style={{ display: 'flex', justifyContent: 'center' }}>
               <div style={{ position: 'relative' }}>
-                <div style={{ width: 'clamp(220px, 30vw, 320px)', height: 'clamp(220px, 30vw, 320px)', borderRadius: '28px', background: 'linear-gradient(135deg, var(--en-green) 0%, var(--en-coral) 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: 'var(--en-shadow-lg)' }}>
-                  <span style={{ fontFamily: 'var(--font-display)', fontWeight: 900, fontSize: 'clamp(56px, 8vw, 96px)', color: 'rgba(255,255,255,0.9)', letterSpacing: '-2px', fontStyle: 'italic' }}>JG</span>
+                <div style={{ width: 'clamp(220px, 30vw, 320px)', height: 'clamp(220px, 30vw, 320px)', borderRadius: '28px', background: 'var(--en-surface)', border: '1.5px solid var(--en-border)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '12px', overflow: 'hidden', position: 'relative' }}>
+                  {/* Background accent */}
+                  <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '45%', background: 'linear-gradient(135deg, var(--en-green) 0%, var(--en-coral) 100%)', opacity: 0.12 }}/>
+                  {/* Silhouette */}
+                  <svg width="72" height="72" viewBox="0 0 24 24" fill="none" stroke="var(--en-text-soft)" strokeWidth="1.2" style={{ zIndex: 1 }}>
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+                  </svg>
+                  <div style={{ fontFamily: 'var(--font-body)', fontSize: '12px', color: 'var(--en-text-faint)', zIndex: 1 }}>Foto de Juan próximamente</div>
                 </div>
                 {/* Badge */}
                 <div style={{ position: 'absolute', bottom: '-16px', right: '-16px', background: 'var(--en-surface)', border: '1.5px solid var(--en-border)', borderRadius: '16px', padding: '12px 18px', boxShadow: 'var(--en-shadow-sm)' }}>
@@ -366,9 +379,9 @@ export default async function HomePage() {
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px', marginBottom: '24px' }}>
             {[
-              { name: 'FREE', price: '$0', desc: 'Para explorar', features: ['1 lección de muestra', 'Catálogo completo', 'Comunidad lectura'], color: 'var(--en-text-soft)', highlight: false },
+              { name: 'FREE', price: '$0', desc: 'Para explorar', features: ['1 lección de muestra', 'Catálogo completo', 'Comunidad en lectura'], color: 'var(--en-text-soft)', highlight: false },
               { name: 'NORTE', price: 'U$D 12/mes', desc: 'Para aprender en serio', features: ['5 cursos incluidos', 'Cursos nuevos sin costo extra', 'Certificados'], color: 'var(--en-green)', highlight: true },
-              { name: 'NORTE PRO', price: 'U$D 15/mes', desc: 'Para diferenciarte', features: ['Todo Norte', 'Certificados', 'Peer review'], color: 'var(--en-coral)', highlight: false },
+              { name: 'NORTE PRO', price: 'U$D 15/mes', desc: 'Para diferenciarte', features: ['Todo Norte', 'Peer review', 'Prioridad en mentoría'], color: 'var(--en-coral)', highlight: false },
             ].map(p => (
               <div key={p.name} style={{ background: p.highlight ? 'var(--en-green)' : 'var(--en-surface)', border: `1.5px solid ${p.highlight ? 'transparent' : 'var(--en-border)'}`, borderRadius: '20px', padding: '24px', boxShadow: p.highlight ? 'var(--en-shadow-green)' : 'var(--en-shadow-sm)', textAlign: 'left' }}>
                 <div style={{ fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '10px', letterSpacing: '2px', textTransform: 'uppercase', color: p.highlight ? 'rgba(255,255,255,0.7)' : p.color, marginBottom: '8px' }}>{p.name}</div>
@@ -400,9 +413,6 @@ export default async function HomePage() {
             <div style={{ position: 'absolute', bottom: '-60px', left: '-60px', width: '240px', height: '240px', borderRadius: '50%', background: 'rgba(255,255,255,0.04)' }}/>
 
             <div style={{ position: 'relative' }}>
-              <div style={{ fontFamily: 'var(--font-body)', fontSize: '11px', fontWeight: 700, letterSpacing: '2px', textTransform: 'uppercase', color: 'rgba(255,255,255,0.65)', marginBottom: '16px' }}>
-                EMPEZÁ HOY
-              </div>
               <h2 style={{ fontFamily: 'var(--font-display)', fontWeight: 900, fontSize: 'clamp(28px, 4.5vw, 52px)', letterSpacing: '-2px', color: '#fff', marginBottom: '16px', lineHeight: 1.05 }}>
                 Tu marca no se va a<br />diseñar sola.
               </h2>
