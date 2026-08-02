@@ -2,8 +2,8 @@ import { createClient } from '@/lib/supabase/server'
 import { NextResponse } from 'next/server'
 
 const VALID_INTERESTS = [
-  'Análisis Técnico', 'Macroeconomía', 'Cripto',
-  'Acciones y Bolsa', 'Opciones y Derivados', 'Economía Argentina',
+  'Diseño de marca', 'Logo con IA', 'Canva avanzado',
+  'Contenido para redes', 'Conseguir clientes', 'Herramientas IA',
 ]
 
 export async function POST(req: Request) {

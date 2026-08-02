@@ -18,6 +18,7 @@ export default function OnboardingWizard({ userName, userPlan }: Props) {
   const [step, setStep] = useState(1)
   const [selectedInterests, setSelectedInterests] = useState<string[]>([])
   const [completing, setCompleting] = useState(false)
+  const [completeError, setCompleteError] = useState('')
 
   function toggleInterest(interest: string) {
     setSelectedInterests(prev =>
@@ -27,14 +28,23 @@ export default function OnboardingWizard({ userName, userPlan }: Props) {
 
   async function complete(destination: 'cursos' | 'precios') {
     setCompleting(true)
+    setCompleteError('')
     try {
       const res = await fetch('/api/onboarding/complete', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ interests: selectedInterests }),
       })
-      if (!res.ok) return
-      router.push(destination === 'cursos' ? '/cursos' : '/precios')
+      if (!res.ok) {
+        // Mark as best-effort — still navigate so the user isn't stuck
+        console.error('onboarding complete failed:', await res.text())
+      }
+      // Always redirect to dashboard — middleware will let them through once
+      // onboarding_completed = true is persisted
+      router.push(destination === 'precios' ? '/precios' : '/dashboard')
+    } catch (err) {
+      setCompleteError('Hubo un error. Intentá de nuevo.')
+      console.error(err)
     } finally {
       setCompleting(false)
     }
@@ -227,12 +237,15 @@ export default function OnboardingWizard({ userName, userPlan }: Props) {
         </div>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+          {completeError && (
+            <p style={{ fontSize: '13px', color: '#C0392B', textAlign: 'center', margin: 0 }}>{completeError}</p>
+          )}
           <button
             onClick={() => complete('cursos')}
             disabled={completing}
             style={{ width: '100%', padding: '14px', borderRadius: '12px', border: 'none', cursor: completing ? 'wait' : 'pointer', background: 'var(--en-green)', color: 'var(--en-white)', fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '15px', opacity: completing ? 0.7 : 1 }}
           >
-            {completing ? 'Un momento...' : 'Ver cursos →'}
+            {completing ? 'Un momento...' : 'Ingresar al dashboard →'}
           </button>
           {userPlan === 'free' && (
             <button
@@ -243,12 +256,12 @@ export default function OnboardingWizard({ userName, userPlan }: Props) {
               Elegir un plan
             </button>
           )}
-          <button
-            onClick={() => setStep(2)}
-            style={{ background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'var(--font-body)', fontSize: '13px', color: 'var(--en-text-soft)', padding: '4px' }}
+          <a
+            href="/dashboard"
+            style={{ background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'var(--font-body)', fontSize: '13px', color: 'var(--en-text-faint)', padding: '4px', textAlign: 'center', display: 'block', textDecoration: 'none' }}
           >
-            ← Volver
-          </button>
+            — Volver
+          </a>
         </div>
       </div>
     </div>
