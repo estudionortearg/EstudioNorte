@@ -52,7 +52,7 @@ export default async function AdminGamificacionPage() {
     profiles: { full_name: string | null }[] | null
   }
 
-  const requestsWithXp = (pendingRequests as unknown as RawRequest[]).map(r => ({
+  const requestsWithXp = ((pendingRequests || []) as unknown as RawRequest[]).map(r => ({
     id: r.id,
     requested_at: r.requested_at,
     user_id: r.user_id,
