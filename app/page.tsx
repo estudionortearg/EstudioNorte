@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
+import { LandingAnimations, FaqAccordion } from '@/components/landing/LandingAnimations'
 
 async function getPublishedCourses() {
   const supabase = await createClient()
@@ -10,6 +11,33 @@ async function getPublishedCourses() {
     .limit(6)
   return data || []
 }
+
+const FAQS = [
+  {
+    q: '¿Necesito saber diseño para hacer los cursos?',
+    a: 'No. Los cursos están pensados para personas sin ninguna experiencia previa en diseño. Todo lo que necesitás es ganas de aprender y una computadora.',
+  },
+  {
+    q: '¿Qué incluye el plan gratuito?',
+    a: 'Con el plan gratuito podés acceder al primer módulo de cada curso, explorar el catálogo completo y participar en la comunidad en modo lectura. Es suficiente para ver si esto es para vos.',
+  },
+  {
+    q: '¿Qué herramientas de IA voy a aprender a usar?',
+    a: 'Usamos Midjourney, DALL·E, Adobe Firefly, ChatGPT y Canva con IA, entre otras. El foco no está en la herramienta en sí, sino en el proceso de diseño de marca — la IA es el vehículo.',
+  },
+  {
+    q: '¿Los cursos tienen fecha de inicio o los hago a mi ritmo?',
+    a: 'Son 100% a tu ritmo. Empezás cuando querés, pausás cuando necesitás, y avanzás sin presión. Todo el contenido está disponible desde el momento en que te inscribís.',
+  },
+  {
+    q: '¿Cómo se cobran los planes? ¿Se renuevan solos?',
+    a: 'Los planes Norte y Norte Pro son suscripciones mensuales que se renuevan automáticamente. Podés cancelarlas cuando querás desde tu perfil, sin trámites ni penalidades.',
+  },
+  {
+    q: '¿Obtengo un certificado al terminar?',
+    a: 'Sí. Al completar cada curso recibís un certificado verificable con un código único. Podés compartirlo en LinkedIn o enviarlo a un cliente para demostrar lo que aprendiste.',
+  },
+]
 
 export default async function HomePage() {
   const courses = await getPublishedCourses()
@@ -30,6 +58,7 @@ export default async function HomePage() {
 
   return (
     <div style={{ minHeight: '100vh' }}>
+      <LandingAnimations />
 
       {/* ── NAV ── */}
       <header style={{
@@ -60,33 +89,33 @@ export default async function HomePage() {
 
           {/* Left */}
           <div>
-            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '6px 14px', borderRadius: '100px', background: 'var(--en-green-light)', marginBottom: '24px' }}>
-              <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'var(--en-green)', display: 'inline-block' }}/>
-              <span style={{ fontFamily: 'var(--font-body)', fontSize: '12px', color: 'var(--en-green)', fontWeight: 600 }}>Diseño de marca con IA — para Argentina y LATAM</span>
+            <div className="hero-badge" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '6px 14px', borderRadius: '100px', background: 'var(--en-green-light)', marginBottom: '24px' }}>
+              <span className="badge-dot" style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'var(--en-green)', display: 'inline-block' }}/>
+              <span style={{ fontFamily: 'var(--font-body)', fontSize: '12px', color: 'var(--en-green)', fontWeight: 600 }}>+500 emprendedores ya arrancaron — sumáte</span>
             </div>
 
-            <h1 style={{ fontFamily: 'var(--font-display)', fontWeight: 900, fontSize: 'clamp(38px, 5.5vw, 68px)', letterSpacing: '-2.5px', color: 'var(--en-text)', lineHeight: 1.02, marginBottom: '20px' }}>
-              Tu marca,<br />
-              diseñada con <span style={{ color: 'var(--en-green)' }}>IA</span>,<br />
-              sin agencia.
+            <h1 className="hero-h1" style={{ fontFamily: 'var(--font-display)', fontWeight: 900, fontSize: 'clamp(36px, 5.5vw, 66px)', letterSpacing: '-2.5px', color: 'var(--en-text)', lineHeight: 1.02, marginBottom: '20px' }}>
+              De 0 a marca<br />
+              profesional con <span style={{ color: 'var(--en-green)' }}>IA</span><br />
+              en un fin de semana.
             </h1>
 
-            <p style={{ fontFamily: 'var(--font-body)', fontSize: 'clamp(15px, 1.5vw, 18px)', color: 'var(--en-text-soft)', lineHeight: 1.7, marginBottom: '36px', maxWidth: '460px' }}>
-              Aprendé a crear logos, identidades visuales y contenido para redes con inteligencia artificial. Cursos prácticos de Juan Gallino, con el proceso que él usa con sus propios clientes.
+            <p className="hero-sub" style={{ fontFamily: 'var(--font-body)', fontSize: 'clamp(15px, 1.5vw, 18px)', color: 'var(--en-text-soft)', lineHeight: 1.7, marginBottom: '36px', maxWidth: '460px' }}>
+              El proceso exacto que Juan usa con sus propios clientes. Sin diseñador, sin agencia, sin años de experiencia. Solo IA y las ganas de diferenciarte.
             </p>
 
-            <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', marginBottom: '40px' }}>
-              <Link href="#cursos" style={{ padding: '14px 28px', borderRadius: '12px', background: 'var(--en-green)', color: '#fff', fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '15px', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '8px', boxShadow: 'var(--en-shadow-green)' }}>
-                Ver cursos
+            <div className="hero-ctas" style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', marginBottom: '40px' }}>
+              <Link href="#cursos" className="btn-glow" style={{ padding: '14px 28px', borderRadius: '12px', background: 'var(--en-green)', color: '#fff', fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '15px', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '8px', boxShadow: 'var(--en-shadow-green)', transition: 'transform 0.15s ease, box-shadow 0.15s ease' }}>
+                Empezar gratis
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
               </Link>
               <Link href="/sobre-juano" style={{ padding: '14px 28px', borderRadius: '12px', background: 'transparent', color: 'var(--en-text)', fontFamily: 'var(--font-body)', fontWeight: 500, fontSize: '15px', textDecoration: 'none', border: '1.5px solid var(--en-border)' }}>
-                Quién es Juan
+                Ver el proceso
               </Link>
             </div>
 
             {/* Social proof */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+            <div className="hero-proof" style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
               <div style={{ display: 'flex' }}>
                 {['JG','MA','LR','CP','FT'].map((init, i) => (
                   <div key={init} style={{ width: '32px', height: '32px', borderRadius: '50%', background: i % 2 === 0 ? 'var(--en-green-light)' : 'color-mix(in srgb, var(--en-coral) 12%, transparent)', border: '2px solid var(--en-surface)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '10px', fontWeight: 700, color: 'var(--en-text-soft)', marginLeft: i > 0 ? '-8px' : '0', zIndex: 5 - i, position: 'relative' }}>{init}</div>
@@ -96,14 +125,14 @@ export default async function HomePage() {
                 <div style={{ display: 'flex', gap: '2px', marginBottom: '2px' }}>
                   {[1,2,3,4,5].map(s => <svg key={s} width="12" height="12" viewBox="0 0 24 24" fill="var(--en-coral)"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>)}
                 </div>
-                <span style={{ fontFamily: 'var(--font-body)', fontSize: '12px', color: 'var(--en-text-soft)' }}>+500 alumnos · 4.9 rating</span>
+                <span style={{ fontFamily: 'var(--font-body)', fontSize: '12px', color: 'var(--en-text-soft)' }}>+500 alumnos · 4.9 rating · 100% práctico</span>
               </div>
             </div>
           </div>
 
           {/* Right: featured course card */}
-          <div style={{ position: 'relative', display: 'flex', justifyContent: 'center', padding: '24px' }}>
-            <div style={{ background: 'var(--en-surface)', borderRadius: '20px', boxShadow: 'var(--en-shadow-lg)', padding: '28px', width: '100%', maxWidth: '340px', border: '1px solid var(--en-border)' }}>
+          <div className="hero-card" style={{ position: 'relative', display: 'flex', justifyContent: 'center', padding: '24px' }}>
+            <div className="float-card" style={{ background: 'var(--en-surface)', borderRadius: '20px', boxShadow: 'var(--en-shadow-lg)', padding: '28px', width: '100%', maxWidth: '340px', border: '1px solid var(--en-border)' }}>
               <div style={{ background: 'linear-gradient(135deg, var(--en-green) 0%, var(--en-coral) 100%)', borderRadius: '12px', height: '160px', marginBottom: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', overflow: 'hidden' }}>
                 <div style={{ position: 'absolute', top: '-20px', right: '-20px', width: '100px', height: '100px', borderRadius: '50%', background: 'rgba(255,255,255,0.08)' }}/>
                 <svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.5" opacity="0.9">
@@ -153,7 +182,7 @@ export default async function HomePage() {
       </section>
 
       {/* ── STATS BAR ── */}
-      <section style={{ padding: '0 clamp(16px, 5vw, 64px) 80px', maxWidth: '1200px', margin: '0 auto' }}>
+      <section className="reveal" style={{ padding: '0 clamp(16px, 5vw, 64px) 80px', maxWidth: '1200px', margin: '0 auto' }}>
         <div style={{ display: 'flex', background: 'var(--en-surface)', borderRadius: '16px', border: '1px solid var(--en-border)', boxShadow: 'var(--en-shadow-sm)', overflow: 'hidden', flexWrap: 'wrap' }}>
           {[
             { value: '500+', label: 'Alumnos activos', icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--en-green)" strokeWidth="1.8"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> },
@@ -175,19 +204,19 @@ export default async function HomePage() {
       {/* ── PARA QUIÉN ── */}
       <section style={{ padding: 'clamp(64px, 8vw, 100px) clamp(16px, 5vw, 64px)', background: 'var(--en-overlay-light)' }}>
         <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-          <div style={{ textAlign: 'center', marginBottom: '48px' }}>
+          <div className="reveal" style={{ textAlign: 'center', marginBottom: '48px' }}>
             <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '6px 14px', borderRadius: '100px', background: 'var(--en-green-light)', marginBottom: '16px' }}>
               <span style={{ fontFamily: 'var(--font-body)', fontSize: '12px', color: 'var(--en-green)', fontWeight: 600 }}>Para quién es esto</span>
             </div>
             <h2 style={{ fontFamily: 'var(--font-display)', fontWeight: 900, fontSize: 'clamp(28px, 4vw, 48px)', letterSpacing: '-1.5px', color: 'var(--en-text)', marginBottom: '12px' }}>
-              Diseñado para quienes <span style={{ color: 'var(--en-green)' }}>arrancan de cero</span>
+              No necesitás saber diseño.<br /><span style={{ color: 'var(--en-green)' }}>Solo querés resultados.</span>
             </h2>
             <p style={{ fontFamily: 'var(--font-body)', fontSize: '16px', color: 'var(--en-text-soft)', maxWidth: '480px', margin: '0 auto' }}>
-              No necesitás experiencia en diseño. Necesitás querer hacer algo diferente.
+              Si tenés algo para ofrecer y tu marca no lo refleja, este es tu lugar.
             </p>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '16px' }}>
+          <div className="reveal-stagger" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '16px' }}>
             {AUDIENCE.map(({ who, desc }) => (
               <div key={who} style={{ background: 'var(--en-surface)', border: '1.5px solid var(--en-border)', borderRadius: '18px', padding: '28px 24px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
                 <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: 'var(--en-green-light)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -208,19 +237,19 @@ export default async function HomePage() {
         <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
           <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0,1fr) minmax(0,1fr)', gap: '64px', alignItems: 'center' }}>
 
-            <div>
+            <div className="reveal-left">
               <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '6px 14px', borderRadius: '100px', background: 'var(--en-green-light)', marginBottom: '20px' }}>
                 <span style={{ fontFamily: 'var(--font-body)', fontSize: '12px', color: 'var(--en-green)', fontWeight: 600 }}>Qué vas a lograr</span>
               </div>
               <h2 style={{ fontFamily: 'var(--font-display)', fontWeight: 900, fontSize: 'clamp(28px, 4vw, 48px)', letterSpacing: '-1.5px', color: 'var(--en-text)', lineHeight: 1.1, marginBottom: '16px' }}>
-                Resultados reales,<br />no teoría de libro
+                Al terminar, tenés<br />algo real para mostrar.
               </h2>
               <p style={{ fontFamily: 'var(--font-body)', fontSize: '16px', color: 'var(--en-text-soft)', lineHeight: 1.7 }}>
-                Cada curso termina con algo que podés mostrar. Un logo terminado, un sistema de marca listo para usar, contenido que podés publicar hoy mismo.
+                Cada curso termina con algo que podés usar. Un logo terminado, una identidad lista, contenido que podés publicar hoy mismo.
               </p>
             </div>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            <div className="reveal-right reveal-stagger" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
               {OUTCOMES.map(({ title, desc }, i) => (
                 <div key={title} style={{ display: 'flex', gap: '16px', alignItems: 'flex-start', padding: '20px', background: 'var(--en-surface)', border: '1px solid var(--en-border)', borderRadius: '16px' }}>
                   <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: 'var(--en-green-light)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontFamily: 'var(--font-display)', fontWeight: 900, fontSize: '13px', color: 'var(--en-green)' }}>
@@ -240,7 +269,7 @@ export default async function HomePage() {
       {/* ── CURSOS ── */}
       <section id="cursos" style={{ padding: 'clamp(64px, 8vw, 100px) clamp(16px, 5vw, 64px)', background: 'var(--en-overlay-light)' }}>
         <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-          <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: '40px', flexWrap: 'wrap', gap: '16px' }}>
+          <div className="reveal" style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: '40px', flexWrap: 'wrap', gap: '16px' }}>
             <div>
               <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '6px 14px', borderRadius: '100px', background: 'var(--en-green-light)', marginBottom: '16px' }}>
                 <span style={{ fontFamily: 'var(--font-body)', fontSize: '12px', color: 'var(--en-green)', fontWeight: 600 }}>Catálogo de cursos</span>
@@ -258,7 +287,7 @@ export default async function HomePage() {
           </div>
 
           {courses.length > 0 ? (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', maxWidth: '780px' }}>
+            <div className="reveal" style={{ display: 'flex', flexDirection: 'column', gap: '14px', maxWidth: '780px' }}>
               {courses.slice(0, 4).map((course, i) => {
                 const GRADIENTS = [
                   'linear-gradient(135deg, #0fba81 0%, #ff6b6b 100%)',
@@ -269,7 +298,7 @@ export default async function HomePage() {
                 const bg = GRADIENTS[i % GRADIENTS.length]
                 return (
                   <Link key={course.slug} href={`/cursos/${course.slug}`} style={{ textDecoration: 'none', display: 'block' }}>
-                    <div style={{ display: 'flex', background: 'var(--en-surface)', border: '1px solid var(--en-border)', borderRadius: '16px', overflow: 'hidden', boxShadow: 'var(--en-shadow-sm)' }}>
+                    <div style={{ display: 'flex', background: 'var(--en-surface)', border: '1px solid var(--en-border)', borderRadius: '16px', overflow: 'hidden', boxShadow: 'var(--en-shadow-sm)', transition: 'box-shadow 0.2s ease, transform 0.2s ease' }}>
                       <div style={{ flexShrink: 0, width: '140px', background: bg, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', justifyContent: 'flex-end', padding: '14px 12px', position: 'relative' }}>
                         <div style={{ position: 'absolute', top: '10px', left: '10px' }}>
                           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.7)" strokeWidth="1.5"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
@@ -307,7 +336,7 @@ export default async function HomePage() {
               })}
             </div>
           ) : (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', maxWidth: '780px' }}>
+            <div className="reveal" style={{ display: 'flex', flexDirection: 'column', gap: '14px', maxWidth: '780px' }}>
               {[
                 { slug: 'tu-marca-con-ia', title: 'Tu Marca con IA — de 0 a cliente', subtitle: 'Logo, identidad visual y primeros clientes. El proceso completo con IA.', price_ars: 29000 },
                 { slug: 'canva-pro-para-tu-marca', title: 'Canva Pro para tu marca — de plantilla a identidad propia', subtitle: 'Dejá de usar plantillas genéricas. Aprendé a usar Canva Pro como un diseñador profesional.', price_ars: 19000 },
@@ -351,49 +380,139 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* ── JUAN ── */}
+      {/* ── JUAN — profile card ── */}
       <section style={{ padding: 'clamp(64px, 8vw, 100px) clamp(16px, 5vw, 64px)' }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0,1fr) minmax(0,1fr)', gap: '64px', alignItems: 'center' }}>
+        <div style={{ maxWidth: '900px', margin: '0 auto' }}>
+          <div className="reveal" style={{ background: 'var(--en-surface)', border: '1.5px solid var(--en-border)', borderRadius: '24px', overflow: 'hidden', boxShadow: 'var(--en-shadow-lg)' }}>
 
-            {/* Photo placeholder — humanized */}
-            <div style={{ display: 'flex', justifyContent: 'center' }}>
-              <div style={{ position: 'relative' }}>
-                <div style={{ width: 'clamp(220px, 30vw, 320px)', height: 'clamp(220px, 30vw, 320px)', borderRadius: '28px', background: 'var(--en-surface)', border: '1.5px solid var(--en-border)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '12px', overflow: 'hidden', position: 'relative' }}>
-                  {/* Background accent */}
-                  <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '45%', background: 'linear-gradient(135deg, var(--en-green) 0%, var(--en-coral) 100%)', opacity: 0.12 }}/>
-                  {/* Silhouette */}
-                  <svg width="72" height="72" viewBox="0 0 24 24" fill="none" stroke="var(--en-text-soft)" strokeWidth="1.2" style={{ zIndex: 1 }}>
-                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
-                  </svg>
-                  <div style={{ fontFamily: 'var(--font-body)', fontSize: '12px', color: 'var(--en-text-faint)', zIndex: 1 }}>Foto de Juan próximamente</div>
-                </div>
-                {/* Badge */}
-                <div style={{ position: 'absolute', bottom: '-16px', right: '-16px', background: 'var(--en-surface)', border: '1.5px solid var(--en-border)', borderRadius: '16px', padding: '12px 18px', boxShadow: 'var(--en-shadow-sm)' }}>
-                  <div style={{ fontFamily: 'var(--font-display)', fontWeight: 900, fontSize: '20px', color: 'var(--en-green)', letterSpacing: '-0.5px' }}>500+</div>
-                  <div style={{ fontFamily: 'var(--font-body)', fontSize: '11px', color: 'var(--en-text-soft)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Alumnos</div>
+            {/* Banner */}
+            <div style={{
+              height: '200px', position: 'relative', overflow: 'hidden',
+              background: 'linear-gradient(135deg, var(--en-green) 0%, var(--en-coral) 100%)',
+            }}>
+              {/* Decorative circles */}
+              <div style={{ position: 'absolute', top: '-60px', right: '-60px', width: '240px', height: '240px', borderRadius: '50%', background: 'rgba(255,255,255,0.07)' }}/>
+              <div style={{ position: 'absolute', bottom: '-40px', left: '30%', width: '160px', height: '160px', borderRadius: '50%', background: 'rgba(255,255,255,0.05)' }}/>
+              <div style={{ position: 'absolute', top: '20px', left: '-30px', width: '120px', height: '120px', borderRadius: '50%', background: 'rgba(255,255,255,0.04)' }}/>
+              {/* Title in banner */}
+              <div style={{ position: 'absolute', top: '28px', left: '200px', right: '24px' }}>
+                <div style={{ fontFamily: 'var(--font-body)', fontSize: '11px', fontWeight: 700, color: 'rgba(255,255,255,0.7)', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '8px' }}>DISEÑADOR DE MARCA CON IA</div>
+                <h2 style={{ fontFamily: 'var(--font-display)', fontWeight: 900, fontSize: 'clamp(26px, 4vw, 44px)', letterSpacing: '-1.5px', color: '#fff', lineHeight: 1.05, margin: 0 }}>Aprendé con Juan</h2>
+                <div style={{ display: 'flex', gap: '8px', marginTop: '12px', flexWrap: 'wrap' }}>
+                  {['Diseño con IA', 'Identidad de marca', 'Herramientas reales'].map(tag => (
+                    <span key={tag} style={{ padding: '4px 12px', borderRadius: '100px', background: 'rgba(255,255,255,0.15)', backdropFilter: 'blur(8px)', color: '#fff', fontFamily: 'var(--font-body)', fontSize: '11px', fontWeight: 600, border: '1px solid rgba(255,255,255,0.25)' }}>{tag}</span>
+                  ))}
                 </div>
               </div>
             </div>
 
-            <div>
-              <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '6px 14px', borderRadius: '100px', background: 'var(--en-green-light)', marginBottom: '20px' }}>
-                <span style={{ fontFamily: 'var(--font-body)', fontSize: '12px', color: 'var(--en-green)', fontWeight: 600 }}>El instructor</span>
-              </div>
-              <h2 style={{ fontFamily: 'var(--font-display)', fontWeight: 900, fontSize: 'clamp(28px, 4vw, 48px)', letterSpacing: '-1.5px', color: 'var(--en-text)', fontStyle: 'italic', marginBottom: '20px' }}>
-                Juan Gallino
-              </h2>
-              <p style={{ fontFamily: 'var(--font-body)', fontSize: '16px', color: 'var(--en-text-soft)', lineHeight: 1.75, marginBottom: '16px' }}>
-                Diseñador de marcas con IA, basado en Rafaela, Santa Fe. Trabajo con emprendedores y profesionales que quieren construir una identidad visual que se destaque — usando inteligencia artificial para ir más rápido y más lejos.
-              </p>
-              <p style={{ fontFamily: 'var(--font-body)', fontSize: '16px', color: 'var(--en-text-soft)', lineHeight: 1.75, marginBottom: '28px' }}>
-                Lo que enseño acá es el proceso exacto que uso con mis propios clientes. Sin relleno, sin teoría vacía.
-              </p>
-              <Link href="/sobre-juano" style={{ fontFamily: 'var(--font-body)', fontWeight: 600, fontSize: '14px', color: 'var(--en-green)', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
-                Conocer más sobre Juan →
-              </Link>
-            </div>
+            {/* Profile photo + content */}
+            <div style={{ padding: '0 32px 32px', position: 'relative' }}>
 
+              {/* Avatar overlapping banner */}
+              <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: '20px' }}>
+                <div style={{
+                  width: '100px', height: '100px', borderRadius: '50%',
+                  background: 'linear-gradient(135deg, var(--en-green) 0%, var(--en-coral) 100%)',
+                  border: '4px solid var(--en-surface)',
+                  marginTop: '-50px',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  flexShrink: 0,
+                  boxShadow: 'var(--en-shadow)',
+                }}>
+                  <span style={{ fontFamily: 'var(--font-display)', fontWeight: 900, fontSize: '32px', color: '#fff', letterSpacing: '-1px' }}>JG</span>
+                </div>
+
+                {/* Bestseller badge */}
+                <div style={{
+                  display: 'flex', alignItems: 'center', gap: '8px',
+                  padding: '8px 16px', borderRadius: '100px',
+                  background: 'linear-gradient(135deg, #FFD700, #FFA500)',
+                  boxShadow: '0 4px 16px rgba(255,165,0,0.3)',
+                }}>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="#fff"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                  <span style={{ fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '12px', color: '#fff', letterSpacing: '0.5px' }}>TOP INSTRUCTOR</span>
+                </div>
+              </div>
+
+              {/* Name + meta */}
+              <div style={{ marginBottom: '16px' }}>
+                <h3 style={{ fontFamily: 'var(--font-display)', fontWeight: 900, fontSize: '24px', letterSpacing: '-0.8px', color: 'var(--en-text)', margin: '0 0 4px' }}>Juan Gallino</h3>
+                <p style={{ fontFamily: 'var(--font-body)', fontSize: '14px', color: 'var(--en-text-soft)', margin: '0 0 12px' }}>Diseñador de marca con IA · Rafaela, Santa Fe</p>
+
+                {/* Stars + stats */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '20px', flexWrap: 'wrap' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <div style={{ display: 'flex', gap: '2px' }}>
+                      {[1,2,3,4,5].map(s => <svg key={s} width="13" height="13" viewBox="0 0 24 24" fill="var(--en-coral)"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>)}
+                    </div>
+                    <span style={{ fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '13px', color: 'var(--en-text)' }}>4.9</span>
+                    <span style={{ fontFamily: 'var(--font-body)', fontSize: '12px', color: 'var(--en-text-soft)' }}>(+200 reseñas)</span>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--en-green)" strokeWidth="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+                    <span style={{ fontFamily: 'var(--font-body)', fontSize: '13px', color: 'var(--en-text-soft)' }}>5 cursos</span>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--en-green)" strokeWidth="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+                    <span style={{ fontFamily: 'var(--font-body)', fontSize: '13px', color: 'var(--en-text-soft)' }}>500+ alumnos</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Divider */}
+              <div style={{ height: '1px', background: 'var(--en-border)', margin: '20px 0' }}/>
+
+              {/* Bio + social */}
+              <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0,1fr) auto', gap: '32px', alignItems: 'start' }}>
+                <div>
+                  <p style={{ fontFamily: 'var(--font-body)', fontSize: '15px', color: 'var(--en-text-soft)', lineHeight: 1.75, marginBottom: '12px' }}>
+                    Diseñador de marcas con IA, basado en Rafaela, Santa Fe. Trabajo con emprendedores y profesionales que quieren construir una identidad visual que se destaque — usando inteligencia artificial para ir más rápido y más lejos.
+                  </p>
+                  <p style={{ fontFamily: 'var(--font-body)', fontSize: '15px', color: 'var(--en-text-soft)', lineHeight: 1.75 }}>
+                    Lo que enseño acá es el proceso exacto que uso con mis propios clientes. Sin relleno, sin teoría vacía.
+                  </p>
+
+                  {/* Social links */}
+                  <div style={{ display: 'flex', gap: '10px', marginTop: '20px', flexWrap: 'wrap' }}>
+                    {[
+                      { label: 'Instagram', href: 'https://instagram.com/juanogallino', icon: <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg> },
+                      { label: 'YouTube', href: 'https://youtube.com/@juanogallino', icon: <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><rect x="2" y="5" width="20" height="14" rx="3"/><polygon points="10 9 16 12 10 15 10 9" fill="currentColor" stroke="none"/></svg> },
+                      { label: 'LinkedIn', href: 'https://linkedin.com/in/juangallino', icon: <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><rect x="2" y="2" width="20" height="20" rx="3"/><path d="M7 10v7M7 7v.01M12 10v7M12 13a3 3 0 0 1 6 0v4"/></svg> },
+                    ].map(({ label, href, icon }) => (
+                      <a
+                        key={label}
+                        href={href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{
+                          display: 'inline-flex', alignItems: 'center', gap: '6px',
+                          padding: '7px 14px', borderRadius: '9px',
+                          border: '1.5px solid var(--en-border)', background: 'var(--en-bg)',
+                          color: 'var(--en-text-soft)', textDecoration: 'none',
+                          fontFamily: 'var(--font-body)', fontSize: '12px', fontWeight: 600,
+                          transition: 'border-color 0.15s ease, color 0.15s ease',
+                        }}
+                      >
+                        {icon}
+                        {label}
+                      </a>
+                    ))}
+                  </div>
+                </div>
+
+                <Link href="/sobre-juano" style={{
+                  display: 'inline-flex', alignItems: 'center', gap: '6px',
+                  padding: '10px 18px', borderRadius: '10px',
+                  background: 'var(--en-green)', color: '#fff',
+                  fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '13px',
+                  textDecoration: 'none', whiteSpace: 'nowrap',
+                  boxShadow: 'var(--en-shadow-green-sm)',
+                }}>
+                  Ver perfil →
+                </Link>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -401,17 +520,19 @@ export default async function HomePage() {
       {/* ── PRECIOS PREVIEW ── */}
       <section style={{ padding: 'clamp(64px, 8vw, 100px) clamp(16px, 5vw, 64px)', background: 'var(--en-overlay-light)' }}>
         <div style={{ maxWidth: '860px', margin: '0 auto', textAlign: 'center' }}>
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '6px 14px', borderRadius: '100px', background: 'var(--en-green-light)', marginBottom: '20px' }}>
-            <span style={{ fontFamily: 'var(--font-body)', fontSize: '12px', color: 'var(--en-green)', fontWeight: 600 }}>Planes</span>
+          <div className="reveal">
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '6px 14px', borderRadius: '100px', background: 'var(--en-green-light)', marginBottom: '20px' }}>
+              <span style={{ fontFamily: 'var(--font-body)', fontSize: '12px', color: 'var(--en-green)', fontWeight: 600 }}>Planes</span>
+            </div>
+            <h2 style={{ fontFamily: 'var(--font-display)', fontWeight: 900, fontSize: 'clamp(28px, 4vw, 48px)', letterSpacing: '-1.5px', color: 'var(--en-text)', marginBottom: '12px' }}>
+              Empezá gratis, crecé a tu ritmo
+            </h2>
+            <p style={{ fontFamily: 'var(--font-body)', fontSize: '16px', color: 'var(--en-text-soft)', marginBottom: '40px', maxWidth: '480px', margin: '0 auto 40px' }}>
+              El primer curso es gratis. Cuando querés más, tenés planes accesibles en ARS o USD.
+            </p>
           </div>
-          <h2 style={{ fontFamily: 'var(--font-display)', fontWeight: 900, fontSize: 'clamp(28px, 4vw, 48px)', letterSpacing: '-1.5px', color: 'var(--en-text)', marginBottom: '12px' }}>
-            Empezá gratis, crecé a tu ritmo
-          </h2>
-          <p style={{ fontFamily: 'var(--font-body)', fontSize: '16px', color: 'var(--en-text-soft)', marginBottom: '40px', maxWidth: '480px', margin: '0 auto 40px' }}>
-            El primer curso es gratis. Cuando querés más, tenés planes accesibles en ARS o USD.
-          </p>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px', marginBottom: '24px' }}>
+          <div className="reveal-stagger" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px', marginBottom: '24px' }}>
             {[
               { name: 'FREE', price: '$0', desc: 'Para explorar', features: ['1 lección de muestra', 'Catálogo completo', 'Comunidad en lectura'], color: 'var(--en-text-soft)', highlight: false },
               { name: 'NORTE', price: 'U$D 12/mes', desc: 'Para aprender en serio', features: ['5 cursos incluidos', 'Cursos nuevos sin costo extra', 'Certificados'], color: 'var(--en-green)', highlight: true },
@@ -439,16 +560,46 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* ── CTA FINAL ── */}
+      {/* ── FAQS ── */}
       <section style={{ padding: 'clamp(64px, 8vw, 100px) clamp(16px, 5vw, 64px)' }}>
+        <div style={{ maxWidth: '780px', margin: '0 auto' }}>
+          <div className="reveal" style={{ textAlign: 'center', marginBottom: '48px' }}>
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '6px 14px', borderRadius: '100px', background: 'var(--en-green-light)', marginBottom: '16px' }}>
+              <span style={{ fontFamily: 'var(--font-body)', fontSize: '12px', color: 'var(--en-green)', fontWeight: 600 }}>Preguntas frecuentes</span>
+            </div>
+            <h2 style={{ fontFamily: 'var(--font-display)', fontWeight: 900, fontSize: 'clamp(28px, 4vw, 48px)', letterSpacing: '-1.5px', color: 'var(--en-text)', marginBottom: '12px' }}>
+              Todo lo que querés saber<br /><span style={{ color: 'var(--en-green)' }}>antes de arrancar</span>
+            </h2>
+            <p style={{ fontFamily: 'var(--font-body)', fontSize: '16px', color: 'var(--en-text-soft)', maxWidth: '440px', margin: '0 auto' }}>
+              Si tenés alguna otra duda, podés escribirnos directamente.
+            </p>
+          </div>
+
+          <div className="reveal">
+            <FaqAccordion items={FAQS} />
+          </div>
+
+          <div className="reveal" style={{ textAlign: 'center', marginTop: '40px' }}>
+            <p style={{ fontFamily: 'var(--font-body)', fontSize: '14px', color: 'var(--en-text-soft)' }}>
+              ¿Tenés otra pregunta?{' '}
+              <a href="mailto:hola@estudionorte.ar" style={{ color: 'var(--en-green)', fontWeight: 600, textDecoration: 'none' }}>
+                Escribinos →
+              </a>
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* ── CTA FINAL ── */}
+      <section style={{ padding: 'clamp(64px, 8vw, 100px) clamp(16px, 5vw, 64px)', background: 'var(--en-overlay-light)' }}>
         <div style={{ maxWidth: '700px', margin: '0 auto' }}>
-          <div style={{ background: 'linear-gradient(135deg, var(--en-green) 0%, var(--en-coral) 100%)', borderRadius: '28px', padding: 'clamp(48px, 6vw, 72px)', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
+          <div className="reveal" style={{ background: 'linear-gradient(135deg, var(--en-green) 0%, var(--en-coral) 100%)', borderRadius: '28px', padding: 'clamp(48px, 6vw, 72px)', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
             <div style={{ position: 'absolute', top: '-50px', right: '-50px', width: '220px', height: '220px', borderRadius: '50%', background: 'rgba(255,255,255,0.06)' }}/>
             <div style={{ position: 'absolute', bottom: '-60px', left: '-60px', width: '240px', height: '240px', borderRadius: '50%', background: 'rgba(255,255,255,0.04)' }}/>
 
             <div style={{ position: 'relative' }}>
               <h2 style={{ fontFamily: 'var(--font-display)', fontWeight: 900, fontSize: 'clamp(28px, 4.5vw, 52px)', letterSpacing: '-2px', color: '#fff', marginBottom: '16px', lineHeight: 1.05 }}>
-                Tu marca no se va a<br />diseñar sola.
+                Ya son más de 500.<br />¿Cuándo arrancás vos?
               </h2>
               <p style={{ fontFamily: 'var(--font-body)', fontSize: '16px', color: 'rgba(255,255,255,0.78)', marginBottom: '32px', maxWidth: '440px', margin: '0 auto 32px' }}>
                 El primer curso es gratis. En menos de 2 horas ya vas a tener algo concreto para mostrar.
