@@ -6,6 +6,7 @@ import { Metadata } from 'next'
 import StudentSidebar from '@/components/layout/StudentSidebar'
 import BottomNav from '@/components/layout/BottomNav'
 import XPStreak from '@/components/gamification/XPStreak'
+import ProgressBar from '@/components/ui/ProgressBar'
 
 export const metadata: Metadata = { title: 'Mi Dashboard — Estudio Norte' }
 
@@ -280,9 +281,9 @@ export default async function DashboardPage() {
                   </div>
                 )}
 
-                {/* Mis cursos */}
-                <div>
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px' }}>
+                {/* Mis cursos — HiStudy progress bar style */}
+                <div style={{ background: 'var(--en-surface)', border: '1.5px solid var(--en-border)', borderRadius: '18px', padding: '24px 28px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '24px' }}>
                     <h2 style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: '18px', color: 'var(--en-text)', letterSpacing: '-0.3px' }}>
                       Mis cursos
                     </h2>
@@ -290,58 +291,20 @@ export default async function DashboardPage() {
                       Explorar más →
                     </Link>
                   </div>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                    {validCourses.map(course => {
-                      const isComplete = course.progressPercent === 100
-                      return (
-                        <Link key={course.courseSlug}
-                          href={course.nextLessonId
-                            ? `/aprender/${course.courseSlug}/${course.nextLessonId}`
-                            : `/aprender/${course.courseSlug}`}
-                          style={{ textDecoration: 'none' }}
-                        >
-                          <div style={{
-                            background: 'var(--en-surface)', border: '1px solid var(--en-border)',
-                            borderRadius: '14px', padding: '18px 20px',
-                            display: 'flex', alignItems: 'center', gap: '16px',
-                          }}>
-                            {/* Progress circle */}
-                            <div style={{
-                              width: '44px', height: '44px', borderRadius: '50%', flexShrink: 0,
-                              background: isComplete ? 'var(--en-green-light)' : 'color-mix(in srgb, var(--en-coral) 10%, var(--en-surface))',
-                              display: 'flex', alignItems: 'center', justifyContent: 'center',
-                              fontFamily: 'var(--font-display)', fontWeight: 900, fontSize: '13px',
-                              color: isComplete ? 'var(--en-green)' : 'var(--en-coral)',
-                            }}>
-                              {course.progressPercent}%
-                            </div>
-                            {/* Title + progress */}
-                            <div style={{ flex: 1, minWidth: 0 }}>
-                              <h3 style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: '15px', color: 'var(--en-text)', letterSpacing: '-0.2px', marginBottom: '8px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                                {course.courseTitle}
-                              </h3>
-                              <div style={{ height: '4px', borderRadius: '2px', background: 'var(--en-track-bg)' }}>
-                                <div style={{ height: '100%', borderRadius: '2px', background: isComplete ? 'var(--en-green)' : 'var(--en-coral)', width: `${course.progressPercent}%`, transition: 'width 0.3s ease' }}/>
-                              </div>
-                              <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '6px' }}>
-                                <span style={{ fontFamily: 'var(--font-body)', fontSize: '11px', color: 'var(--en-text-faint)' }}>
-                                  {course.completedLessons}/{course.totalLessons} lecciones
-                                </span>
-                                {isComplete && (
-                                  <span style={{ fontFamily: 'var(--font-body)', fontSize: '11px', fontWeight: 700, color: 'var(--en-green)' }}>
-                                    ✓ Completado
-                                  </span>
-                                )}
-                              </div>
-                            </div>
-                            {/* Chevron */}
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--en-text-faint)" strokeWidth="2" style={{ flexShrink: 0 }}>
-                              <polyline points="9,18 15,12 9,6"/>
-                            </svg>
-                          </div>
-                        </Link>
-                      )
-                    })}
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                    {validCourses.map(course => (
+                      <ProgressBar
+                        key={course.courseSlug}
+                        label={course.courseTitle}
+                        sublabel={`${course.completedLessons}/${course.totalLessons} lecciones`}
+                        value={course.progressPercent}
+                        href={course.nextLessonId
+                          ? `/aprender/${course.courseSlug}/${course.nextLessonId}`
+                          : `/aprender/${course.courseSlug}`}
+                        isComplete={course.progressPercent === 100}
+                        height={5}
+                      />
+                    ))}
                   </div>
                 </div>
               </>

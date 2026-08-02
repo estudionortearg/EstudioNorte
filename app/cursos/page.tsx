@@ -1,12 +1,14 @@
 import { Metadata } from 'next'
 import CourseCard from '@/components/courses/CourseCard'
+import { createAdminClient } from '@/lib/supabase/admin'
 
 export const metadata: Metadata = {
   title: 'Cursos — Estudio Norte',
-  description: 'Cursos de diseño de marca con IA. Material práctico de Juan Gallino para crear identidades visuales y conseguir clientes.',
+  description: 'Cursos de diseño de marca con IA. Material práctico de Juan Gallino para crear identidades visuales y conseguir tus primeros clientes.',
 }
 
-const courses = [
+// Static marketing data — price, badges, featured flag
+const COURSES_STATIC = [
   {
     slug: 'ia-para-community-managers',
     title: 'IA para Community Managers que quieren trabajar distinto',
@@ -54,7 +56,23 @@ const courses = [
   },
 ]
 
-export default function CursosPage() {
+export default async function CursosPage() {
+  // Fetch thumbnail_url from DB — fail silently if no rows yet
+  const admin = createAdminClient()
+  const { data: dbCourses } = await admin
+    .from('courses')
+    .select('slug, thumbnail_url')
+
+  const thumbMap: Record<string, string | null> = {}
+  for (const row of dbCourses || []) {
+    thumbMap[row.slug] = row.thumbnail_url ?? null
+  }
+
+  const courses = COURSES_STATIC.map(c => ({
+    ...c,
+    thumbnailUrl: thumbMap[c.slug] ?? null,
+  }))
+
   return (
     <div style={{ minHeight: '100vh' }}>
 
@@ -100,9 +118,8 @@ export default function CursosPage() {
 
         <div style={{
           display: 'grid',
-          gridTemplateColumns: '1fr',
-          gap: '16px',
-          maxWidth: '780px',
+          gridTemplateColumns: 'repeat(auto-fill, minmax(288px, 1fr))',
+          gap: '24px',
         }}>
           {courses.map(course => (
             <CourseCard key={course.slug} {...course} />

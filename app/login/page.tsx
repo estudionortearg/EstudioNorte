@@ -1,17 +1,16 @@
 'use client'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
-import { Button } from '@/components/ui'
 
 function MailSentIcon() {
   return (
-    <svg width="48" height="48" viewBox="0 0 48 48" fill="none" style={{ margin: '0 auto 20px', display: 'block' }}>
-      <rect x="4" y="10" width="40" height="28" rx="4" stroke="var(--en-green)" strokeWidth="1.5"/>
-      <path d="M4 14L24 26L44 14" stroke="var(--en-green)" strokeWidth="1.5" strokeLinecap="round"/>
-      <path d="M32 32L38 38M38 32L32 38" stroke="var(--en-coral)" strokeWidth="1.5" strokeLinecap="round"/>
-      <path d="M34 35H42" stroke="var(--en-coral)" strokeWidth="1.5" strokeLinecap="round"/>
+    <svg width="56" height="56" viewBox="0 0 56 56" fill="none" style={{ margin: '0 auto 24px', display: 'block' }}>
+      <circle cx="28" cy="28" r="28" fill="var(--en-green-light)"/>
+      <rect x="12" y="18" width="32" height="20" rx="3" stroke="var(--en-green)" strokeWidth="1.5"/>
+      <path d="M12 22L28 30L44 22" stroke="var(--en-green)" strokeWidth="1.5" strokeLinecap="round"/>
     </svg>
   )
 }
@@ -82,15 +81,31 @@ function BrandPanel() {
 }
 
 export default function LoginPage() {
+  const router = useRouter()
   const [email, setEmail] = useState('')
   const [loading, setLoading] = useState(false)
   const [sent, setSent] = useState(false)
   const [error, setError] = useState('')
+  const [urlError, setUrlError] = useState('')
+  const [inputFocused, setInputFocused] = useState(false)
+
+  // If user already has a valid session, send them to the dashboard
+  useEffect(() => {
+    const supabase = createClient()
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session) router.replace('/dashboard')
+    })
+    // Read error message from URL (set by /auth/callback on failure)
+    const params = new URLSearchParams(window.location.search)
+    const errParam = params.get('error')
+    if (errParam) setUrlError(decodeURIComponent(errParam))
+  }, [router])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
     setError('')
+    setUrlError('')
 
     const supabase = createClient()
     const { error } = await supabase.auth.signInWithOtp({
@@ -108,7 +123,7 @@ export default function LoginPage() {
 
   return (
     <div style={{ minHeight: '100vh', background: 'var(--en-bg)', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))' }}>
-      {/* Left: Brand panel */}
+      {/* Left: Brand panel — unchanged */}
       <BrandPanel />
 
       {/* Right: Form */}
@@ -117,16 +132,17 @@ export default function LoginPage() {
         padding: '64px 48px', background: 'var(--en-surface)',
       }}>
         <motion.div
-          initial={{ opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.6 }}
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
           style={{ width: '100%', maxWidth: '380px' }}
         >
           {sent ? (
+            /* ── Success state ── */
             <div style={{ textAlign: 'center' }}>
               <MailSentIcon />
               <h1 style={{
-                fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: '28px',
+                fontFamily: 'var(--font-display)', fontWeight: 900, fontSize: '30px',
                 color: 'var(--en-text)', marginBottom: '12px', letterSpacing: '-0.5px',
               }}>
                 Revisá tu email
@@ -134,75 +150,131 @@ export default function LoginPage() {
               <p style={{ color: 'var(--en-text-soft)', lineHeight: 1.7, fontSize: '15px' }}>
                 Te mandamos un link de acceso a{' '}
                 <strong style={{ color: 'var(--en-text)' }}>{email}</strong>.
-                <br />Hacé click en el link para entrar.
+                <br />Hacé click en el link desde el <strong>mismo navegador</strong> para entrar.
               </p>
               <div style={{
-                marginTop: '32px', padding: '16px', borderRadius: '10px',
-                background: 'var(--en-green-08)', border: '1px solid var(--en-green-15)',
-                fontSize: '13px', color: 'var(--en-text-soft)',
+                marginTop: '28px', padding: '14px 16px', borderRadius: '10px',
+                background: '#F0FBF9', border: '1px solid #C0EDE8',
+                fontSize: '13px', color: 'var(--en-text-soft)', lineHeight: 1.6,
               }}>
-                Si no lo ves en bandeja de entrada, revisá spam.
+                Si no lo ves en bandeja de entrada, revisá la carpeta de spam.
               </div>
+              <button
+                onClick={() => { setSent(false); setEmail('') }}
+                style={{
+                  marginTop: '20px', fontFamily: 'var(--font-body)', fontSize: '13px',
+                  color: 'var(--en-green)', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 600,
+                }}
+              >
+                Usar otro email
+              </button>
             </div>
           ) : (
+            /* ── Form state ── */
             <>
+              {/* Logo link */}
               <div style={{ marginBottom: '40px' }}>
-                <div style={{ marginBottom: '24px' }}>
-                  <Link href="/" style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
-                    <span style={{ width: '28px', height: '28px', borderRadius: '7px', background: 'var(--en-green)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontFamily: 'var(--font-display)', fontWeight: 900, fontSize: '11px' }}>EN</span>
-                    <span style={{ fontFamily: 'var(--font-body)', fontWeight: 600, fontSize: '14px', color: 'var(--en-text)' }}>Estudio Norte</span>
-                  </Link>
-                </div>
+                <Link href="/" style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '8px', marginBottom: '36px' }}>
+                  <span style={{ width: '30px', height: '30px', borderRadius: '8px', background: 'var(--en-green)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontFamily: 'var(--font-display)', fontWeight: 900, fontSize: '12px' }}>EN</span>
+                  <span style={{ fontFamily: 'var(--font-body)', fontWeight: 600, fontSize: '14px', color: 'var(--en-text)' }}>Estudio Norte</span>
+                </Link>
+
                 <h1 style={{
                   fontFamily: 'var(--font-display)', fontWeight: 900,
-                  fontSize: 'clamp(28px, 4vw, 36px)', letterSpacing: '-1.5px',
-                  color: 'var(--en-text)', marginBottom: '10px',
+                  fontSize: '34px', letterSpacing: '-1.5px',
+                  color: '#192335', marginBottom: '8px', lineHeight: 1.1,
                 }}>
-                  Accedé a tus cursos
+                  Ingresá a tu cuenta
                 </h1>
-                <p style={{ color: 'var(--en-text-soft)', fontSize: '15px', lineHeight: 1.6 }}>
-                  Ingresá tu email y te mandamos un link de acceso. Sin contraseña.
+                <p style={{ fontFamily: 'var(--font-body)', color: '#7A8599', fontSize: '14px', lineHeight: 1.6 }}>
+                  Acceso sin contraseña — te mandamos un link al instante.
                 </p>
               </div>
 
-              <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                  <label style={{ fontFamily: 'var(--font-body)', fontSize: '13px', fontWeight: 600, color: '#6B7385' }}>
-                    Email
+              {/* URL error banner (from failed magic link) */}
+              {urlError && (
+                <div style={{
+                  marginBottom: '20px', padding: '12px 16px', borderRadius: '10px',
+                  background: '#FFF5F5', border: '1px solid #FFCACA',
+                  fontSize: '13px', color: '#C0392B', lineHeight: 1.6,
+                }}>
+                  {urlError}
+                </div>
+              )}
+
+              <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '0' }}>
+                {/* Email field — underline style like HiStudy */}
+                <div style={{ marginBottom: '32px' }}>
+                  <label style={{
+                    fontFamily: 'var(--font-body)', fontSize: '12px', fontWeight: 700,
+                    color: '#7A8599', letterSpacing: '0.5px', textTransform: 'uppercase',
+                    display: 'block', marginBottom: '10px',
+                  }}>
+                    Tu email
                   </label>
                   <input
                     type="email"
-                    placeholder="tu@email.com"
+                    placeholder="ejemplo@gmail.com"
                     value={email}
                     onChange={e => setEmail(e.target.value)}
+                    onFocus={() => setInputFocused(true)}
+                    onBlur={() => setInputFocused(false)}
                     required
                     style={{
-                      backgroundColor: '#F5F7FA',
-                      border: '1.5px solid #C5CAD5',
-                      borderRadius: '8px',
-                      padding: '12px 16px',
-                      fontSize: '15px',
-                      color: '#192335',
                       width: '100%',
-                      outline: 'none',
+                      background: 'transparent',
+                      border: 'none',
+                      borderBottom: `2px solid ${inputFocused ? '#4ECDC4' : '#E0E4ED'}`,
+                      padding: '10px 0',
+                      fontSize: '16px',
+                      color: '#192335',
                       fontFamily: 'var(--font-body)',
+                      outline: 'none',
                       boxSizing: 'border-box',
+                      transition: 'border-color 200ms',
                     }}
-                    onFocus={e => { e.currentTarget.style.borderColor = '#4ECDC4' }}
-                    onBlur={e => { e.currentTarget.style.borderColor = '#C5CAD5' }}
                   />
-                  {error && <span style={{ color: '#FF6B6B', fontSize: '12px' }}>{error}</span>}
+                  {error && (
+                    <span style={{ fontSize: '12px', color: '#C0392B', marginTop: '6px', display: 'block' }}>
+                      {error}
+                    </span>
+                  )}
                 </div>
-                <Button variant="primary" type="submit" disabled={loading} style={{ width: '100%', marginTop: '8px' }}>
-                  {loading ? 'Enviando...' : 'Enviame el link de acceso'}
-                </Button>
+
+                {/* CTA button */}
+                <button
+                  type="submit"
+                  disabled={loading}
+                  style={{
+                    width: '100%',
+                    padding: '15px 24px',
+                    background: loading ? '#8BC8C5' : 'linear-gradient(135deg, #4ECDC4 0%, #2BAE9E 100%)',
+                    border: 'none',
+                    borderRadius: '10px',
+                    fontFamily: 'var(--font-display)',
+                    fontWeight: 800,
+                    fontSize: '15px',
+                    color: '#fff',
+                    cursor: loading ? 'not-allowed' : 'pointer',
+                    letterSpacing: '-0.2px',
+                    transition: 'opacity 150ms, transform 100ms',
+                    transform: 'translateY(0)',
+                    boxShadow: '0 4px 16px rgba(78, 205, 196, 0.35)',
+                  }}
+                  onMouseEnter={e => { if (!loading) (e.currentTarget as HTMLButtonElement).style.opacity = '0.9' }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.opacity = '1' }}
+                >
+                  {loading ? 'Enviando...' : 'Recibir link de acceso'}
+                </button>
               </form>
 
               <p style={{
-                marginTop: '32px', fontSize: '13px', color: 'var(--en-text-faint)',
+                marginTop: '28px', fontSize: '12px', color: '#A0A9B8',
                 textAlign: 'center', lineHeight: 1.6,
               }}>
-                Al continuar aceptás los términos de uso de Estudio Norte.
+                Al continuar aceptás los{' '}
+                <Link href="/terminos" style={{ color: 'var(--en-green)', textDecoration: 'none', fontWeight: 600 }}>términos de uso</Link>{' '}
+                de Estudio Norte.
               </p>
             </>
           )}
