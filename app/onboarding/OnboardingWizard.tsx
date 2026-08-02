@@ -180,7 +180,7 @@ export default function OnboardingWizard({ userName, userPlan }: Props) {
       current: userPlan === 'free',
     },
     {
-      name: 'NORTE', color: 'var(--en-green)', price: 'U$D 7/mes',
+      name: 'NORTE', color: 'var(--en-green)', price: 'U$D 12/mes',
       features: ['Todas las guías PDF', 'Tutor IA', 'XP + Badges'],
       current: userPlan === 'norte',
     },

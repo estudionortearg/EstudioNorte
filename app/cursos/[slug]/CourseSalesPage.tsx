@@ -311,7 +311,7 @@ export default function CourseSalesPage({ course, curriculum }: { course: Course
                     {/* Precio suscripción */}
                     <div style={{ marginBottom: '20px' }}>
                       <div style={{ fontFamily: 'var(--font-display)', fontWeight: 900, fontSize: '40px', color: 'var(--en-text)', letterSpacing: '-2px', lineHeight: 1, marginBottom: '4px' }}>
-                        $7.000
+                        $12.000
                         <span style={{ fontSize: '16px', fontWeight: 700, color: 'var(--en-text-soft)', letterSpacing: '-0.5px' }}> ARS/mes</span>
                       </div>
                       <div style={{ fontFamily: 'var(--font-body)', fontSize: '12px', color: 'var(--en-text-faint)' }}>
@@ -324,7 +324,7 @@ export default function CourseSalesPage({ course, curriculum }: { course: Course
                       <div style={{ fontFamily: 'var(--font-body)', fontSize: '12px', color: 'var(--en-text-soft)', lineHeight: 1.6 }}>
                         <span style={{ textDecoration: 'line-through', opacity: 0.5 }}>${(course.priceArs).toLocaleString('es-AR')} solo este curso</span>
                         <br/>
-                        <strong style={{ color: 'var(--en-coral)' }}>Con Norte accedés a los 5 cursos</strong> — {(5 * course.priceArs / 7000).toFixed(0)}x más valor.
+                        <strong style={{ color: 'var(--en-coral)' }}>Con Norte accedés a los 5 cursos</strong> — {(5 * course.priceArs / 12000).toFixed(0)}x más valor.
                       </div>
                     </div>
 

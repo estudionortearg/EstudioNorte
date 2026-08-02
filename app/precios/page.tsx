@@ -27,7 +27,7 @@ const PLANS = [
   },
   {
     name: 'NORTE',
-    price: 'U$D 7',
+    price: 'U$D 12',
     period: '/mes',
     description: 'Acceso a todos los cursos + los que se agreguen',
     color: 'var(--en-green)',

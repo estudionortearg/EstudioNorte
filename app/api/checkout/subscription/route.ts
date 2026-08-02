@@ -4,7 +4,7 @@ import { createClient } from '@/lib/supabase/server'
 const PLAN_CONFIG = {
   norte: {
     reason: 'Estudio Norte — Plan Norte',
-    transaction_amount: 7000,
+    transaction_amount: 12000,
   },
   norte_pro: {
     reason: 'Estudio Norte — Plan Norte Pro',
