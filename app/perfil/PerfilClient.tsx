@@ -152,11 +152,16 @@ export default function PerfilClient({ email, fullName, avatarUrl, bannerUrl, cr
     if (!isDirty || saving) return
     setSaving(true)
     try {
-      await fetch('/api/perfil', {
+      const res = await fetch('/api/perfil', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ full_name: inputName }),
       })
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}))
+        console.error('[perfil] save failed:', body)
+        return
+      }
       setName(inputName)
       setSaved(true)
       setTimeout(() => setSaved(false), 2500)
