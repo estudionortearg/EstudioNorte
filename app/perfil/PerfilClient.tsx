@@ -133,7 +133,7 @@ export default function PerfilClient({ email, fullName, avatarUrl, bannerUrl, cr
 
   const memberSince = new Date(createdAt).toLocaleDateString('es-AR', { month: 'long', year: 'numeric' })
   const initials = getInitials(name || inputName, email)
-  const displayName = name || email.split('@')[0]
+  const displayName = name || 'Sin nombre'
   const isDirty = inputName !== name
   const planLabel = plan === 'norte_pro' ? 'Norte Pro' : plan === 'norte' ? 'Norte' : 'Gratuito'
 
@@ -334,7 +334,7 @@ export default function PerfilClient({ email, fullName, avatarUrl, bannerUrl, cr
             {/* Banner picker dropdown */}
             {bannerPickerOpen && (
               <div style={{
-                position: 'absolute', right: 0, top: 'calc(100% + 8px)', zIndex: 50,
+                position: 'fixed', right: 'clamp(16px, 4vw, 40px)', top: '140px', zIndex: 50,
                 background: 'var(--en-surface)', border: '1px solid var(--en-border)',
                 borderRadius: '14px', padding: '14px',
                 boxShadow: 'var(--en-shadow-lg)',
@@ -348,14 +348,22 @@ export default function PerfilClient({ email, fullName, avatarUrl, bannerUrl, cr
                     <button
                       key={p.key}
                       onClick={() => handleBannerPreset(p.key)}
-                      title={p.label}
                       style={{
-                        height: '40px', borderRadius: '8px', background: p.key, border: '2px solid transparent',
-                        cursor: 'pointer', padding: 0,
-                        outline: currentBanner === p.key ? '2px solid var(--en-green)' : 'none',
-                        outlineOffset: '2px',
+                        borderRadius: '8px', border: 'none', cursor: 'pointer', padding: 0,
+                        display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '5px',
+                        background: 'none',
+                        outline: 'none',
                       }}
-                    />
+                    >
+                      <span style={{
+                        display: 'block', height: '36px', width: '100%', borderRadius: '7px', background: p.key,
+                        outline: currentBanner === p.key ? '2px solid var(--en-green)' : '2px solid transparent',
+                        outlineOffset: '2px',
+                      }}/>
+                      <span style={{ fontFamily: 'var(--font-body)', fontSize: '11px', color: 'var(--en-text-soft)' }}>
+                        {p.label}
+                      </span>
+                    </button>
                   ))}
                 </div>
                 <div style={{ borderTop: '1px solid var(--en-border)', paddingTop: '10px' }}>
