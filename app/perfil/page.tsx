@@ -4,6 +4,7 @@ import PerfilClient from './PerfilClient'
 import BottomNav from '@/components/layout/BottomNav'
 import { Metadata } from 'next'
 
+export const dynamic = 'force-dynamic'
 export const metadata: Metadata = { title: 'Mi Perfil — Estudio Norte' }
 
 export default async function PerfilPage() {

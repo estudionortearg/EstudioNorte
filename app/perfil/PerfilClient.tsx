@@ -129,6 +129,7 @@ export default function PerfilClient({ email, fullName, avatarUrl, bannerUrl, cr
   const [currentBanner, setCurrentBanner] = useState<string | null>(bannerUrl)
   const [bannerPickerOpen, setBannerPickerOpen] = useState(false)
   const [bannerUploading, setBannerUploading] = useState(false)
+  const [bannerSaved, setBannerSaved] = useState(false)
   const bannerInputRef = useRef<HTMLInputElement>(null)
 
   const memberSince = new Date(createdAt).toLocaleDateString('es-AR', { month: 'long', year: 'numeric' })
@@ -186,6 +187,8 @@ export default function PerfilClient({ email, fullName, avatarUrl, bannerUrl, cr
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ gradient }),
     })
+    setBannerSaved(true)
+    setTimeout(() => setBannerSaved(false), 2500)
   }
 
   const handleBannerImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -198,7 +201,7 @@ export default function PerfilClient({ email, fullName, avatarUrl, bannerUrl, cr
     try {
       const res = await fetch('/api/perfil/banner', { method: 'POST', body: form })
       const data = await res.json()
-      if (data.url) setCurrentBanner(data.url)
+      if (data.url) { setCurrentBanner(data.url); setBannerSaved(true); setTimeout(() => setBannerSaved(false), 2500) }
     } finally {
       setBannerUploading(false)
       e.target.value = ''
@@ -321,7 +324,14 @@ export default function PerfilClient({ email, fullName, avatarUrl, bannerUrl, cr
                 color: '#fff', fontFamily: 'var(--font-body)', fontSize: '12px', fontWeight: 500,
               }}
             >
-              {bannerUploading ? '...' : (
+              {bannerUploading ? '...' : bannerSaved ? (
+                <>
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                    <polyline points="20 6 9 17 4 12"/>
+                  </svg>
+                  Guardado
+                </>
+              ) : (
                 <>
                   <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
                     <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
