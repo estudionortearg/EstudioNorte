@@ -1,5 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
-
 @import "tailwindcss";
 
 :root {
@@ -46,8 +44,8 @@
   --en-green-30: rgba(47,87,239,0.30);
 
   /* Tipografía */
-  --font-display: 'Plus Jakarta Sans', sans-serif;
-  --font-body: 'Plus Jakarta Sans', sans-serif;
+  --font-display: var(--font-jakarta, 'Plus Jakarta Sans', sans-serif);
+  --font-body: var(--font-jakarta, 'Plus Jakarta Sans', sans-serif);
 
   /* Retrocompat — legacy vars */
   --color-teal: #2F57EF;
