@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useRef } from 'react'
+import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import BadgeGrid from '@/components/gamification/BadgeGrid'
 import StudentSidebar from '@/components/layout/StudentSidebar'
@@ -113,6 +114,7 @@ const TABS = [
 type Tab = typeof TABS[number]['key']
 
 export default function PerfilClient({ email, fullName, avatarUrl, bannerUrl, createdAt, plan, enrollmentsCount, lessonsCompleted, payments, allBadges, earnedBadges, activeRewards, myRequests, totalXp }: Props) {
+  const router = useRouter()
   const [name, setName] = useState(fullName)
   const [inputName, setInputName] = useState(fullName)
   const [saving, setSaving] = useState(false)
@@ -158,6 +160,7 @@ export default function PerfilClient({ email, fullName, avatarUrl, bannerUrl, cr
       setName(inputName)
       setSaved(true)
       setTimeout(() => setSaved(false), 2500)
+      router.refresh()
     } finally {
       setSaving(false)
     }
@@ -172,7 +175,7 @@ export default function PerfilClient({ email, fullName, avatarUrl, bannerUrl, cr
     try {
       const res = await fetch('/api/perfil/avatar', { method: 'POST', body: form })
       const data = await res.json()
-      if (data.url) setCurrentAvatar(data.url)
+      if (data.url) { setCurrentAvatar(data.url); router.refresh() }
     } finally {
       setAvatarUploading(false)
       e.target.value = ''
@@ -189,6 +192,7 @@ export default function PerfilClient({ email, fullName, avatarUrl, bannerUrl, cr
     })
     setBannerSaved(true)
     setTimeout(() => setBannerSaved(false), 2500)
+    router.refresh()
   }
 
   const handleBannerImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -201,7 +205,7 @@ export default function PerfilClient({ email, fullName, avatarUrl, bannerUrl, cr
     try {
       const res = await fetch('/api/perfil/banner', { method: 'POST', body: form })
       const data = await res.json()
-      if (data.url) { setCurrentBanner(data.url); setBannerSaved(true); setTimeout(() => setBannerSaved(false), 2500) }
+      if (data.url) { setCurrentBanner(data.url); setBannerSaved(true); setTimeout(() => setBannerSaved(false), 2500); router.refresh() }
     } finally {
       setBannerUploading(false)
       e.target.value = ''
